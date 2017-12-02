@@ -6,3 +6,4 @@ authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 [dependencies]
 cgmath = "0.15"
 midgar = { git = "https://github.com/mystal/midgar-engine", branch = "ld40" }
+rand = "0.3"

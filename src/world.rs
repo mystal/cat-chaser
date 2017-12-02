@@ -4,55 +4,40 @@ use cgmath::{self, Vector2};
 use midgar::{self, KeyCode};
 
 use config;
+use entities::*;
+use level::Level;
 
 const MOVE_SPEED: f32 = 150.0;
 
-pub struct Dog {
-    pub pos: Vector2<f32>,
-    pub left_key: KeyCode, // TODO: consider breaking this out into control struct
-    pub right_key: KeyCode,
-    pub up_key: KeyCode,
-    pub down_key: KeyCode,
-}
-
-pub struct Cat {
-    pub pos: Vector2<f32>,
-}
-
-pub struct CatBox {
-    pub pos: Vector2<f32>,
-    pub size: Vector2<f32>,
-}
-
 pub struct GameWorld {
+    pub level: Level,
     pub dog: Dog,
     pub cats: Vec<Cat>,
-    pub cat_box: CatBox,
-    pub bounds: Vector2<u32>,
 }
 
 impl GameWorld {
     pub fn new() -> Self {
-        let cats = vec![
-            Cat {
-                pos: cgmath::vec2(400.0, 400.0),
-            },
-        ];
-
-        GameWorld {
-            dog: Dog {
-                pos: cgmath::vec2(700.0, 100.0),
-                left_key: KeyCode::Left,
-                right_key: KeyCode::Right,
-                up_key: KeyCode::Up,
-                down_key: KeyCode::Down,
-            },
-            cats,
+        let level = Level {
             cat_box: CatBox {
                 pos: cgmath::vec2(200.0, 200.0),
                 size: cgmath::vec2(80.0, 80.0),
             },
+            num_cats: 10,
             bounds: config::SCREEN_SIZE,
+        };
+        let dog = Dog {
+            pos: level.cat_box.pos,
+            left_key: KeyCode::Left,
+            right_key: KeyCode::Right,
+            up_key: KeyCode::Up,
+            down_key: KeyCode::Down,
+        };
+        let cats = level.generate_cats();
+
+        GameWorld {
+            level,
+            dog,
+            cats,
         }
     }
 
@@ -77,5 +62,9 @@ impl GameWorld {
         // TODO: Cats move or run!
 
         // TODO: Check win condition!
+    }
+
+    pub fn cat_box(&self) -> &CatBox {
+        &self.level.cat_box
     }
 }
