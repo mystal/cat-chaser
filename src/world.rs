@@ -46,5 +46,10 @@ impl GameWorld {
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
+        // TODO: Move dog!
+
+        // TODO: Cats move or run!
+
+        // TODO: Check win condition!
     }
 }
