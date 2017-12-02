@@ -1,11 +1,18 @@
 use midgar::Midgar;
 
 use cgmath::{self, Vector2};
+use midgar::{self, KeyCode};
 
 use config;
 
+const MOVE_SPEED: f32 = 150.0;
+
 pub struct Dog {
     pub pos: Vector2<f32>,
+    pub left_key: KeyCode, // TODO: consider breaking this out into control struct
+    pub right_key: KeyCode,
+    pub up_key: KeyCode,
+    pub down_key: KeyCode,
 }
 
 pub struct Cat {
@@ -35,6 +42,10 @@ impl GameWorld {
         GameWorld {
             dog: Dog {
                 pos: cgmath::vec2(700.0, 100.0),
+                left_key: KeyCode::Left,
+                right_key: KeyCode::Right,
+                up_key: KeyCode::Up,
+                down_key: KeyCode::Down,
             },
             cats,
             cat_box: CatBox {
@@ -46,7 +57,22 @@ impl GameWorld {
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
-        // TODO: Move dog!
+        // TODO: consider moving this into a poll input method
+        if midgar.input().is_key_held(self.dog.left_key) && !midgar.input().is_key_held(self.dog.right_key) {
+            self.dog.pos.x -= MOVE_SPEED * dt;
+        }
+
+        if midgar.input().is_key_held(self.dog.right_key) && !midgar.input().is_key_held(self.dog.left_key) {
+            self.dog.pos.x += MOVE_SPEED * dt;
+        }
+
+        if midgar.input().is_key_held(self.dog.up_key) && !midgar.input().is_key_held(self.dog.down_key) {
+            self.dog.pos.y -= MOVE_SPEED * dt;
+        }
+
+        if midgar.input().is_key_held(self.dog.down_key) && !midgar.input().is_key_held(self.dog.up_key) {
+            self.dog.pos.y += MOVE_SPEED * dt;
+        }
 
         // TODO: Cats move or run!
 
