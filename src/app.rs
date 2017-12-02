@@ -1,11 +1,18 @@
 use midgar::{self, KeyCode, Midgar, Surface};
 
+use world::GameWorld;
+use renderer::GameRenderer;
+
 pub struct GameApp {
+    world: GameWorld,
+    renderer: GameRenderer,
 }
 
 impl midgar::App for GameApp {
     fn create(midgar: &Midgar) -> Self {
         GameApp {
+            world: GameWorld::new(),
+            renderer: GameRenderer::new(midgar),
         }
     }
 
@@ -15,11 +22,10 @@ impl midgar::App for GameApp {
             return;
         }
 
-        let mut target = midgar.graphics().display().draw();
+        let dt = midgar.time().delta_time() as f32;
 
-        target.clear_color(0.0, 0.3, 0.7, 1.0);
+        self.world.update(midgar, dt);
 
-        target.finish()
-            .expect("target.finish() failed");
+        self.renderer.render(midgar, dt, &self.world);
     }
 }
