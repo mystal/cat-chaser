@@ -201,12 +201,20 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_ui<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S) {
+        let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
+                                       config::SCREEN_SIZE.y as f32, 0.0,
+                                       -1.0, 1.0);
         // TODO: Draw score!
         match world.game_state {
             GameState::Running => {
             },
             GameState::Won => {
                 // TODO: Draw won text!
+                let text = "Cats corralled!\nPress N to start the next level";
+                self.text.draw_text(text, &self.font, [0.0, 0.0, 0.0],
+                                    40, 252.0, 502.0, 800, &projection, target);
+                self.text.draw_text(text, &self.font, [1.0, 1.0, 1.0],
+                                    40, 250.0, 500.0, 800, &projection, target);
             },
             GameState::GameOver => {
                 // TODO: Draw lose text!
