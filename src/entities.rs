@@ -10,8 +10,9 @@ pub enum Facing {
 }
 
 const ANNOYANCE_THRESHOLD: f32 = 1.0;
-const CANNONBALL_COUNTDOWN: f32 = 1.25;
+const CANNONBALL_COUNTDOWN: f32 = 1.0;
 const CANNONBALL_SPEED: f32 = 240.0;
+const CANNONBALL_TIME: f32 = 1.25;
 const JITTER_AMOUNT: f32 = 2.0;
 
 pub struct Dog {
@@ -55,11 +56,13 @@ pub struct Cat {
     pub jitter_origin: Vector2<f32>,
     pub targeting_time: f32,
     pub dog_target: Vector2<f32>,
+    pub cannonballing_time: f32,
 }
 
 impl Cat {
     fn start_targeting(&mut self, dog_pos: Vector2<f32>) {
         self.dog_target = (dog_pos - self.pos).normalize();
+        self.cannonballing_time = CANNONBALL_TIME;
     }
 
     fn start_jitter(&mut self) {
@@ -92,8 +95,11 @@ impl Cat {
             _ => { },
         }
 
-        self.state = if self.state == CatState::Cannonballing {
+        self.state = if self.state == CatState::Cannonballing && self.cannonballing_time > 0.0 {
             CatState::Cannonballing
+        } else if self.state == CatState::Cannonballing && self.cannonballing_time <= 0.0 {
+            self.stop_cannonballing();
+            CatState::Idle
         } else if self.state == CatState::Jittering && self.targeting_time <= 0.0 {
             CatState::Cannonballing
         } else if self.state != CatState::Cannonballing && self.annoyance_total >= ANNOYANCE_THRESHOLD {
@@ -156,6 +162,12 @@ impl Cat {
         let v = target * CANNONBALL_SPEED* dt;
         self.velocity = v;
         self.try_move(bounds, v);
+
+        self.cannonballing_time -= dt;
+    }
+
+    fn stop_cannonballing(&mut self) {
+        self.annoyance_total = 0.0;
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
