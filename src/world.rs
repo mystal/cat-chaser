@@ -12,6 +12,8 @@ const MOVE_SPEED: f32 = 150.0;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum GameState {
+    StartMenu,
+    HowToPlay,
     Running,
     Won,
     GameOver,

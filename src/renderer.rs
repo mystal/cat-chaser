@@ -96,6 +96,22 @@ impl GameRenderer {
         let mut target = midgar.graphics().display().draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
+        match world.state {
+            GameState::StartMenu => {
+                //do a thing
+            },
+            GameState::HowToPlay => {
+                //do a different thing
+            },
+            GameState::Running | GameState::Won | GameState::GameOver => {
+                self.draw_world(midgar, dt, world, camera);
+            },
+        }
+
+        target.finish().unwrap();
+    }
+
+    fn draw_world(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera) {
         // Some colors!
         let white = [1.0, 1.0, 1.0];
         let grey = [0.5, 0.5, 0.5];
@@ -133,6 +149,17 @@ impl GameRenderer {
         sprite.set_flip_x(world.dog.facing == Facing::Right);
         self.sprite.draw(&sprite, draw_params, &mut target);
 
-        target.finish().unwrap();
+        match world.state {
+            GameState::Running => {
+                //ui stuff
+            },
+            GameState::Won => {
+                //ui stuff
+            },
+            GameState::GameOver => {
+                //ui stuff
+            },
+            _ => {},
+        }
     }
 }
