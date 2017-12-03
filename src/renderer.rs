@@ -23,8 +23,6 @@ pub struct GameRenderer<'a> {
     start_menu: TextureRegion,
 
     cat_box: TextureRegion,
-    basic_cat_walk: TextureRegion,
-    basic_cat_walk_alt: TextureRegion,
     basic_cat_walk_animation: Animation,
     basic_cat_walk_time: f32,
     wizard_dog_idle_animation: Animation,
@@ -85,8 +83,6 @@ impl<'a> GameRenderer<'a> {
             start_menu,
 
             cat_box,
-            basic_cat_walk,
-            basic_cat_walk_alt,
             basic_cat_walk_animation,
             basic_cat_walk_time: 0.0,
             wizard_dog_idle_animation,
@@ -162,12 +158,6 @@ impl<'a> GameRenderer<'a> {
         self.sprite.set_projection_matrix(combined);
         self.shape.set_projection_matrix(combined);
 
-        // Some colors!
-        let white = [1.0, 1.0, 1.0];
-        let grey = [0.5, 0.5, 0.5];
-        let black = [0.0, 0.0, 0.0];
-        let blue_violet = [138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0];
-
         let draw_params = SpriteDrawParams::new()
             .magnify_filter(MagnifySamplerFilter::Nearest)
             .alpha(true);
@@ -207,7 +197,7 @@ impl<'a> GameRenderer<'a> {
     }
 
 
-    fn draw_ui<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S) {
+    fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S) {
         let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                        config::SCREEN_SIZE.y as f32, 0.0,
                                        -1.0, 1.0);

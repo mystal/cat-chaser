@@ -1,7 +1,7 @@
-use midgar::{self, KeyCode, Midgar, Surface};
+use midgar::{self, KeyCode, Midgar};
 
-use config::{self};
-use cgmath::{self, Vector2};
+use config;
+use cgmath;
 use entities::Camera;
 use world::GameWorld;
 use renderer::GameRenderer;

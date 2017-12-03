@@ -2,8 +2,6 @@ use midgar::Midgar;
 
 use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::KeyCode;
-
-use config;
 use entities::*;
 use level::{Level, MAX_LEVEL};
 
@@ -69,19 +67,19 @@ impl GameWorld {
         self.game_state = GameState::Running;
     }
 
-    fn update_start_menu(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::HowToPlay;
         }
     }
 
-    fn update_how_to_play(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_how_to_play(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::Running;
         }
     }
 
-    fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_game_over(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::R) {
             self.level = Level::new(1);
             self.restart();
