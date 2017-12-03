@@ -34,6 +34,8 @@ pub struct GameRenderer<'a> {
     wizard_dog_run_time: f32,
 
     font: Font<'a>,
+
+    game_time: f32,
 }
 
 impl<'a> GameRenderer<'a> {
@@ -92,11 +94,15 @@ impl<'a> GameRenderer<'a> {
             wizard_dog_run_animation,
             wizard_dog_run_time: 0.0,
 
-            font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf")
+            font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf"),
+
+            game_time: 0.0,
         }
     }
 
     pub fn render(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera) {
+        self.game_time += dt;
+
         // Get framebuffer target.
         let mut target = midgar.graphics().display().draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
@@ -115,11 +121,12 @@ impl<'a> GameRenderer<'a> {
                 self.sprite.draw(&self.start_menu.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                                  draw_params, &mut target);
                 // Draw blinking text!
-                // TODO: Make it actually blink
-                self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
-                                    40, 452.0, 542.0, 500, &projection, &mut target);
-                self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
-                                    40, 450.0, 540.0, 500, &projection, &mut target);
+                if self.game_time.fract() < 0.5 {
+                    self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
+                                        40, 452.0, 542.0, 500, &projection, &mut target);
+                    self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
+                                        40, 450.0, 540.0, 500, &projection, &mut target);
+                }
             },
             GameState::HowToPlay => {
                 let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
@@ -128,11 +135,12 @@ impl<'a> GameRenderer<'a> {
                 self.sprite.set_projection_matrix(projection);
                 // TODO: Draw splash screen
                 // Draw blinking text!
-                // TODO: Make it actually blink
-                self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
-                                    40, 452.0, 542.0, 500, &projection, &mut target);
-                self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
-                                    40, 450.0, 540.0, 500, &projection, &mut target);
+                if self.game_time.fract() < 0.5 {
+                    self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
+                                        40, 452.0, 542.0, 500, &projection, &mut target);
+                    self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
+                                        40, 450.0, 540.0, 500, &projection, &mut target);
+                }
             },
             GameState::Running | GameState::Won | GameState::GameOver => {
                 self.draw_world(dt, world, camera, &mut target);
