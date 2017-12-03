@@ -1,5 +1,5 @@
 use cgmath::{self, Vector2, InnerSpace};
-use midgar::{self, KeyCode};
+use midgar::KeyCode;
 use rand;
 use rand::distributions::{IndependentSample, Range};
 
@@ -14,16 +14,60 @@ const CANNONBALL_COUNTDOWN: f32 = 1.0;
 const CANNONBALL_SPEED: f32 = 240.0;
 const CANNONBALL_TIME: f32 = 1.25;
 const JITTER_AMOUNT: f32 = 2.0;
+const HIT_TIME: f32 = 0.5;
+const BLINK_FRAMES: u32 = 2;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum DogState {
+    Chasing,
+    Blinking(bool),
+}
 
 pub struct Dog {
     pub pos: Vector2<f32>,
     pub vel: Vector2<f32>,
+    pub size: Vector2<f32>,
     pub facing: Facing,
 
     pub left_key: KeyCode, // TODO: consider breaking this out into control struct
     pub right_key: KeyCode,
     pub up_key: KeyCode,
     pub down_key: KeyCode,
+
+    pub dog_state: DogState,
+    pub hit_time: f32,
+    pub hit_frame: u32,
+    
+}
+
+impl Dog {
+    pub fn hit(&mut self) {
+        self.dog_state = DogState::Blinking(true);
+        self.hit_time = HIT_TIME;
+    }
+
+    pub fn update(&mut self, dt: f32) {
+        match self.dog_state {
+            DogState::Chasing  => {},
+            DogState::Blinking(t) => {
+                self.hit_frame += 1;
+                if self.hit_frame >= BLINK_FRAMES {
+                    self.update_blink(t, dt);
+                    self.hit_frame = 0;
+                }
+            }
+        }
+    }
+
+    fn update_blink(&mut self, value: bool, dt: f32) {
+        self.hit_time -= dt;
+        if self.hit_time > 0.0 {
+            self.dog_state = DogState::Blinking(!value);
+        } else {
+            self.dog_state = DogState::Chasing;
+        }
+        
+    }
 }
 
 pub enum CatType {
@@ -60,6 +104,19 @@ pub struct Cat {
 }
 
 impl Cat {
+    fn collides_with(&self, dog: &Dog) -> bool {
+        if dog.dog_state != DogState::Chasing {
+            return false;
+        }
+
+        let is_right = self.pos.x > dog.pos.x + dog.size.x;
+        let is_left = self.pos.x + self.size.x < dog.pos.x;
+        let is_top = self.pos.y + self.size.y < dog.pos.y;
+        let is_bottom = self.pos.y > dog.pos.y + dog.size.y;
+
+        return !(is_right || is_left || is_top || is_bottom);
+    }
+
     fn start_targeting(&mut self, dog_pos: Vector2<f32>) {
         self.dog_target = (dog_pos - self.pos).normalize();
         self.cannonballing_time = CANNONBALL_TIME;
@@ -74,7 +131,7 @@ impl Cat {
         return self.annoyance_total / ANNOYANCE_THRESHOLD
     }
 
-    pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32, dog: &Dog) {
+    pub fn jitter(&mut self, dt: f32, dog: &Dog) {
         let mut rng = rand::thread_rng();
         let x_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
         let y_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
@@ -106,7 +163,7 @@ impl Cat {
             CatState::Jittering
         } else if cat_box.in_bounds(&self.pos) {
             CatState::InPen
-        } else if dog_to_cat.magnitude() < self.radius {
+        } else if dog.dog_state == DogState::Chasing && dog_to_cat.magnitude() < self.radius {
             CatState::Flee
         } else {
             CatState::Idle
@@ -151,23 +208,28 @@ impl Cat {
         self.decrease_annoyance(dt)
     }
 
-    pub fn in_pen(&mut self, bounds: &Vector2<u32>, dt: f32) {
+    pub fn in_pen(&mut self, _bounds: &Vector2<u32>, dt: f32) {
         // TODO: wander in random direction
         // self.pos = self.pos;
         self.decrease_annoyance(dt);
     }
 
-    pub fn cannonball(&mut self, bounds: &Vector2<u32>, dt: f32) {
+    pub fn cannonball(&mut self, bounds: &Vector2<u32>, dt: f32, dog: &mut Dog) {
         let target = self.dog_target;
         let v = target * CANNONBALL_SPEED* dt;
         self.velocity = v;
         self.try_move(bounds, v);
 
         self.cannonballing_time -= dt;
+
+        if self.collides_with(dog) {
+            dog.hit();
+        }
     }
 
     fn stop_cannonballing(&mut self) {
         self.annoyance_total = 0.0;
+        self.state = CatState::Idle;
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
@@ -204,7 +266,7 @@ impl Cat {
 
     fn increase_annoyance(&mut self, dt: f32) {
         self.annoyance_total += self.annoyance_rate * dt;
-        if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+        if self.annoyance_total >= ANNOYANCE_THRESHOLD {
             self.start_jitter();
         }
     }

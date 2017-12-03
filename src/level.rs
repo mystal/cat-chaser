@@ -5,7 +5,11 @@ use config;
 
 use entities::*;
 
-pub const MAX_LEVEL: u32 = 4;
+pub const MAX_LEVEL: u32 = 5;
+const BASIC_CAT_ANNOYANCE_RATE: f32 = 0.75;
+const BASIC_CAT_CALMING_RATE: f32 = 0.5;
+const BASIC_CAT_SPEED: f32 = 150.0;
+const BASIC_CAT_RW_RADIUS: f32 = 9.0;
 
 pub struct Level {
     pub cat_box: CatBox,
@@ -38,9 +42,10 @@ impl Level {
     pub fn num_cats_for_level(level_num: u32) -> u32 {
         let num = match level_num {
             1 => 1,
-            2 => 5,
-            3 => 10,
-            4 => 20,
+            2 => 3,
+            3 => 5,
+            4 => 10,
+            5 => 20,
             _ => 1,
         };
 
@@ -66,15 +71,15 @@ impl Level {
                 facing: Facing::Left, // TODO: Randomize!
                 cat_type: CatType::Basic,
                 radius: 70.0,
-                speed: 150.0,
+                speed: BASIC_CAT_SPEED,
                 size: cgmath::vec2(30.0, 30.0),
                 annoyance_total: 0.0,
-                annoyance_rate: 1.0,
-                calming_rate: 0.5,
+                annoyance_rate: BASIC_CAT_ANNOYANCE_RATE,
+                calming_rate: BASIC_CAT_CALMING_RATE,
                 state: CatState::Idle,
                 velocity: cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
                                        rng.gen::<f32>() * 2.0 - 1.0).normalize(),
-                rw_radius: 9.0,
+                rw_radius: BASIC_CAT_RW_RADIUS,
                 rw_theta: 0.0,
                 jitter_origin: cat_pos,
                 targeting_time: 0.0,

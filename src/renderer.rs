@@ -1,13 +1,13 @@
 use std::rc::Rc;
 
-use cgmath::{self, Matrix4, Vector3};
+use cgmath::{self, Matrix4};
 use cgmath::prelude::*;
-use entities::Camera;
+use entities::{Camera, DogState};
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::text::{self, Font, TextRenderer};
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
 
 use config;
@@ -23,9 +23,8 @@ pub struct GameRenderer<'a> {
     start_menu: TextureRegion,
     how_to_play: TextureRegion,
 
+    background: TextureRegion,
     cat_box: TextureRegion,
-    basic_cat_walk: TextureRegion,
-    basic_cat_walk_alt: TextureRegion,
     basic_cat_walk_animation: Animation,
     basic_cat_idle_animation: Animation,
     basic_cat_walk_time: f32,
@@ -50,6 +49,10 @@ impl<'a> GameRenderer<'a> {
         let how_to_play = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/how_to_play.png", false));
             TextureRegion::new(texture)
+        };
+        let background = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/hardwood_floor.png", false));
+            TextureRegion::with_sub_field(texture, (0, 0), (config::SCREEN_SIZE.x, config::SCREEN_SIZE.y))
         };
         let cat_box = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
@@ -98,9 +101,8 @@ impl<'a> GameRenderer<'a> {
             start_menu,
             how_to_play,
 
+            background,
             cat_box,
-            basic_cat_walk,
-            basic_cat_walk_alt,
             basic_cat_walk_animation,
             basic_cat_idle_animation,
             basic_cat_walk_time: 0.0,
@@ -191,15 +193,20 @@ impl<'a> GameRenderer<'a> {
         self.sprite.set_projection_matrix(combined);
         self.shape.set_projection_matrix(combined);
 
-        // Some colors!
-        let white = [1.0, 1.0, 1.0];
-        let grey = [0.5, 0.5, 0.5];
-        let black = [0.0, 0.0, 0.0];
-        let blue_violet = [138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0];
-
         let draw_params = SpriteDrawParams::new()
             .magnify_filter(MagnifySamplerFilter::Nearest)
             .alpha(true);
+
+        // Background
+        let pos = self.background.size();
+        let mut sprite = self.background.draw(pos.x as f32 / 2.0, pos.y as f32 / 2.0);
+        sprite.set_scale(cgmath::vec2(2.0, 2.0));
+        self.sprite.draw(&sprite,
+                        SpriteDrawParams::new()
+                            .magnify_filter(MagnifySamplerFilter::Nearest)
+                            .alpha(true)
+                            .wrap_function(SamplerWrapFunction::Repeat),
+                        target);
 
         // Draw cat box.
         self.sprite.draw(&self.cat_box.draw(world.cat_box().pos.x, world.cat_box().pos.y),
@@ -218,24 +225,39 @@ impl<'a> GameRenderer<'a> {
         // Draw dog, woof.
         self.wizard_dog_idle_time += dt;
         self.wizard_dog_run_time += dt;
-        let mut sprite = if world.dog.vel.is_zero() {
-            self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
-                .draw(world.dog.pos.x, world.dog.pos.y)
-        } else {
-            self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
-                .draw(world.dog.pos.x, world.dog.pos.y)
-        };
-        sprite.set_flip_x(world.dog.facing == Facing::Right);
-        self.sprite.draw(&sprite, draw_params, target);
+
+        match world.dog.dog_state {
+            DogState::Chasing | DogState::Blinking(true) => {
+                let mut sprite = if world.dog.vel.is_zero() {
+                    self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                        .draw(world.dog.pos.x, world.dog.pos.y)
+                } else {
+                    self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
+                        .draw(world.dog.pos.x, world.dog.pos.y)
+                };
+                sprite.set_flip_x(world.dog.facing == Facing::Right);
+                self.sprite.draw(&sprite, draw_params, target);
+            }
+            DogState::Blinking(false) => {}
+        }
     }
 
-    fn draw_ui<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S) {
+
+    fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S) {
+        let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
+                                       config::SCREEN_SIZE.y as f32, 0.0,
+                                       -1.0, 1.0);
         // TODO: Draw score!
         match world.game_state {
             GameState::Running => {
             },
             GameState::Won => {
                 // TODO: Draw won text!
+                let text = "Cats corralled!\nPress N to start the next level";
+                self.text.draw_text(text, &self.font, [0.0, 0.0, 0.0],
+                                    40, 252.0, 502.0, 800, &projection, target);
+                self.text.draw_text(text, &self.font, [1.0, 1.0, 1.0],
+                                    40, 250.0, 500.0, 800, &projection, target);
             },
             GameState::GameOver => {
                 // TODO: Draw lose text!

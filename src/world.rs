@@ -1,9 +1,7 @@
 use midgar::Midgar;
 
 use cgmath::{self, InnerSpace, Vector2, Zero};
-use midgar::{self, KeyCode};
-
-use config;
+use midgar::KeyCode;
 use entities::*;
 use level::{Level, MAX_LEVEL};
 
@@ -32,11 +30,15 @@ impl GameWorld {
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
+            size: cgmath::Vector2::new(30.0, 30.0),
             facing: Facing::Left,
             left_key: KeyCode::Left,
             right_key: KeyCode::Right,
             up_key: KeyCode::Up,
             down_key: KeyCode::Down,
+            dog_state: DogState::Chasing,
+            hit_time: 0.0,
+            hit_frame: 0,
         };
         let cats = level.generate_cats();
 
@@ -65,19 +67,19 @@ impl GameWorld {
         self.game_state = GameState::Running;
     }
 
-    fn update_start_menu(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::HowToPlay;
         }
     }
 
-    fn update_how_to_play(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_how_to_play(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::Running;
         }
     }
 
-    fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_game_over(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::R) {
             self.level = Level::new(1);
             self.restart();
@@ -130,6 +132,8 @@ impl GameWorld {
         self.dog.vel = dir * MOVE_SPEED;
         self.dog.pos += self.dog.vel * dt;
 
+        self.dog.update(dt);
+
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
@@ -140,12 +144,11 @@ impl GameWorld {
                     cat.flee(&self.level.bounds, &dir, dt)
                 },
                 CatState::Jittering => {
-                    cat.jitter(&self.level.bounds, dt, &self.dog)
+                    cat.jitter(dt, &self.dog)
                 }
                 CatState::Cannonballing => {
-                    cat.cannonball(&self.level.bounds, dt)
-                }
-                _ => {},
+                    cat.cannonball(&self.level.bounds, dt, &mut self.dog)
+                }                
             }
             if cat.velocity.x != 0.0 {
                 cat.facing = if cat.velocity.x > 0.0 {
