@@ -1,8 +1,11 @@
 extern crate cgmath;
 extern crate midgar;
+extern crate rand;
 
 mod app;
 mod config;
+mod entities;
+mod level;
 mod renderer;
 mod world;
 

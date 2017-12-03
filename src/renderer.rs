@@ -35,11 +35,11 @@ impl GameRenderer {
         let grey = [0.5, 0.5, 0.5];
         let black = [0.0, 0.0, 0.0];
         let blue_violet = [138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0];
-        self.shape.draw_filled_rect(world.cat_box.pos.x, world.cat_box.pos.y,
-                                    world.cat_box.size.x, world.cat_box.size.y,
+        self.shape.draw_filled_rect(world.cat_box().pos.x, world.cat_box().pos.y,
+                                    world.cat_box().size.x, world.cat_box().size.y,
                                     white, &mut target);
-        self.shape.draw_filled_rect(world.cat_box.pos.x + 2.0, world.cat_box.pos.y + 2.0,
-                                    world.cat_box.size.x - 4.0, world.cat_box.size.y - 4.0,
+        self.shape.draw_filled_rect(world.cat_box().pos.x, world.cat_box().pos.y,
+                                    world.cat_box().size.x - 4.0, world.cat_box().size.y - 4.0,
                                     black, &mut target);
 
         // Draw cats!
