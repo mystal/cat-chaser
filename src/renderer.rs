@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use cgmath::{self, Matrix4};
+use cgmath::{self, Matrix4, Vector3};
 use cgmath::prelude::*;
 use entities::Camera;
 use midgar::{Midgar, Surface};
@@ -86,6 +86,7 @@ impl GameRenderer {
         for cat in &world.cats {
             let mut sprite = self.basic_cat.draw(cat.pos.x, cat.pos.y);
             sprite.set_flip_x(cat.facing == Facing::Right);
+            sprite.set_color(cgmath::Vector3::new(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
             self.sprite.draw(&sprite, draw_params, &mut target);
         }
 
