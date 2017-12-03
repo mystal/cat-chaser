@@ -27,6 +27,7 @@ impl Level {
             }
             cats.push(Cat {
                 pos: cat_pos,
+                facing: Facing::Left, // TODO: Randomize!
                 cat_type: CatType::Basic,
                 radius: 70.0,
                 speed: 2.0,

@@ -1,6 +1,6 @@
 use midgar::Midgar;
 
-use cgmath::{self, Vector2, InnerSpace};
+use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::{self, KeyCode};
 
 use config;
@@ -28,6 +28,8 @@ impl GameWorld {
         };
         let dog = Dog {
             pos: level.cat_box.pos,
+            vel: Vector2::zero(),
+            facing: Facing::Left,
             left_key: KeyCode::Left,
             right_key: KeyCode::Right,
             up_key: KeyCode::Up,
@@ -46,21 +48,31 @@ impl GameWorld {
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         // TODO: consider moving this into a poll input method
         // TODO: Clamp dog to level bounds.
+        let mut dir = Vector2::zero();
         if midgar.input().is_key_held(self.dog.left_key) && !midgar.input().is_key_held(self.dog.right_key) {
-            self.dog.pos.x -= MOVE_SPEED * dt;
+            dir.x -= 1.0;
         }
-
         if midgar.input().is_key_held(self.dog.right_key) && !midgar.input().is_key_held(self.dog.left_key) {
-            self.dog.pos.x += MOVE_SPEED * dt;
+            dir.x += 1.0;
         }
-
         if midgar.input().is_key_held(self.dog.up_key) && !midgar.input().is_key_held(self.dog.down_key) {
-            self.dog.pos.y -= MOVE_SPEED * dt;
+            dir.y -= 1.0;
         }
-
         if midgar.input().is_key_held(self.dog.down_key) && !midgar.input().is_key_held(self.dog.up_key) {
-            self.dog.pos.y += MOVE_SPEED * dt;
+            dir.y += 1.0;
         }
+        if !dir.is_zero() {
+            dir = dir.normalize();
+        }
+        if dir.x != 0.0 {
+            self.dog.facing = if dir.x > 0.0 {
+                Facing::Right
+            } else {
+                Facing::Left
+            };
+        }
+        self.dog.vel = dir * MOVE_SPEED;
+        self.dog.pos += self.dog.vel * dt;
 
         // Cats move or run!
         for cat in &mut self.cats {
@@ -69,6 +81,13 @@ impl GameWorld {
                 CatState::InPen => { cat.in_pen(&self.level.bounds) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
+                    if dir.x != 0.0 {
+                        cat.facing = if dir.x > 0.0 {
+                            Facing::Right
+                        } else {
+                            Facing::Left
+                        };
+                    }
                     cat.flee(&self.level.bounds, &dir)
                 },
                 _ => {},

@@ -3,8 +3,17 @@ use midgar::{self, KeyCode};
 use rand;
 use rand::distributions::{IndependentSample, Range};
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub enum Facing {
+    Left,
+    Right,
+}
+
 pub struct Dog {
     pub pos: Vector2<f32>,
+    pub vel: Vector2<f32>,
+    pub facing: Facing,
+
     pub left_key: KeyCode, // TODO: consider breaking this out into control struct
     pub right_key: KeyCode,
     pub up_key: KeyCode,
@@ -24,6 +33,7 @@ pub enum CatState {
 
 pub struct Cat {
     pub pos: Vector2<f32>,
+    pub facing: Facing,
     pub cat_type: CatType,
     pub radius: f32,
     pub speed: f32,
