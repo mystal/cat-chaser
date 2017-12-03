@@ -77,7 +77,7 @@ impl GameWorld {
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
-                CatState::Idle => { cat.idle(&self.level.bounds) },
+                CatState::Idle => { cat.idle(&self.level.bounds, dt) },
                 CatState::InPen => { cat.in_pen(&self.level.bounds, dt) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
