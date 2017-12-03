@@ -86,9 +86,6 @@ impl GameWorld {
                 CatState::Jittering => {
                     cat.jitter(&self.level.bounds, dt, &self.dog)
                 }
-                CatState::Annoyed => {
-                    cat.annoyed(&self.level.bounds, dt)
-                }
                 CatState::Cannonballing => {
                     cat.cannonball(&self.level.bounds, dt)
                 }
