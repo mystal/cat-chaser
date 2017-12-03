@@ -37,6 +37,7 @@ pub struct GameRenderer<'a> {
     wizard_dog_run_time: f32,
 
     font: Font<'a>,
+    cat_face: TextureRegion,
 
     game_time: f32,
 }
@@ -104,6 +105,11 @@ impl<'a> GameRenderer<'a> {
             .unwrap();
         wizard_dog_run_animation.play_mode = PlayMode::Loop;
 
+        let cat_face = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_face.png", false));
+            TextureRegion::new(texture)
+        };
+
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
                                        config::GAME_SIZE.y as f32 / 2.0, -(config::GAME_SIZE.y as f32 / 2.0),
                                        -1.0, 1.0);
@@ -130,6 +136,7 @@ impl<'a> GameRenderer<'a> {
             wizard_dog_run_time: 0.0,
 
             font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf"),
+            cat_face,
 
             game_time: 0.0,
         }
@@ -275,12 +282,21 @@ impl<'a> GameRenderer<'a> {
         let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                        config::SCREEN_SIZE.y as f32, 0.0,
                                        -1.0, 1.0);
-        // Draw score!
+        let draw_params = SpriteDrawParams::new()
+            .magnify_filter(MagnifySamplerFilter::Nearest)
+            .alpha(true);
+
+        // Draw cat face next to score!
+        self.sprite.set_projection_matrix(projection);
+        let mut sprite = self.cat_face.draw(660.0, 25.0);
+        sprite.set_scale(cgmath::vec2(3.0, 3.0));
+        self.sprite.draw(&sprite, draw_params, target);
+        // Draw score text!
         let score_text = format!("{:02}/{:02}", world.cats_scored, world.level.num_cats);
         self.text.draw_text(&score_text, &self.font, [0.0, 0.0, 0.0],
-                            40, 702.0, 7.0, 800, &projection, target);
+                            40, 697.0, 7.0, 800, &projection, target);
         self.text.draw_text(&score_text, &self.font, [1.0, 1.0, 1.0],
-                            40, 700.0, 5.0, 800, &projection, target);
+                            40, 695.0, 5.0, 800, &projection, target);
         match world.game_state {
             GameState::Running => {
             },

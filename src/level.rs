@@ -6,10 +6,6 @@ use config;
 use entities::*;
 
 pub const MAX_LEVEL: u32 = 5;
-const BASIC_CAT_ANNOYANCE_RATE: f32 = 0.75;
-const BASIC_CAT_CALMING_RATE: f32 = 0.5;
-const BASIC_CAT_SPEED: f32 = 150.0;
-const BASIC_CAT_RW_RADIUS: f32 = 9.0;
 
 pub struct Level {
     pub cat_box: CatBox,
@@ -66,26 +62,9 @@ impl Level {
             while cat_pos.distance(self.cat_box.pos) < cat_box_radius {
                 cat_pos = cgmath::vec2(range_x.ind_sample(&mut rng), range_y.ind_sample(&mut rng));
             }
-            cats.push(Cat {
-                pos: cat_pos,
-                facing: Facing::Left, // TODO: Randomize!
-                cat_type: CatType::Basic,
-                radius: 70.0,
-                speed: BASIC_CAT_SPEED,
-                size: cgmath::vec2(30.0, 30.0),
-                annoyance_total: 0.0,
-                annoyance_rate: BASIC_CAT_ANNOYANCE_RATE,
-                calming_rate: BASIC_CAT_CALMING_RATE,
-                state: CatState::Idle,
-                velocity: cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
-                                       rng.gen::<f32>() * 2.0 - 1.0).normalize(),
-                rw_radius: BASIC_CAT_RW_RADIUS,
-                rw_theta: 0.0,
-                jitter_origin: cat_pos,
-                targeting_time: 0.0,
-                dog_target: cgmath::vec2(0.0, 0.0),
-                cannonballing_time: 0.0,
-            });
+            let vel = cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
+                                   rng.gen::<f32>() * 2.0 - 1.0).normalize();
+            cats.push(Cat::new_basic_cat(cat_pos, vel));
         }
         cats
     }
