@@ -39,6 +39,7 @@ impl Level {
                 velocity: cgmath::vec2(1.0, 0.0),
                 rw_radius: 0.1,
                 rw_theta: 0.0,
+                jitter_origin: cat_pos,
             });
         }
         cats
