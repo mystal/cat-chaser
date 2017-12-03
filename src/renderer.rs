@@ -247,7 +247,12 @@ impl<'a> GameRenderer<'a> {
         let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                        config::SCREEN_SIZE.y as f32, 0.0,
                                        -1.0, 1.0);
-        // TODO: Draw score!
+        // Draw score!
+        let score_text = format!("{:02}/{:02}", world.cats_scored, world.level.num_cats);
+        self.text.draw_text(&score_text, &self.font, [0.0, 0.0, 0.0],
+                            40, 702.0, 7.0, 800, &projection, target);
+        self.text.draw_text(&score_text, &self.font, [1.0, 1.0, 1.0],
+                            40, 700.0, 5.0, 800, &projection, target);
         match world.game_state {
             GameState::Running => {
             },
