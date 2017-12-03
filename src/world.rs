@@ -5,27 +5,30 @@ use midgar::{self, KeyCode};
 
 use config;
 use entities::*;
-use level::Level;
+use level::{Level, MAX_LEVEL};
+
 
 const MOVE_SPEED: f32 = 150.0;
 
+#[derive(Clone, Copy, PartialEq)]
+pub enum GameState {
+    StartMenu,
+    HowToPlay,
+    Running,
+    Won,
+    GameOver,
+}
+
 pub struct GameWorld {
+    pub game_state: GameState,
     pub level: Level,
     pub dog: Dog,
     pub cats: Vec<Cat>,
-    pub we_win: bool,
 }
 
 impl GameWorld {
     pub fn new() -> Self {
-        let level = Level {
-            cat_box: CatBox {
-                pos: cgmath::vec2(100.0, 100.0),
-                size: cgmath::vec2(60.0, 60.0),
-            },
-            num_cats: 10,
-            bounds: cgmath::vec2(config::GAME_SIZE.x, config::GAME_SIZE.y),
-        };
+        let level = Level::new(1);
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
@@ -38,14 +41,54 @@ impl GameWorld {
         let cats = level.generate_cats();
 
         GameWorld {
+            game_state: GameState::Running,
             level,
             dog,
             cats,
-            we_win: false,
         }
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
+        match self.game_state {
+            GameState::Running => self.update_running(midgar, dt),
+            GameState::Won => self.update_won(midgar, dt),
+            GameState::GameOver => self.update_game_over(midgar, dt),
+            _ => {},
+        }
+    }
+
+    fn restart(&mut self) {
+        self.dog.pos = self.level.cat_box.pos;
+        let cats = self.level.generate_cats();
+        self.cats = cats;
+        self.game_state = GameState::Running;
+    }
+
+    fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::R) {
+            self.level = Level::new(1);
+            self.restart();
+        }
+    }
+
+    fn update_won(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::N) {
+            if self.level.level_num > MAX_LEVEL {
+                self.game_state = GameState::GameOver;
+                return;
+            }
+
+            self.level.next_level();
+            self.restart();
+        }
+
+        self.update_running(midgar, dt);
+    }
+
+    fn update_running(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::R) {
+            self.restart();
+        }
         // TODO: consider moving this into a poll input method
         // TODO: Clamp dog to level bounds.
         let mut dir = Vector2::zero();
@@ -100,7 +143,7 @@ impl GameWorld {
             }
         }
 
-        if !self.we_win {
+        if self.game_state != GameState::Won {
             // Check win condition!
             let mut we_win = true;
             for cat in &self.cats {
@@ -112,7 +155,7 @@ impl GameWorld {
 
             if we_win {
                 println!("YOU WON");
-                self.we_win = true;
+                self.game_state = GameState::Won;
             }
         }
     }
