@@ -9,6 +9,8 @@ pub enum Facing {
     Right,
 }
 
+const ANNOYANCE_THRESHOLD: f32 = 1.0;
+
 pub struct Dog {
     pub pos: Vector2<f32>,
     pub vel: Vector2<f32>,
@@ -24,11 +26,13 @@ pub enum CatType {
     Basic,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CatState {
     Flee,
     Idle,
-    InPen
+    InPen,
+    Jittering,
+    Annoyed,
 }
 
 pub struct Cat {
@@ -38,15 +42,37 @@ pub struct Cat {
     pub radius: f32,
     pub speed: f32,
     pub size: Vector2<f32>,
+    pub annoyance_total: f32,
+    pub annoyance_rate: f32,
+    pub calming_rate: f32,
     pub state: CatState,
-
     pub velocity: Vector2<f32>,
-
     pub rw_radius: f32, // for random walk in idle
     pub rw_theta: f32, // for random walk in idle
+    pub jitter_origin: Vector2<f32>,
 }
 
 impl Cat {
+    fn start_jitter(&mut self) {
+        self.jitter_origin = self.pos;
+    }
+
+    pub fn normalized_jitter(&self) -> f32 {
+        return self.annoyance_total / ANNOYANCE_THRESHOLD
+    }
+
+    pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        let mut rng = rand::thread_rng();
+        let x_range = Range::new(-1.0, 1.0);
+        let y_range = Range::new(-1.0, 1.0);
+
+        let x = x_range.ind_sample(&mut rng);
+        let y = y_range.ind_sample(&mut rng);
+
+        self.pos.x = self.jitter_origin.x + x;
+        self.pos.y = self.jitter_origin.y + y;
+    }
+
     pub fn update_state(&mut self, dog: &Dog, cat_box: &CatBox) -> CatState {
         let dog_to_cat = self.pos - dog.pos;
 
@@ -54,7 +80,9 @@ impl Cat {
             _ => { },
         }
 
-        self.state = if cat_box.in_bounds(&self.pos) {
+        self.state = if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+            CatState::Jittering
+        } else if cat_box.in_bounds(&self.pos) {
             CatState::InPen
         } else if dog_to_cat.magnitude() < self.radius {
             CatState::Flee
@@ -65,17 +93,18 @@ impl Cat {
         self.state
     }
 
-    pub fn flee(&mut self, bounds: &Vector2<u32>, dir: &Vector2<f32>) {
+    pub fn flee(&mut self, bounds: &Vector2<u32>, dir: &Vector2<f32>, dt: f32) {
         match &self.cat_type {
             _ => { },
         }
 
         let speed = self.speed;
         self.velocity = dir.normalize() * speed;
-        self.try_move(bounds, dir.normalize() * speed);
+        self.try_move(bounds, dir.normalize() * speed * dt);
+        self.increase_annoyance(dt);
     }
 
-    pub fn idle(&mut self, bounds: &Vector2<u32>) {
+    pub fn idle(&mut self, bounds: &Vector2<u32>, dt: f32) {
         let range_theta = Range::new(-0.3, 0.3);
         let mut rng = rand::thread_rng();
         // random update rw_theta
@@ -96,12 +125,18 @@ impl Cat {
             self.velocity = (self.velocity + circle_vector).normalize() * self.speed / 3.0;
         }
         v = self.velocity;
-        self.try_move(bounds, v);
+        self.try_move(bounds, v * dt);
+        self.decrease_annoyance(dt)
     }
 
-    pub fn in_pen(&mut self, bounds: &Vector2<u32>) {
+    pub fn in_pen(&mut self, bounds: &Vector2<u32>, dt: f32) {
         // TODO: wander in random direction
         // self.pos = self.pos;
+        self.decrease_annoyance(dt);
+    }
+
+    pub fn annoyed(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        println!("ANNOYED!");
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
@@ -127,6 +162,20 @@ impl Cat {
         };
 
         self.pos = new_pos;
+    }
+
+    fn decrease_annoyance(&mut self, dt: f32) {
+        self.annoyance_total -= self.calming_rate * dt;
+        if self.annoyance_total < 0.0 {
+            self.annoyance_total = 0.0;
+        }
+    }
+
+    fn increase_annoyance(&mut self, dt: f32) {
+        self.annoyance_total += self.annoyance_rate * dt;
+        if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+            self.start_jitter();
+        }
     }
 }
 

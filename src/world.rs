@@ -77,12 +77,25 @@ impl GameWorld {
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
-                CatState::Idle => { cat.idle(&self.level.bounds) },
-                CatState::InPen => { cat.in_pen(&self.level.bounds) },
+                CatState::Idle => { cat.idle(&self.level.bounds, dt) },
+                CatState::InPen => { cat.in_pen(&self.level.bounds, dt) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
-                    cat.flee(&self.level.bounds, &dir)
+                    if dir.x != 0.0 {
+                        cat.facing = if dir.x > 0.0 {
+                            Facing::Right
+                        } else {
+                            Facing::Left
+                        };
+                    }
+                    cat.flee(&self.level.bounds, &dir, dt)
                 },
+                CatState::Jittering => {
+                    cat.jitter(&self.level.bounds, dt)
+                }
+                CatState::Annoyed => {
+                    cat.annoyed(&self.level.bounds, dt)
+                }
                 _ => {},
             }
             if cat.velocity.x != 0.0 {
