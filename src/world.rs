@@ -45,7 +45,7 @@ impl GameWorld {
         let cats = level.generate_cats();
 
         GameWorld {
-            game_state: GameState::Running,
+            game_state: GameState::StartMenu,
             level,
             dog,
             cats,
@@ -54,10 +54,11 @@ impl GameWorld {
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
+            GameState::StartMenu => self.update_start_menu(midgar, dt),
+            GameState::HowToPlay => self.update_how_to_play(midgar, dt),
             GameState::Running => self.update_running(midgar, dt),
             GameState::Won => self.update_won(midgar, dt),
             GameState::GameOver => self.update_game_over(midgar, dt),
-            _ => {},
         }
     }
 
@@ -66,6 +67,18 @@ impl GameWorld {
         let cats = self.level.generate_cats();
         self.cats = cats;
         self.game_state = GameState::Running;
+    }
+
+    fn update_start_menu(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            self.game_state = GameState::HowToPlay;
+        }
+    }
+
+    fn update_how_to_play(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            self.game_state = GameState::Running;
+        }
     }
 
     fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
