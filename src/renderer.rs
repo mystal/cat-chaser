@@ -17,14 +17,19 @@ pub struct GameRenderer {
     shape: ShapeRenderer,
 
     cat_box: TextureRegion,
+    basic_cat: TextureRegion,
 }
 
 impl GameRenderer {
     pub fn new(midgar: &Midgar) -> Self {
         // Load textures.
         let cat_box = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", true));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
             TextureRegion::new(texture)
+        };
+        let basic_cat = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat.png", false));
+            TextureRegion::with_sub_field(texture, (0, 0), (32, 32))
         };
 
         let projection = cgmath::ortho(-(config::SCREEN_SIZE.x as f32 / 2.0), config::SCREEN_SIZE.x as f32 / 2.0,
@@ -37,6 +42,7 @@ impl GameRenderer {
             shape: ShapeRenderer::new(midgar.graphics().display(), projection),
 
             cat_box,
+            basic_cat,
         }
     }
 
@@ -71,9 +77,8 @@ impl GameRenderer {
 
         // Draw cats!
         for cat in &world.cats {
-            self.shape.draw_filled_rect(cat.pos.x, cat.pos.y,
-                                        30.0, 30.0,
-                                        grey, &mut target);
+            self.sprite.draw(&self.basic_cat.draw(cat.pos.x, cat.pos.y),
+                             draw_params, &mut target);
         }
 
         // Draw dog, woof.
