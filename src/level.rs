@@ -5,7 +5,7 @@ use config;
 
 use entities::*;
 
-pub const MAX_LEVEL: u32 = 4;
+pub const MAX_LEVEL: u32 = 5;
 
 pub struct Level {
     pub cat_box: CatBox,
@@ -38,9 +38,10 @@ impl Level {
     pub fn num_cats_for_level(level_num: u32) -> u32 {
         let num = match level_num {
             1 => 1,
-            2 => 5,
-            3 => 10,
-            4 => 20,
+            2 => 3,
+            3 => 5,
+            4 => 10,
+            5 => 20,
             _ => 1,
         };
 

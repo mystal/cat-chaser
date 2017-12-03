@@ -6,8 +6,8 @@ use entities::{Camera, DogState};
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::text::{self, Font, TextRenderer};
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, Sprite, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
 
 use config;
@@ -22,6 +22,7 @@ pub struct GameRenderer<'a> {
 
     start_menu: TextureRegion,
 
+    background: TextureRegion,
     cat_box: TextureRegion,
     basic_cat_walk: TextureRegion,
     basic_cat_walk_alt: TextureRegion,
@@ -44,6 +45,11 @@ impl<'a> GameRenderer<'a> {
         let start_menu = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/start_menu_background.png", false));
             TextureRegion::new(texture)
+        };
+
+        let background = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/hardwood_floor.png", false));
+            TextureRegion::with_sub_field(texture, (0, 0), (config::SCREEN_SIZE.x, config::SCREEN_SIZE.y))
         };
         let cat_box = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
@@ -84,6 +90,7 @@ impl<'a> GameRenderer<'a> {
 
             start_menu,
 
+            background,
             cat_box,
             basic_cat_walk,
             basic_cat_walk_alt,
@@ -171,6 +178,17 @@ impl<'a> GameRenderer<'a> {
         let draw_params = SpriteDrawParams::new()
             .magnify_filter(MagnifySamplerFilter::Nearest)
             .alpha(true);
+
+        // Background
+        let pos = self.background.size();
+        let mut sprite = self.background.draw(pos.x as f32 / 2.0, pos.y as f32 / 2.0);
+        sprite.set_scale(cgmath::vec2(2.0, 2.0));
+        self.sprite.draw(&sprite,
+                        SpriteDrawParams::new()
+                            .magnify_filter(MagnifySamplerFilter::Nearest)
+                            .alpha(true)
+                            .wrap_function(SamplerWrapFunction::Repeat),
+                        target);
 
         // Draw cat box.
         self.sprite.draw(&self.cat_box.draw(world.cat_box().pos.x, world.cat_box().pos.y),
