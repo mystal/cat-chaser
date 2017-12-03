@@ -1,6 +1,8 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{self, KeyCode};
 
+const ANNOYANCE_THRESHOLD: f32 = 100.0;
+
 pub struct Dog {
     pub pos: Vector2<f32>,
     pub left_key: KeyCode, // TODO: consider breaking this out into control struct
@@ -17,7 +19,8 @@ pub enum CatType {
 pub enum CatState {
     Flee,
     Idle,
-    InPen
+    InPen,
+    Annoyed,
 }
 
 pub struct Cat {
@@ -26,6 +29,9 @@ pub struct Cat {
     pub radius: f32,
     pub speed: f32,
     pub size: Vector2<f32>,
+    pub annoyance_total: f32,
+    pub annoyance_rate: f32,
+    pub calming_rate: f32,
     pub state: CatState,
 }
 
@@ -48,22 +54,28 @@ impl Cat {
         self.state
     }
 
-    pub fn flee(&mut self, bounds: &Vector2<u32>, dir: &Vector2<f32>) {
+    pub fn flee(&mut self, bounds: &Vector2<u32>, dir: &Vector2<f32>, dt: f32) {
         match &self.cat_type {
             _ => { },
         }
 
-        let speed = self.speed;
+        let speed = self.speed * dt;
         self.try_move(bounds, dir.normalize() * speed);
+        self.increase_annoyance(dt);
     }
 
-    pub fn idle(&mut self, bounds: &Vector2<u32>) {
-
+    pub fn idle(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        self.decrease_annoyance(dt);
     }
 
-    pub fn in_pen(&mut self, bounds: &Vector2<u32>) {
+    pub fn in_pen(&mut self, bounds: &Vector2<u32>, dt: f32) {
         // TODO: wander in random direction
         // self.pos = self.pos;
+        self.decrease_annoyance(dt);
+    }
+
+    pub fn annoyed(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        println!("ANNOYED!");
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
@@ -86,6 +98,14 @@ impl Cat {
         } else {
             self.pos.y = self.pos.y + change.y;
         }
+    }
+
+    fn decrease_annoyance(&mut self, dt: f32) {
+        self.annoyance_total -= self.calming_rate * dt;
+    }
+
+    fn increase_annoyance(&mut self, dt: f32) {
+        self.annoyance_total += self.annoyance_rate * dt;
     }
 }
 

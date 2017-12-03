@@ -69,7 +69,7 @@ impl GameWorld {
                 CatState::InPen => { cat.in_pen(&self.level.bounds) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
-                    cat.flee(&self.level.bounds, &dir)
+                    cat.flee(&self.level.bounds, &dir, dt)
                 },
                 _ => {},
             }
