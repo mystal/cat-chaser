@@ -23,7 +23,11 @@ pub struct GameRenderer {
     basic_cat_walk_alt: TextureRegion,
     basic_cat_walk_animation: Animation,
     basic_cat_walk_time: f32,
-    wizard_dog: TextureRegion,
+    wizard_dog_idle_animation: Animation,
+    wizard_dog_idle_time: f32,
+    wizard_dog_run_animation: Animation,
+    // TODO: Move this to Dog to start the animation at the right time.
+    wizard_dog_run_time: f32,
 }
 
 impl GameRenderer {
@@ -41,10 +45,20 @@ impl GameRenderer {
         let mut basic_cat_walk_animation = Animation::new(0.2, &[basic_cat_walk.clone(), basic_cat_walk_alt.clone()])
             .unwrap();
         basic_cat_walk_animation.play_mode = PlayMode::Loop;
-        let wizard_dog = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog.png", false));
-            TextureRegion::new(texture)
+        let wizard_dog_idle = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog_idle.png", false));
+            TextureRegion::split(texture, (32, 32))
         };
+        let mut wizard_dog_idle_animation = Animation::new(0.2, &wizard_dog_idle)
+            .unwrap();
+        wizard_dog_idle_animation.play_mode = PlayMode::Loop;
+        let wizard_dog_run = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog_run.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut wizard_dog_run_animation = Animation::new(0.1, &wizard_dog_run)
+            .unwrap();
+        wizard_dog_run_animation.play_mode = PlayMode::Loop;
 
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
                                        config::GAME_SIZE.y as f32 / 2.0, -(config::GAME_SIZE.y as f32 / 2.0),
@@ -60,7 +74,10 @@ impl GameRenderer {
             basic_cat_walk_alt,
             basic_cat_walk_animation,
             basic_cat_walk_time: 0.0,
-            wizard_dog,
+            wizard_dog_idle_animation,
+            wizard_dog_idle_time: 0.0,
+            wizard_dog_run_animation,
+            wizard_dog_run_time: 0.0,
         }
     }
 
@@ -104,7 +121,15 @@ impl GameRenderer {
         }
 
         // Draw dog, woof.
-        let mut sprite = self.wizard_dog.draw(world.dog.pos.x, world.dog.pos.y);
+        self.wizard_dog_idle_time += dt;
+        self.wizard_dog_run_time += dt;
+        let mut sprite = if world.dog.vel.is_zero() {
+            self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                .draw(world.dog.pos.x, world.dog.pos.y)
+        } else {
+            self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
+                .draw(world.dog.pos.x, world.dog.pos.y)
+        };
         sprite.set_flip_x(world.dog.facing == Facing::Right);
         self.sprite.draw(&sprite, draw_params, &mut target);
 
