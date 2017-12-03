@@ -1,5 +1,7 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{self, KeyCode};
+use rand;
+use rand::distributions::{IndependentSample, Range};
 
 pub struct Dog {
     pub pos: Vector2<f32>,
@@ -27,6 +29,11 @@ pub struct Cat {
     pub speed: f32,
     pub size: Vector2<f32>,
     pub state: CatState,
+
+    pub velocity: Vector2<f32>,
+
+    pub rw_radius: f32, // for random walk in idle
+    pub rw_theta: f32, // for random walk in idle
 }
 
 impl Cat {
@@ -54,11 +61,32 @@ impl Cat {
         }
 
         let speed = self.speed;
+        self.velocity = dir.normalize() * speed;
         self.try_move(bounds, dir.normalize() * speed);
     }
 
     pub fn idle(&mut self, bounds: &Vector2<u32>) {
+        let range_theta = Range::new(-0.3, 0.3);
+        let mut rng = rand::thread_rng();
+        // random update rw_theta
+        self.rw_theta = self.rw_theta + range_theta.ind_sample(&mut rng);
 
+        // 'circle' vector by (velocity rotated by theta).normalized * rw_radius
+        let t = self.rw_theta;
+        let mut v = cgmath::vec2(1.0, 0.0);
+        let mut circle_vector = cgmath::vec2(t.cos()*v.x - t.sin()*v.y, t.sin()*v.x + t.cos()*v.y);
+
+        if circle_vector.magnitude() != 0.0 {
+            circle_vector = circle_vector.normalize() * self.rw_radius;
+        }
+
+        // velocity = (velocity + 'circle' vector).normalized * speed
+
+        if (self.velocity + circle_vector).magnitude() != 0.0 {
+            self.velocity = (self.velocity + circle_vector).normalize() * self.speed / 3.0;
+        }
+        v = self.velocity;
+        self.try_move(bounds, v);
     }
 
     pub fn in_pen(&mut self, bounds: &Vector2<u32>) {

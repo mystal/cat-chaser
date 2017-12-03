@@ -32,6 +32,9 @@ impl Level {
                 speed: 2.0,
                 size: cgmath::vec2(30.0, 30.0),
                 state: CatState::Idle,
+                velocity: cgmath::vec2(1.0, 0.0),
+                rw_radius: 0.1,
+                rw_theta: 0.0,
             });
         }
         cats
