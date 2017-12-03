@@ -29,6 +29,7 @@ impl GameWorld {
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
+            facing: Facing::Left,
             left_key: KeyCode::Left,
             right_key: KeyCode::Right,
             up_key: KeyCode::Up,
@@ -62,6 +63,13 @@ impl GameWorld {
         }
         if !dir.is_zero() {
             dir = dir.normalize();
+        }
+        if dir.x != 0.0 {
+            self.dog.facing = if dir.x > 0.0 {
+                Facing::Right
+            } else {
+                Facing::Left
+            };
         }
         self.dog.vel = dir * MOVE_SPEED;
         self.dog.pos += self.dog.vel * dt;

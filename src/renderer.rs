@@ -9,6 +9,7 @@ use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, Sprite
 use midgar::graphics::texture::TextureRegion;
 
 use config;
+use entities::Facing;
 use world::*;
 
 pub struct GameRenderer {
@@ -88,8 +89,9 @@ impl GameRenderer {
         }
 
         // Draw dog, woof.
-        self.sprite.draw(&self.wizard_dog.draw(world.dog.pos.x, world.dog.pos.y),
-                         draw_params, &mut target);
+        let mut sprite = self.wizard_dog.draw(world.dog.pos.x, world.dog.pos.y);
+        sprite.set_flip_x(world.dog.facing == Facing::Right);
+        self.sprite.draw(&sprite, draw_params, &mut target);
 
         target.finish().unwrap();
     }
