@@ -81,6 +81,13 @@ impl GameWorld {
                 CatState::InPen => { cat.in_pen(&self.level.bounds) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
+                    if dir.x != 0.0 {
+                        cat.facing = if dir.x > 0.0 {
+                            Facing::Right
+                        } else {
+                            Facing::Left
+                        };
+                    }
                     cat.flee(&self.level.bounds, &dir)
                 },
                 _ => {},
