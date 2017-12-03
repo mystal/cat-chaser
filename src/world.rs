@@ -13,6 +13,7 @@ pub struct GameWorld {
     pub level: Level,
     pub dog: Dog,
     pub cats: Vec<Cat>,
+    pub we_win: bool,
 }
 
 impl GameWorld {
@@ -38,11 +39,13 @@ impl GameWorld {
             level,
             dog,
             cats,
+            we_win: false,
         }
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         // TODO: consider moving this into a poll input method
+        // TODO: Clamp dog to level bounds.
         if midgar.input().is_key_held(self.dog.left_key) && !midgar.input().is_key_held(self.dog.right_key) {
             self.dog.pos.x -= MOVE_SPEED * dt;
         }
@@ -59,7 +62,7 @@ impl GameWorld {
             self.dog.pos.y += MOVE_SPEED * dt;
         }
 
-        // TODO: Cats move or run!
+        // Cats move or run!
         for cat in &mut self.cats {
             match cat.get_state(&self.dog, &self.level.cat_box) {
                 CatState::Idle => { cat.idle(&self.level.bounds) },
@@ -72,17 +75,20 @@ impl GameWorld {
             }
         }
 
-        // TODO: Check win condition!
-        let mut we_win = true;
-        for cat in &self.cats {
-            if !self.level.cat_box.in_bounds(&cat.pos) {
-                we_win = false;
-                break;
+        if !self.we_win {
+            // Check win condition!
+            let mut we_win = true;
+            for cat in &self.cats {
+                if !self.level.cat_box.in_bounds(&cat.pos) {
+                    we_win = false;
+                    break;
+                }
             }
-        }
 
-        if we_win {
-            println!("YOU WON");
+            if we_win {
+                println!("YOU WON");
+                self.we_win = true;
+            }
         }
     }
 
