@@ -140,7 +140,7 @@ impl GameWorld {
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
-                CatState::Idle => { cat.idle(&self.level.bounds, dt) },
+                CatState::Idle => { cat.idle(&self.level.bounds, &self.level.cat_box, dt) },
                 CatState::InPen => {
                     cat.in_pen(&self.level.bounds, dt);
                     cats_scored += 1;
@@ -154,7 +154,7 @@ impl GameWorld {
                 }
                 CatState::Cannonballing => {
                     cat.cannonball(&self.level.bounds, dt, &mut self.dog)
-                }                
+                }
             }
             if cat.velocity.x != 0.0 {
                 cat.facing = if cat.velocity.x > 0.0 {

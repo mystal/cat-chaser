@@ -50,7 +50,7 @@ pub struct Dog {
     pub dog_state: DogState,
     pub hit_time: f32,
     pub hit_frame: u32,
-    
+
 }
 
 impl Dog {
@@ -79,7 +79,7 @@ impl Dog {
         } else {
             self.dog_state = DogState::Chasing;
         }
-        
+
     }
 }
 
@@ -244,7 +244,7 @@ impl Cat {
         self.increase_annoyance(dt);
     }
 
-    pub fn idle(&mut self, bounds: &Vector2<u32>, dt: f32) {
+    pub fn idle(&mut self, bounds: &Vector2<u32>, cat_box: &CatBox, dt: f32) {
         let range_theta = Range::new(-0.3, 0.3);
         let mut rng = rand::thread_rng();
         // random update rw_theta
@@ -263,6 +263,11 @@ impl Cat {
 
         if (self.velocity + circle_vector).magnitude() != 0.0 {
             self.velocity = (self.velocity + circle_vector).normalize() * self.speed / 3.0;
+        }
+        // apply repulsive force if we're close to the cat box
+        let box_to_cat = self.pos - cat_box.pos;
+        if box_to_cat.magnitude() < (cat_box.size.x + self.radius) {
+            self.velocity = (self.velocity + box_to_cat.normalize() * 150.0 / box_to_cat.magnitude()).normalize() * self.speed / 3.0;
         }
         v = self.velocity;
         self.try_move(bounds, v * dt);
