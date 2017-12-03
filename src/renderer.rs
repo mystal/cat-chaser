@@ -11,7 +11,7 @@ use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFun
 use midgar::graphics::texture::TextureRegion;
 
 use config;
-use entities::Facing;
+use entities::{CAT_COLORS, Facing};
 use world::*;
 
 pub struct GameRenderer<'a> {
@@ -178,26 +178,31 @@ impl<'a> GameRenderer<'a> {
                 // Draw how to play splash screen!
                 self.sprite.draw(&self.how_to_play.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                                  draw_params, &mut target);
+
                 // Draw corgi idle animation
                 self.wizard_dog_idle_time += dt;
                 let mut sprite = self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
                     .draw(670.0, 50.0);
                 sprite.set_scale(cgmath::vec2(4.0, 4.0));
                 self.sprite.draw(&sprite, draw_params, &mut target);
+
                 // Draw cat animations
                 sprite = self.basic_cat_idle_animation.current_key_frame(self.game_time)
                     .draw(380.0, 340.0);
                 sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                sprite.set_color(CAT_COLORS[0].into());
                 self.sprite.draw(&sprite, draw_params, &mut target);
 
                 sprite = self.fat_cat_idle_animation.current_key_frame(self.game_time)
                     .draw(480.0, 340.0);
                 sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                sprite.set_color(CAT_COLORS[3].into());
                 self.sprite.draw(&sprite, draw_params, &mut target);
 
                 sprite = self.kitten_idle_animation.current_key_frame(self.game_time)
                     .draw(580.0, 340.0);
                 sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                sprite.set_color(CAT_COLORS[2].into());
                 self.sprite.draw(&sprite, draw_params, &mut target);
 
                 // Draw blinking text!

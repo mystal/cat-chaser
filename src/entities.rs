@@ -30,7 +30,10 @@ const KITTEN_RW_RADIUS: f32 = 12.0;
 const KITTEN_FLEE_SCALAR: f32 = 1.5;
 
 pub const CAT_COLORS: &[[f32; 3]] = &[
-    [203.0 / 255.0, 219.0 / 255.0, 252.0 / 255.0], // The default purple blue.
+    [203.0 / 255.0, 219.0 / 255.0, 252.0 / 255.0], // The default purple blue
+    [189.0 / 255.0, 245.0 / 255.0, 242.0 / 255.0], // Robin's egg blue-ish
+    [174.0 / 255.0, 245.0 / 255.0, 184.0 / 255.0], // Pastel green.
+    [255.0 / 255.0, 193.0 / 255.0, 229.0 / 255.0], // Not quite but sort of pink.
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq)]
