@@ -63,6 +63,8 @@ impl Level {
         let range_y = Range::new(20.0, self.bounds.y as f32 - 20.0);
         let mut rng = rand::thread_rng();
 
+        let meow_range = Range::new(-3.0, 2.0);
+
         let mut cats = Vec::new();
         let mut basic_cats: u32 = 0;
         let mut kittens: u32 = 0;

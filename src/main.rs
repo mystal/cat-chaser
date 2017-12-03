@@ -1,6 +1,7 @@
 extern crate cgmath;
 extern crate midgar;
 extern crate rand;
+extern crate ears;
 
 mod app;
 mod config;
@@ -8,6 +9,7 @@ mod entities;
 mod level;
 mod renderer;
 mod world;
+mod sounds;
 
 fn main() {
     let app_config = midgar::MidgarAppConfig::new()

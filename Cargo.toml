@@ -7,6 +7,7 @@ authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 cgmath = "0.15"
 midgar = { git = "https://github.com/mystal/midgar-engine", branch = "ld40" }
 rand = "0.3"
+ears = "0.4.0"
 
 #[patch.'https://github.com/mystal/midgar-engine']
 #midgar = { path = "../midgar-engine" }

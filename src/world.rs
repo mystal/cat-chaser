@@ -3,6 +3,7 @@ use midgar::Midgar;
 use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::KeyCode;
 use entities::*;
+use sounds::Sounds;
 use level::{Level, MAX_LEVEL};
 
 
@@ -20,6 +21,7 @@ pub enum GameState {
 pub struct GameWorld {
     pub game_state: GameState,
     pub level: Level,
+    pub sounds: Sounds,
     pub dog: Dog,
     pub cats: Vec<Cat>,
     pub cats_scored: u32,
@@ -46,6 +48,7 @@ impl GameWorld {
         GameWorld {
             game_state: GameState::StartMenu,
             level,
+            sounds: Sounds::new(),
             dog,
             cats,
             cats_scored: 0,
@@ -149,8 +152,9 @@ impl GameWorld {
         let mut cats_scored = 0;
         // Cats move or run!
         for cat in &mut self.cats {
+            let prev_state = cat.state.clone();
             match cat.update_state(&self.dog, &self.level.cat_box) {
-                CatState::Idle => { cat.idle(&self.level.bounds, dt) },
+                CatState::Idle => { cat.idle(&self.level.bounds, &self.level.cat_box, dt) },
                 CatState::InPen => {
                     cat.in_pen(&self.level.bounds, dt);
                     cats_scored += 1;
@@ -166,6 +170,20 @@ impl GameWorld {
                     cat.cannonball(&self.level.bounds, dt, &mut self.dog)
                 }
             }
+
+            if cat.state == CatState::Idle || cat.state == CatState::InPen || cat.state == CatState::Flee {
+                // Basic meow
+                if cat.meow_time >= cat.meow_interval {
+                    cat.meow(&mut self.sounds, dt);
+                }
+                cat.meow_time += dt;
+            } else if prev_state != cat.state {
+                // Angry meow
+                if cat.state == CatState::Jittering || cat.state == CatState::Cannonballing {
+                    cat.meow(&mut self.sounds, dt);
+                }
+            }
+
             if cat.velocity.x != 0.0 {
                 cat.facing = if cat.velocity.x > 0.0 {
                     Facing::Right
