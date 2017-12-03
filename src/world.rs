@@ -71,6 +71,12 @@ impl GameWorld {
                     let dir = &cat.pos - self.dog.pos;
                     cat.flee(&self.level.bounds, &dir, dt)
                 },
+                CatState::Jittering => {
+                    cat.jitter(&self.level.bounds, dt)
+                }
+                CatState::Annoyed => {
+                    cat.annoyed(&self.level.bounds, dt)
+                }
                 _ => {},
             }
         }
