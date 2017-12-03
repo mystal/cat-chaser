@@ -18,6 +18,7 @@ pub struct GameRenderer {
 
     cat_box: TextureRegion,
     basic_cat: TextureRegion,
+    wizard_dog: TextureRegion,
 }
 
 impl GameRenderer {
@@ -31,6 +32,10 @@ impl GameRenderer {
             let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat.png", false));
             TextureRegion::with_sub_field(texture, (0, 0), (32, 32))
         };
+        let wizard_dog = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog.png", false));
+            TextureRegion::new(texture)
+        };
 
         let projection = cgmath::ortho(-(config::SCREEN_SIZE.x as f32 / 2.0), config::SCREEN_SIZE.x as f32 / 2.0,
                                        config::SCREEN_SIZE.y as f32 / 2.0, -(config::SCREEN_SIZE.y as f32 / 2.0),
@@ -43,6 +48,7 @@ impl GameRenderer {
 
             cat_box,
             basic_cat,
+            wizard_dog,
         }
     }
 
@@ -82,9 +88,8 @@ impl GameRenderer {
         }
 
         // Draw dog, woof.
-        self.shape.draw_filled_rect(world.dog.pos.x, world.dog.pos.y,
-                                    50.0, 50.0,
-                                    blue_violet, &mut target);
+        self.sprite.draw(&self.wizard_dog.draw(world.dog.pos.x, world.dog.pos.y),
+                         draw_params, &mut target);
 
         target.finish().unwrap();
     }
