@@ -10,7 +10,8 @@ pub enum Facing {
 }
 
 const ANNOYANCE_THRESHOLD: f32 = 1.0;
-const CANNONBALL_COUNTDOWN: f32 = 1.0;
+const CANNONBALL_COUNTDOWN: f32 = 1.25;
+const JITTER_AMOUNT: f32 = 2.0;
 
 pub struct Dog {
     pub pos: Vector2<f32>,
@@ -71,8 +72,8 @@ impl Cat {
 
     pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32, dog: &Dog) {
         let mut rng = rand::thread_rng();
-        let x_range = Range::new(-1.0, 1.0);
-        let y_range = Range::new(-1.0, 1.0);
+        let x_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
+        let y_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
 
         let x = x_range.ind_sample(&mut rng);
         let y = y_range.ind_sample(&mut rng);
