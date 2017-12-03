@@ -286,11 +286,11 @@ impl<'a> GameRenderer<'a> {
         self.basic_cat_walk_time += dt;
         for cat in &world.cats {
             let mut sprite = match cat.cat_type {
-                CatType::Basic => self.basic_cat_walk_animation.current_key_frame(self.basic_cat_walk_time)
+                CatType::Basic => self.basic_cat_walk_animation.current_key_frame(self.game_time)
                     .draw(cat.pos.x, cat.pos.y),
-                CatType::Kitten => self.kitten_walk_animation.current_key_frame(self.kitten_walk_time)
+                CatType::Kitten => self.kitten_walk_animation.current_key_frame(self.game_time)
                     .draw(cat.pos.x, cat.pos.y),
-                CatType::Fat => self.fat_cat_walk_animation.current_key_frame(self.fat_cat_walk_time)
+                CatType::Fat => self.fat_cat_walk_animation.current_key_frame(self.game_time)
                     .draw(cat.pos.x, cat.pos.y),
             };
             sprite.set_flip_x(cat.facing == Facing::Right);
