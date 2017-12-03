@@ -32,6 +32,7 @@ impl GameWorld {
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
+            size: cgmath::Vector2::new(30.0, 30.0),
             facing: Facing::Left,
             left_key: KeyCode::Left,
             right_key: KeyCode::Right,
@@ -127,10 +128,10 @@ impl GameWorld {
                     cat.flee(&self.level.bounds, &dir, dt)
                 },
                 CatState::Jittering => {
-                    cat.jitter(&self.level.bounds, dt, &self.dog)
+                    cat.jitter(dt, &self.dog)
                 }
                 CatState::Cannonballing => {
-                    cat.cannonball(&self.level.bounds, dt)
+                    cat.cannonball(&self.level.bounds, dt, &mut self.dog)
                 }
                 _ => {},
             }
