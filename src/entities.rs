@@ -34,7 +34,6 @@ pub enum CatState {
     InPen,
     Jittering,
     Cannonballing,
-    Annoyed,
 }
 
 pub struct Cat {
@@ -57,7 +56,7 @@ pub struct Cat {
 }
 
 impl Cat {
-    fn start_cannonballing(&mut self, dog_pos: Vector2<f32>) {
+    fn start_targeting(&mut self, dog_pos: Vector2<f32>) {
         self.dog_target = (dog_pos - self.pos).normalize();
     }
 
@@ -155,9 +154,6 @@ impl Cat {
         self.try_move(bounds, target * 240.0 * dt);
     }
 
-    pub fn annoyed(&mut self, bounds: &Vector2<u32>, dt: f32) {       
-    }
-
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
         let half_size = self.size * 0.5;
         let (min_x, max_x) = (half_size.x, bounds.x as f32 - half_size.x);
@@ -200,7 +196,7 @@ impl Cat {
     fn cannonball_countdown(&mut self, dt: f32, dog: &Dog) {
         self.cannonball_time -= dt;
         if self.cannonball_time <= 0.0 {
-            self.start_cannonballing(dog.pos);
+            self.start_targeting(dog.pos);
         }
     }
 }
