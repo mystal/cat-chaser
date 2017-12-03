@@ -21,7 +21,7 @@ impl GameWorld {
         let level = Level {
             cat_box: CatBox {
                 pos: cgmath::vec2(100.0, 100.0),
-                size: cgmath::vec2(50.0, 50.0),
+                size: cgmath::vec2(60.0, 60.0),
             },
             num_cats: 10,
             bounds: cgmath::vec2(config::GAME_SIZE.x, config::GAME_SIZE.y),
@@ -64,7 +64,7 @@ impl GameWorld {
 
         // Cats move or run!
         for cat in &mut self.cats {
-            match cat.get_state(&self.dog, &self.level.cat_box) {
+            match cat.update_state(&self.dog, &self.level.cat_box) {
                 CatState::Idle => { cat.idle(&self.level.bounds) },
                 CatState::InPen => { cat.in_pen(&self.level.bounds) },
                 CatState::Flee => {

@@ -12,7 +12,7 @@ pub struct Level {
 
 impl Level {
     pub fn generate_cats(&self) -> Vec<Cat> {
-        let cat_box_radius = 150.0;
+        let cat_box_radius = 80.0;
         let range_x = Range::new(0.0, self.bounds.x as f32);
         let range_y = Range::new(0.0, self.bounds.y as f32);
         let mut rng = rand::thread_rng();
@@ -27,9 +27,10 @@ impl Level {
             cats.push(Cat {
                 pos: cat_pos,
                 cat_type: CatType::Basic,
-                radius: 100.0,
+                radius: 70.0,
                 speed: 2.0,
                 size: cgmath::vec2(30.0, 30.0),
+                state: CatState::Idle,
             });
         }
         cats
