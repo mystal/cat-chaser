@@ -53,7 +53,7 @@ pub struct Cat {
     pub rw_radius: f32, // for random walk in idle
     pub rw_theta: f32, // for random walk in idle
     pub jitter_origin: Vector2<f32>,
-    pub cannonball_time: f32,
+    pub targeting_time: f32,
     pub dog_target: Vector2<f32>,
 }
 
@@ -64,7 +64,7 @@ impl Cat {
 
     fn start_jitter(&mut self) {
         self.jitter_origin = self.pos;
-        self.cannonball_time = CANNONBALL_COUNTDOWN;
+        self.targeting_time = CANNONBALL_COUNTDOWN;
     }
 
     pub fn normalized_jitter(&self) -> f32 {
@@ -94,7 +94,7 @@ impl Cat {
 
         self.state = if self.state == CatState::Cannonballing {
             CatState::Cannonballing
-        } else if self.state == CatState::Jittering && self.cannonball_time <= 0.0 {
+        } else if self.state == CatState::Jittering && self.targeting_time <= 0.0 {
             CatState::Cannonballing
         } else if self.state != CatState::Cannonballing && self.annoyance_total >= ANNOYANCE_THRESHOLD {
             CatState::Jittering
@@ -198,8 +198,8 @@ impl Cat {
     }
 
     fn cannonball_countdown(&mut self, dt: f32, dog: &Dog) {
-        self.cannonball_time -= dt;
-        if self.cannonball_time <= 0.0 {
+        self.targeting_time -= dt;
+        if self.targeting_time <= 0.0 {
             self.start_targeting(dog.pos);
         }
     }
