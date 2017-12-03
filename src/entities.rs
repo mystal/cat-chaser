@@ -3,6 +3,7 @@ use midgar::{self, KeyCode};
 
 pub struct Dog {
     pub pos: Vector2<f32>,
+    pub vel: Vector2<f32>,
     pub left_key: KeyCode, // TODO: consider breaking this out into control struct
     pub right_key: KeyCode,
     pub up_key: KeyCode,
