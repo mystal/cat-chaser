@@ -22,6 +22,7 @@ pub struct GameWorld {
     pub level: Level,
     pub dog: Dog,
     pub cats: Vec<Cat>,
+    pub cats_scored: u32,
 }
 
 impl GameWorld {
@@ -47,6 +48,7 @@ impl GameWorld {
             level,
             dog,
             cats,
+            cats_scored: 0,
         }
     }
 
@@ -134,11 +136,15 @@ impl GameWorld {
 
         self.dog.update(dt);
 
+        let mut cats_scored = 0;
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
                 CatState::Idle => { cat.idle(&self.level.bounds, dt) },
-                CatState::InPen => { cat.in_pen(&self.level.bounds, dt) },
+                CatState::InPen => {
+                    cat.in_pen(&self.level.bounds, dt);
+                    cats_scored += 1;
+                },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
                     cat.flee(&self.level.bounds, &dir, dt)
@@ -159,18 +165,11 @@ impl GameWorld {
             }
         }
 
+        self.cats_scored = cats_scored;
+
         if self.game_state != GameState::Won {
             // Check win condition!
-            let mut we_win = true;
-            for cat in &self.cats {
-                if !self.level.cat_box.in_bounds(&cat.pos) {
-                    we_win = false;
-                    break;
-                }
-            }
-
-            if we_win {
-                println!("YOU WON");
+            if self.cats_scored == self.level.num_cats {
                 self.game_state = GameState::Won;
             }
         }
