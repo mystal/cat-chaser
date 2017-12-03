@@ -7,7 +7,7 @@ use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::text::{self, Font, TextRenderer};
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, Sprite, SpriteDrawParams, SpriteRenderer};
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
 
 use config;
