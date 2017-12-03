@@ -43,7 +43,7 @@ impl Level {
     pub fn cats_for_level(level_num: u32) -> (u32, u32, u32) {
         match level_num {
             1 => (1, 0, 0),
-            2 => (3, 0, 0),
+            2 => (2, 1, 0),
             3 => (3, 2, 0),
             4 => (5, 3, 2),
             5 => (10, 6, 4),
