@@ -34,7 +34,7 @@ impl GameRenderer {
             TextureRegion::new(texture)
         };
         let (basic_cat_walk, basic_cat_walk_alt) = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat_walk.png", false));
             (TextureRegion::with_sub_field(texture.clone(), (0, 0), (32, 32)),
              TextureRegion::with_sub_field(texture.clone(), (32, 0), (32, 32)))
         };
