@@ -17,8 +17,8 @@ impl midgar::App for GameApp {
         GameApp {
             world: GameWorld::new(),
             camera: Camera {
-                pos: cgmath::vec2(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
-                bounds: config::SCREEN_SIZE.cast::<f32>(),
+                pos: cgmath::vec2(config::GAME_SIZE.x as f32 / 2.0, config::GAME_SIZE.y as f32 / 2.0),
+                bounds: config::GAME_SIZE.cast::<f32>(),
                 zoom: 1,
             },
             renderer: GameRenderer::new(midgar),

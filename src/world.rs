@@ -20,11 +20,11 @@ impl GameWorld {
     pub fn new() -> Self {
         let level = Level {
             cat_box: CatBox {
-                pos: cgmath::vec2(200.0, 200.0),
-                size: cgmath::vec2(100.0, 100.0),
+                pos: cgmath::vec2(100.0, 100.0),
+                size: cgmath::vec2(50.0, 50.0),
             },
             num_cats: 10,
-            bounds: cgmath::vec2(config::SCREEN_SIZE.x, config::SCREEN_SIZE.y),
+            bounds: cgmath::vec2(config::GAME_SIZE.x, config::GAME_SIZE.y),
         };
         let dog = Dog {
             pos: level.cat_box.pos,

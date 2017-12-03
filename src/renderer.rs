@@ -37,8 +37,8 @@ impl GameRenderer {
             TextureRegion::new(texture)
         };
 
-        let projection = cgmath::ortho(-(config::SCREEN_SIZE.x as f32 / 2.0), config::SCREEN_SIZE.x as f32 / 2.0,
-                                       config::SCREEN_SIZE.y as f32 / 2.0, -(config::SCREEN_SIZE.y as f32 / 2.0),
+        let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
+                                       config::GAME_SIZE.y as f32 / 2.0, -(config::GAME_SIZE.y as f32 / 2.0),
                                        -1.0, 1.0);
 
         GameRenderer {
