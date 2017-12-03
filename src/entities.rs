@@ -44,6 +44,10 @@ impl Cat {
         self.jitter_origin = self.pos;
     }
 
+    pub fn normalized_jitter(&self) -> f32 {
+        return self.annoyance_total / ANNOYANCE_THRESHOLD
+    }
+
     pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32) {
         let mut rng = rand::thread_rng();
         let x_range = Range::new(-1.0, 1.0);
