@@ -67,25 +67,28 @@ impl Cat {
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
-        let bottom_right = self.pos + self.size;
-        let bound_x = bounds.x as f32;
-        let bound_y = bounds.y as f32;
+        let half_size = self.size * 0.5;
+        let (min_x, max_x) = (half_size.x, bounds.x as f32 - half_size.x);
+        let (min_y, may_y) = (half_size.y, bounds.y as f32 - half_size.y);
 
-        if bottom_right.x + change.x > bound_x {
-            self.pos.x = bound_x - self.size.x;
-        } else if self.pos.x + change.x < 0.0 {
-            self.pos.x = 0.0;
+        // Clamp new_pos to min and max values.
+        let mut new_pos = self.pos + change;
+        new_pos.x = if new_pos.x < min_x {
+            min_x
+        } else if new_pos.x > max_x {
+            max_x
         } else {
-            self.pos.x = self.pos.x + change.x;
-        }
+            new_pos.x
+        };
+        new_pos.y = if new_pos.y < min_y {
+            min_y
+        } else if new_pos.y > may_y {
+            may_y
+        } else {
+            new_pos.y
+        };
 
-        if bottom_right.y + change.y > bound_y {
-            self.pos.y = bound_y - self.size.y;
-        } else if self.pos.y + change.y < 0.0 {
-            self.pos.y = 0.0;
-        } else {
-            self.pos.y = self.pos.y + change.y;
-        }
+        self.pos = new_pos;
     }
 }
 

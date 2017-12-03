@@ -12,9 +12,10 @@ pub struct Level {
 
 impl Level {
     pub fn generate_cats(&self) -> Vec<Cat> {
+        // Spawn cats a bit away from walls and away from the cat box.
         let cat_box_radius = 80.0;
-        let range_x = Range::new(0.0, self.bounds.x as f32);
-        let range_y = Range::new(0.0, self.bounds.y as f32);
+        let range_x = Range::new(20.0, self.bounds.x as f32 - 20.0);
+        let range_y = Range::new(20.0, self.bounds.y as f32 - 20.0);
         let mut rng = rand::thread_rng();
 
         let mut cats = Vec::new();
