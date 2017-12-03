@@ -82,16 +82,6 @@ impl GameRenderer {
     }
 
     pub fn render(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera) {
-        // set the camera view
-        let camera_pos = camera.pos.extend(0.0);
-        let view = cgmath::Matrix4::look_at(cgmath::Point3::from_vec(camera_pos),
-                                            cgmath::Point3::new(0.0, 0.0, -1.0) + camera_pos,
-                                            cgmath::vec3(0.0, 1.0, 0.0));
-
-        let combined = self.projection * view;
-        self.sprite.set_projection_matrix(combined);
-        self.shape.set_projection_matrix(combined);
-
         // Get framebuffer target.
         let mut target = midgar.graphics().display().draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
@@ -112,6 +102,16 @@ impl GameRenderer {
     }
 
     fn draw_world<S: Surface>(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera, target: &mut S) {
+        // set the camera view
+        let camera_pos = camera.pos.extend(0.0);
+        let view = cgmath::Matrix4::look_at(cgmath::Point3::from_vec(camera_pos),
+                                            cgmath::Point3::new(0.0, 0.0, -1.0) + camera_pos,
+                                            cgmath::vec3(0.0, 1.0, 0.0));
+
+        let combined = self.projection * view;
+        self.sprite.set_projection_matrix(combined);
+        self.shape.set_projection_matrix(combined);
+
         // Some colors!
         let white = [1.0, 1.0, 1.0];
         let grey = [0.5, 0.5, 0.5];
