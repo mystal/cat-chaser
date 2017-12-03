@@ -69,6 +69,16 @@ impl GameWorld {
         self.game_state = GameState::Running;
     }
 
+    fn next_level(&mut self) {
+        if self.level.level_num >= MAX_LEVEL {
+            self.game_state = GameState::GameOver;
+            return;
+        }
+
+        self.level.next_level();
+        self.restart();
+    }
+
     fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::HowToPlay;
@@ -90,13 +100,7 @@ impl GameWorld {
 
     fn update_won(&mut self, midgar: &Midgar, dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::N) {
-            if self.level.level_num > MAX_LEVEL {
-                self.game_state = GameState::GameOver;
-                return;
-            }
-
-            self.level.next_level();
-            self.restart();
+            self.next_level();
         }
 
         self.update_running(midgar, dt);
@@ -105,7 +109,13 @@ impl GameWorld {
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::R) {
             self.restart();
+            return;
         }
+        if midgar.input().was_key_pressed(KeyCode::Tab) {
+            self.next_level();
+            return;
+        }
+
         // TODO: consider moving this into a poll input method
         // TODO: Clamp dog to level bounds.
         let mut dir = Vector2::zero();
