@@ -98,6 +98,13 @@ impl GameWorld {
                 }
                 _ => {},
             }
+            if cat.velocity.x != 0.0 {
+                cat.facing = if cat.velocity.x > 0.0 {
+                    Facing::Right
+                } else {
+                    Facing::Left
+                };
+            }
         }
 
         if !self.we_win {
