@@ -1,12 +1,12 @@
 use std::rc::Rc;
 
-use cgmath::{self, Matrix4, Vector3};
+use cgmath::{self, Matrix4};
 use cgmath::prelude::*;
-use entities::Camera;
+use entities::{Camera, DogState};
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
 
 use config;
@@ -139,15 +139,22 @@ impl GameRenderer {
         // Draw dog, woof.
         self.wizard_dog_idle_time += dt;
         self.wizard_dog_run_time += dt;
-        let mut sprite = if world.dog.vel.is_zero() {
-            self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
-                .draw(world.dog.pos.x, world.dog.pos.y)
-        } else {
-            self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
-                .draw(world.dog.pos.x, world.dog.pos.y)
-        };
-        sprite.set_flip_x(world.dog.facing == Facing::Right);
-        self.sprite.draw(&sprite, draw_params, target);
+
+        match world.dog.dog_state {
+            DogState::Chasing | DogState::Blinking(true) => {
+                let mut sprite = if world.dog.vel.is_zero() {
+                    self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                        .draw(world.dog.pos.x, world.dog.pos.y)
+                } else {
+                    self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
+                        .draw(world.dog.pos.x, world.dog.pos.y)
+                };
+                sprite.set_flip_x(world.dog.facing == Facing::Right);
+                self.sprite.draw(&sprite, draw_params, target);
+            }
+            DogState::Blinking(false) => {}
+        }
+
 
         match world.game_state {
             GameState::Running => {

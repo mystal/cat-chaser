@@ -1,7 +1,7 @@
 use midgar::Midgar;
 
 use cgmath::{self, InnerSpace, Vector2, Zero};
-use midgar::{self, KeyCode};
+use midgar::KeyCode;
 
 use config;
 use entities::*;
@@ -38,6 +38,9 @@ impl GameWorld {
             right_key: KeyCode::Right,
             up_key: KeyCode::Up,
             down_key: KeyCode::Down,
+            dog_state: DogState::Chasing,
+            hit_time: 0.0,
+            hit_frame: 0,
         };
         let cats = level.generate_cats();
 
@@ -118,6 +121,8 @@ impl GameWorld {
         self.dog.vel = dir * MOVE_SPEED;
         self.dog.pos += self.dog.vel * dt;
 
+        self.dog.update(dt);
+
         // Cats move or run!
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
@@ -132,8 +137,7 @@ impl GameWorld {
                 }
                 CatState::Cannonballing => {
                     cat.cannonball(&self.level.bounds, dt, &mut self.dog)
-                }
-                _ => {},
+                }                
             }
             if cat.velocity.x != 0.0 {
                 cat.facing = if cat.velocity.x > 0.0 {
