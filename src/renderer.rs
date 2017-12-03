@@ -4,6 +4,7 @@ use cgmath::{self, Matrix4, Vector3};
 use cgmath::prelude::*;
 use entities::Camera;
 use midgar::{Midgar, Surface};
+use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
@@ -18,7 +19,10 @@ pub struct GameRenderer {
     shape: ShapeRenderer,
 
     cat_box: TextureRegion,
-    basic_cat: TextureRegion,
+    basic_cat_walk: TextureRegion,
+    basic_cat_walk_alt: TextureRegion,
+    basic_cat_walk_animation: Animation,
+    basic_cat_walk_time: f32,
     wizard_dog: TextureRegion,
 }
 
@@ -29,10 +33,14 @@ impl GameRenderer {
             let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
             TextureRegion::new(texture)
         };
-        let basic_cat = {
+        let (basic_cat_walk, basic_cat_walk_alt) = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat.png", false));
-            TextureRegion::with_sub_field(texture, (0, 0), (32, 32))
+            (TextureRegion::with_sub_field(texture.clone(), (0, 0), (32, 32)),
+             TextureRegion::with_sub_field(texture.clone(), (32, 0), (32, 32)))
         };
+        let mut basic_cat_walk_animation = Animation::new(0.2, &[basic_cat_walk.clone(), basic_cat_walk_alt.clone()])
+            .unwrap();
+        basic_cat_walk_animation.play_mode = PlayMode::Loop;
         let wizard_dog = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog.png", false));
             TextureRegion::new(texture)
@@ -48,7 +56,10 @@ impl GameRenderer {
             shape: ShapeRenderer::new(midgar.graphics().display(), projection),
 
             cat_box,
-            basic_cat,
+            basic_cat_walk,
+            basic_cat_walk_alt,
+            basic_cat_walk_animation,
+            basic_cat_walk_time: 0.0,
             wizard_dog,
         }
     }
@@ -83,8 +94,10 @@ impl GameRenderer {
                          draw_params, &mut target);
 
         // Draw cats!
+        self.basic_cat_walk_time += dt;
         for cat in &world.cats {
-            let mut sprite = self.basic_cat.draw(cat.pos.x, cat.pos.y);
+            let mut sprite = self.basic_cat_walk_animation.current_key_frame(self.basic_cat_walk_time)
+                .draw(cat.pos.x, cat.pos.y);
             sprite.set_flip_x(cat.facing == Facing::Right);
             sprite.set_color(cgmath::Vector3::new(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
             self.sprite.draw(&sprite, draw_params, &mut target);
