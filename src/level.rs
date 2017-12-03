@@ -1,5 +1,5 @@
-use cgmath::{self, MetricSpace, Vector2};
-use rand;
+use cgmath::{self, InnerSpace, MetricSpace, Vector2};
+use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
 
 use entities::*;
@@ -30,14 +30,15 @@ impl Level {
                 facing: Facing::Left, // TODO: Randomize!
                 cat_type: CatType::Basic,
                 radius: 70.0,
-                speed: 60.0,
+                speed: 150.0,
                 size: cgmath::vec2(30.0, 30.0),
                 annoyance_total: 0.0,
                 annoyance_rate: 1.0,
                 calming_rate: 0.5,
                 state: CatState::Idle,
-                velocity: cgmath::vec2(1.0, 0.0),
-                rw_radius: 0.1,
+                velocity: cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
+                                       rng.gen::<f32>() * 2.0 - 1.0).normalize(),
+                rw_radius: 9.0,
                 rw_theta: 0.0,
                 jitter_origin: cat_pos,
             });
