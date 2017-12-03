@@ -253,7 +253,9 @@ impl<'a> GameRenderer<'a> {
             let mut sprite = self.basic_cat_walk_animation.current_key_frame(self.basic_cat_walk_time)
                 .draw(cat.pos.x, cat.pos.y);
             sprite.set_flip_x(cat.facing == Facing::Right);
-            sprite.set_color(cgmath::Vector3::new(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
+            let color = cgmath::vec3(cat.color[0], cat.color[1], cat.color[2])
+                .mul_element_wise(cgmath::vec3(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
+            sprite.set_color(color);
             self.sprite.draw(&sprite, draw_params, target);
         }
 
@@ -301,7 +303,7 @@ impl<'a> GameRenderer<'a> {
             GameState::Running => {
             },
             GameState::Won => {
-                // TODO: Draw won text!
+                // Draw won text!
                 let text = "Cats corralled!\nPress N to start the next level";
                 self.text.draw_text(text, &self.font, [0.0, 0.0, 0.0],
                                     40, 252.0, 502.0, 800, &projection, target);
