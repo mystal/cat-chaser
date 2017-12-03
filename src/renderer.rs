@@ -27,6 +27,8 @@ pub struct GameRenderer<'a> {
     cat_box: TextureRegion,
     basic_cat_walk_animation: Animation,
     basic_cat_idle_animation: Animation,
+    fat_cat_idle_animation: Animation,
+    kitten_idle_animation: Animation,
     basic_cat_walk_time: f32,
     wizard_dog_idle_animation: Animation,
     wizard_dog_idle_time: f32,
@@ -73,6 +75,20 @@ impl<'a> GameRenderer<'a> {
         let mut basic_cat_idle_animation = Animation::new(0.2, &basic_cat_idle)
             .unwrap();
         basic_cat_idle_animation.play_mode = PlayMode::Loop;
+        let fat_cat_idle = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/fat_cat_idle.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut fat_cat_idle_animation = Animation::new(0.2, &fat_cat_idle)
+            .unwrap();
+        fat_cat_idle_animation.play_mode = PlayMode::Loop;
+        let kitten_idle = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/kitten_idle.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut kitten_idle_animation = Animation::new(0.2, &kitten_idle)
+            .unwrap();
+        kitten_idle_animation.play_mode = PlayMode::Loop;
         let wizard_dog_idle = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog_idle.png", false));
             TextureRegion::split(texture, (32, 32))
@@ -105,6 +121,8 @@ impl<'a> GameRenderer<'a> {
             cat_box,
             basic_cat_walk_animation,
             basic_cat_idle_animation,
+            fat_cat_idle_animation,
+            kitten_idle_animation,
             basic_cat_walk_time: 0.0,
             wizard_dog_idle_animation,
             wizard_dog_idle_time: 0.0,
@@ -162,6 +180,16 @@ impl<'a> GameRenderer<'a> {
                 // Draw cat animations
                 sprite = self.basic_cat_idle_animation.current_key_frame(self.game_time)
                     .draw(380.0, 340.0);
+                sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                sprite = self.fat_cat_idle_animation.current_key_frame(self.game_time)
+                    .draw(480.0, 340.0);
+                sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                sprite = self.kitten_idle_animation.current_key_frame(self.game_time)
+                    .draw(580.0, 340.0);
                 sprite.set_scale(cgmath::vec2(3.0, 3.0));
                 self.sprite.draw(&sprite, draw_params, &mut target);
 
