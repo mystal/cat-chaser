@@ -11,6 +11,7 @@ pub enum Facing {
 
 const ANNOYANCE_THRESHOLD: f32 = 1.0;
 const CANNONBALL_COUNTDOWN: f32 = 1.25;
+const CANNONBALL_SPEED: f32 = 240.0;
 const JITTER_AMOUNT: f32 = 2.0;
 
 pub struct Dog {
@@ -152,7 +153,9 @@ impl Cat {
 
     pub fn cannonball(&mut self, bounds: &Vector2<u32>, dt: f32) {
         let target = self.dog_target;
-        self.try_move(bounds, target * 240.0 * dt);
+        let v = target * CANNONBALL_SPEED* dt;
+        self.velocity = v;
+        self.try_move(bounds, v);
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
