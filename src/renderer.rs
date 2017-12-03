@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use cgmath::{self, Matrix4};
 use cgmath::prelude::*;
-use entities::{Camera, DogState};
+use entities::{Camera, DogState, CatState, CatType};
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
@@ -29,12 +29,9 @@ pub struct GameRenderer<'a> {
     basic_cat_idle_animation: Animation,
     fat_cat_idle_animation: Animation,
     kitten_idle_animation: Animation,
-    basic_cat_walk_time: f32,
     wizard_dog_idle_animation: Animation,
-    wizard_dog_idle_time: f32,
     wizard_dog_run_animation: Animation,
     // TODO: Move this to Dog to start the animation at the right time.
-    wizard_dog_run_time: f32,
 
     font: Font<'a>,
     cat_face: TextureRegion,
@@ -129,11 +126,8 @@ impl<'a> GameRenderer<'a> {
             basic_cat_idle_animation,
             fat_cat_idle_animation,
             kitten_idle_animation,
-            basic_cat_walk_time: 0.0,
             wizard_dog_idle_animation,
-            wizard_dog_idle_time: 0.0,
             wizard_dog_run_animation,
-            wizard_dog_run_time: 0.0,
 
             font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf"),
             cat_face,
@@ -179,8 +173,7 @@ impl<'a> GameRenderer<'a> {
                 self.sprite.draw(&self.how_to_play.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                                  draw_params, &mut target);
                 // Draw corgi idle animation
-                self.wizard_dog_idle_time += dt;
-                let mut sprite = self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                let mut sprite = self.wizard_dog_idle_animation.current_key_frame(self.game_time)
                     .draw(670.0, 50.0);
                 sprite.set_scale(cgmath::vec2(4.0, 4.0));
                 self.sprite.draw(&sprite, draw_params, &mut target);
@@ -248,26 +241,43 @@ impl<'a> GameRenderer<'a> {
                          draw_params, target);
 
         // Draw cats!
-        self.basic_cat_walk_time += dt;
         for cat in &world.cats {
-            let mut sprite = self.basic_cat_walk_animation.current_key_frame(self.basic_cat_walk_time)
-                .draw(cat.pos.x, cat.pos.y);
+            let mut sprite = if cat.state == CatState::InPen {
+                match cat.cat_type {
+                    CatType::Basic => {
+                        self.basic_cat_idle_animation.current_key_frame(self.game_time)
+                            .draw(cat.pos.x, cat.pos.y)
+                    },
+                    CatType::Kitten => {
+                        self.kitten_idle_animation.current_key_frame(self.game_time)
+                            .draw(cat.pos.x, cat.pos.y)
+                    }
+                }
+            } else {
+                match cat.cat_type {
+                    CatType::Basic => {
+                        self.basic_cat_walk_animation.current_key_frame(self.game_time)
+                            .draw(cat.pos.x, cat.pos.y)
+                    },
+                    CatType::Kitten => {
+                        self.basic_cat_walk_animation.current_key_frame(self.game_time)
+                            .draw(cat.pos.x, cat.pos.y)
+                    }
+                }
+            };
             sprite.set_flip_x(cat.facing == Facing::Right);
             sprite.set_color(cgmath::Vector3::new(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
             self.sprite.draw(&sprite, draw_params, target);
         }
 
         // Draw dog, woof.
-        self.wizard_dog_idle_time += dt;
-        self.wizard_dog_run_time += dt;
-
         match world.dog.dog_state {
             DogState::Chasing | DogState::Blinking(true) => {
                 let mut sprite = if world.dog.vel.is_zero() {
-                    self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                    self.wizard_dog_idle_animation.current_key_frame(self.game_time)
                         .draw(world.dog.pos.x, world.dog.pos.y)
                 } else {
-                    self.wizard_dog_run_animation.current_key_frame(self.wizard_dog_run_time)
+                    self.wizard_dog_run_animation.current_key_frame(self.game_time)
                         .draw(world.dog.pos.x, world.dog.pos.y)
                 };
                 sprite.set_flip_x(world.dog.facing == Facing::Right);
