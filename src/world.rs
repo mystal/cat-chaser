@@ -127,10 +127,10 @@ impl GameWorld {
                     cat.flee(&self.level.bounds, &dir, dt)
                 },
                 CatState::Jittering => {
-                    cat.jitter(&self.level.bounds, dt)
+                    cat.jitter(&self.level.bounds, dt, &self.dog)
                 }
-                CatState::Annoyed => {
-                    cat.annoyed(&self.level.bounds, dt)
+                CatState::Cannonballing => {
+                    cat.cannonball(&self.level.bounds, dt)
                 }
                 _ => {},
             }

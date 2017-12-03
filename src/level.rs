@@ -77,6 +77,9 @@ impl Level {
                 rw_radius: 9.0,
                 rw_theta: 0.0,
                 jitter_origin: cat_pos,
+                targeting_time: 0.0,
+                dog_target: cgmath::vec2(0.0, 0.0),
+                cannonballing_time: 0.0,
             });
         }
         cats
