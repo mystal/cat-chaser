@@ -93,7 +93,16 @@ pub struct CatBox {
 
 impl CatBox {
     pub fn in_bounds(&self, point: &Vector2<f32>) -> bool {
-        let br = self.pos + self.size;
-        point.x >= self.pos.x && point.x <= br.x && point.y >= br.y && point.y <= self.pos.y
+        let half_size = self.size * 0.5;
+        let top_left = self.pos - half_size;
+        let bottom_right = self.pos + half_size;
+        point.x >= top_left.x && point.x <= bottom_right.x &&
+            point.y >= top_left.y && point.y <= bottom_right.y
     }
+}
+
+pub struct Camera {
+    pub pos: Vector2<f32>,
+    pub bounds: Vector2<f32>,
+    pub zoom: i32,
 }
