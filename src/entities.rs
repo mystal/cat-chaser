@@ -10,6 +10,10 @@ pub enum Facing {
 }
 
 const ANNOYANCE_THRESHOLD: f32 = 1.0;
+const CANNONBALL_COUNTDOWN: f32 = 1.0;
+const CANNONBALL_SPEED: f32 = 240.0;
+const CANNONBALL_TIME: f32 = 1.25;
+const JITTER_AMOUNT: f32 = 2.0;
 
 pub struct Dog {
     pub pos: Vector2<f32>,
@@ -32,7 +36,7 @@ pub enum CatState {
     Idle,
     InPen,
     Jittering,
-    Annoyed,
+    Cannonballing,
 }
 
 pub struct Cat {
@@ -50,27 +54,38 @@ pub struct Cat {
     pub rw_radius: f32, // for random walk in idle
     pub rw_theta: f32, // for random walk in idle
     pub jitter_origin: Vector2<f32>,
+    pub targeting_time: f32,
+    pub dog_target: Vector2<f32>,
+    pub cannonballing_time: f32,
 }
 
 impl Cat {
+    fn start_targeting(&mut self, dog_pos: Vector2<f32>) {
+        self.dog_target = (dog_pos - self.pos).normalize();
+        self.cannonballing_time = CANNONBALL_TIME;
+    }
+
     fn start_jitter(&mut self) {
         self.jitter_origin = self.pos;
+        self.targeting_time = CANNONBALL_COUNTDOWN;
     }
 
     pub fn normalized_jitter(&self) -> f32 {
         return self.annoyance_total / ANNOYANCE_THRESHOLD
     }
 
-    pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32) {
+    pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32, dog: &Dog) {
         let mut rng = rand::thread_rng();
-        let x_range = Range::new(-1.0, 1.0);
-        let y_range = Range::new(-1.0, 1.0);
+        let x_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
+        let y_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
 
         let x = x_range.ind_sample(&mut rng);
         let y = y_range.ind_sample(&mut rng);
 
         self.pos.x = self.jitter_origin.x + x;
         self.pos.y = self.jitter_origin.y + y;
+
+        self.cannonball_countdown(dt, dog);
     }
 
     pub fn update_state(&mut self, dog: &Dog, cat_box: &CatBox) -> CatState {
@@ -80,7 +95,14 @@ impl Cat {
             _ => { },
         }
 
-        self.state = if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+        self.state = if self.state == CatState::Cannonballing && self.cannonballing_time > 0.0 {
+            CatState::Cannonballing
+        } else if self.state == CatState::Cannonballing && self.cannonballing_time <= 0.0 {
+            self.stop_cannonballing();
+            CatState::Idle
+        } else if self.state == CatState::Jittering && self.targeting_time <= 0.0 {
+            CatState::Cannonballing
+        } else if self.state != CatState::Cannonballing && self.annoyance_total >= ANNOYANCE_THRESHOLD {
             CatState::Jittering
         } else if cat_box.in_bounds(&self.pos) {
             CatState::InPen
@@ -135,8 +157,17 @@ impl Cat {
         self.decrease_annoyance(dt);
     }
 
-    pub fn annoyed(&mut self, bounds: &Vector2<u32>, dt: f32) {
-        println!("ANNOYED!");
+    pub fn cannonball(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        let target = self.dog_target;
+        let v = target * CANNONBALL_SPEED* dt;
+        self.velocity = v;
+        self.try_move(bounds, v);
+
+        self.cannonballing_time -= dt;
+    }
+
+    fn stop_cannonballing(&mut self) {
+        self.annoyance_total = 0.0;
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
@@ -175,6 +206,13 @@ impl Cat {
         self.annoyance_total += self.annoyance_rate * dt;
         if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
             self.start_jitter();
+        }
+    }
+
+    fn cannonball_countdown(&mut self, dt: f32, dog: &Dog) {
+        self.targeting_time -= dt;
+        if self.targeting_time <= 0.0 {
+            self.start_targeting(dog.pos);
         }
     }
 }
