@@ -98,9 +98,9 @@ impl Cat {
             _ => { },
         }
 
-        let speed = self.speed * dt;
+        let speed = self.speed;
         self.velocity = dir.normalize() * speed;
-        self.try_move(bounds, dir.normalize() * speed);
+        self.try_move(bounds, dir.normalize() * speed * dt);
         self.increase_annoyance(dt);
     }
 
@@ -125,7 +125,7 @@ impl Cat {
             self.velocity = (self.velocity + circle_vector).normalize() * self.speed / 3.0;
         }
         v = self.velocity;
-        self.try_move(bounds, v);
+        self.try_move(bounds, v * dt);
         self.decrease_annoyance(dt)
     }
 
