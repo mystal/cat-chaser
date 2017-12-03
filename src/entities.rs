@@ -17,3 +17,9 @@ pub struct CatBox {
     pub pos: Vector2<f32>,
     pub size: Vector2<f32>,
 }
+
+pub struct Camera {
+    pub pos: Vector2<f32>,
+    pub bounds: Vector2<f32>,
+    pub zoom: i32,
+}
