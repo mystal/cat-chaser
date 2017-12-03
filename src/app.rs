@@ -6,13 +6,13 @@ use entities::Camera;
 use world::GameWorld;
 use renderer::GameRenderer;
 
-pub struct GameApp {
+pub struct GameApp<'a> {
     camera: Camera,
     world: GameWorld,
-    renderer: GameRenderer,
+    renderer: GameRenderer<'a>,
 }
 
-impl midgar::App for GameApp {
+impl<'a> midgar::App for GameApp<'a> {
     fn create(midgar: &Midgar) -> Self {
         GameApp {
             world: GameWorld::new(),
