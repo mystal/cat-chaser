@@ -16,6 +16,10 @@ const CANNONBALL_TIME: f32 = 1.25;
 const JITTER_AMOUNT: f32 = 2.0;
 const HIT_TIME: f32 = 0.5;
 const BLINK_FRAMES: u32 = 2;
+const BASIC_CAT_ANNOYANCE_RATE: f32 = 0.75;
+const BASIC_CAT_CALMING_RATE: f32 = 0.5;
+const BASIC_CAT_SPEED: f32 = 150.0;
+const BASIC_CAT_RW_RADIUS: f32 = 9.0;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum DogState {
@@ -104,6 +108,28 @@ pub struct Cat {
 }
 
 impl Cat {
+    pub fn new_basic_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+        Cat {
+            pos: pos,
+            facing: Facing::Left, // TODO: Randomize!
+            cat_type: CatType::Basic,
+            radius: 70.0,
+            speed: BASIC_CAT_SPEED,
+            size: cgmath::vec2(30.0, 30.0),
+            annoyance_total: 0.0,
+            annoyance_rate: BASIC_CAT_ANNOYANCE_RATE,
+            calming_rate: BASIC_CAT_CALMING_RATE,
+            state: CatState::Idle,
+            velocity: vel,
+            rw_radius: BASIC_CAT_RW_RADIUS,
+            rw_theta: 0.0,
+            jitter_origin: pos,
+            targeting_time: 0.0,
+            dog_target: cgmath::vec2(0.0, 0.0),
+            cannonballing_time: 0.0,
+        }
+    }
+
     fn collides_with(&self, dog: &Dog) -> bool {
         if dog.dog_state != DogState::Chasing {
             return false;
