@@ -36,6 +36,7 @@ impl Level {
                 annoyance_rate: 1.0,
                 calming_rate: 0.5,
                 state: CatState::Idle,
+                jitter_origin: cat_pos,
             });
         }
         cats

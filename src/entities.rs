@@ -1,11 +1,15 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{self, KeyCode};
+use rand;
+use rand::distributions::{IndependentSample, Range};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {
     Left,
     Right,
 }
+
+const ANNOYANCE_THRESHOLD: f32 = 1.0;
 
 pub struct Dog {
     pub pos: Vector2<f32>,
@@ -22,11 +26,12 @@ pub enum CatType {
     Basic,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CatState {
     Flee,
     Idle,
     InPen,
+    Jittering,
     Annoyed,
 }
 
@@ -41,9 +46,26 @@ pub struct Cat {
     pub annoyance_rate: f32,
     pub calming_rate: f32,
     pub state: CatState,
+    pub jitter_origin: Vector2<f32>,
 }
 
 impl Cat {
+    fn start_jitter(&mut self) {
+        self.jitter_origin = self.pos;
+    }
+
+    pub fn jitter(&mut self, bounds: &Vector2<u32>, dt: f32) {
+        let mut rng = rand::thread_rng();
+        let x_range = Range::new(-1.0, 1.0);
+        let y_range = Range::new(-1.0, 1.0);
+
+        let x = x_range.ind_sample(&mut rng);
+        let y = y_range.ind_sample(&mut rng);
+
+        self.pos.x = self.jitter_origin.x + x;
+        self.pos.y = self.jitter_origin.y + y;
+    }
+
     pub fn update_state(&mut self, dog: &Dog, cat_box: &CatBox) -> CatState {
         let dog_to_cat = self.pos - dog.pos;
 
@@ -51,7 +73,9 @@ impl Cat {
             _ => { },
         }
 
-        self.state = if cat_box.in_bounds(&self.pos) {
+        self.state = if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+            CatState::Jittering
+        } else if cat_box.in_bounds(&self.pos) {
             CatState::InPen
         } else if dog_to_cat.magnitude() < self.radius {
             CatState::Flee
@@ -113,10 +137,16 @@ impl Cat {
 
     fn decrease_annoyance(&mut self, dt: f32) {
         self.annoyance_total -= self.calming_rate * dt;
+        if self.annoyance_total < 0.0 {
+            self.annoyance_total = 0.0;
+        }
     }
 
     fn increase_annoyance(&mut self, dt: f32) {
         self.annoyance_total += self.annoyance_rate * dt;
+        if (self.annoyance_total >= ANNOYANCE_THRESHOLD) {
+            self.start_jitter();
+        }
     }
 }
 
