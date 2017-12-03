@@ -16,10 +16,19 @@ const CANNONBALL_TIME: f32 = 1.25;
 const JITTER_AMOUNT: f32 = 2.0;
 const HIT_TIME: f32 = 0.5;
 const BLINK_FRAMES: u32 = 2;
+
 const BASIC_CAT_ANNOYANCE_RATE: f32 = 0.75;
 const BASIC_CAT_CALMING_RATE: f32 = 0.5;
 const BASIC_CAT_SPEED: f32 = 150.0;
 const BASIC_CAT_RW_RADIUS: f32 = 9.0;
+const BASIC_CAT_FLEE_SCALAR: f32 = 1.0;
+
+const KITTEN_ANNOYANCE_RATE: f32 = 0.0;
+const KITTEN_CALMING_RATE: f32 = 0.0;
+const KITTEN_SPEED: f32 = 175.0;
+const KITTEN_RW_RADIUS: f32 = 12.0;
+const KITTEN_FLEE_SCALAR: f32 = 1.5;
+
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum DogState {
@@ -76,6 +85,7 @@ impl Dog {
 
 pub enum CatType {
     Basic,
+    Kitten,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -105,6 +115,7 @@ pub struct Cat {
     pub targeting_time: f32,
     pub dog_target: Vector2<f32>,
     pub cannonballing_time: f32,
+    pub flee_scalar: f32,
 }
 
 impl Cat {
@@ -127,6 +138,30 @@ impl Cat {
             targeting_time: 0.0,
             dog_target: cgmath::vec2(0.0, 0.0),
             cannonballing_time: 0.0,
+            flee_scalar: 1.0,
+        }
+    }
+
+    pub fn new_kitten(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+        Cat {
+            pos: pos,
+            facing: Facing::Left, // TODO: Randomize!
+            cat_type: CatType::Kitten,
+            radius: 70.0,
+            speed: KITTEN_SPEED,
+            size: cgmath::vec2(30.0, 30.0),
+            annoyance_total: 0.0,
+            annoyance_rate: KITTEN_ANNOYANCE_RATE,
+            calming_rate: KITTEN_CALMING_RATE,
+            state: CatState::Idle,
+            velocity: vel,
+            rw_radius: KITTEN_RW_RADIUS,
+            rw_theta: 0.0,
+            jitter_origin: pos,
+            targeting_time: 0.0,
+            dog_target: cgmath::vec2(0.0, 0.0),
+            cannonballing_time: 0.0,
+            flee_scalar: KITTEN_FLEE_SCALAR,
         }
     }
 
@@ -203,7 +238,7 @@ impl Cat {
             _ => { },
         }
 
-        let speed = self.speed;
+        let speed = self.speed * self.flee_scalar;
         self.velocity = dir.normalize() * speed;
         self.try_move(bounds, dir.normalize() * speed * dt);
         self.increase_annoyance(dt);
