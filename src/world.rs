@@ -88,7 +88,7 @@ impl GameWorld {
                             Facing::Left
                         };
                     }
-                    cat.flee(&self.level.bounds, &dir)
+                    cat.flee(&self.level.bounds, &dir, dt)
                 },
                 _ => {},
             }
