@@ -30,14 +30,14 @@ impl Level {
                 facing: Facing::Left, // TODO: Randomize!
                 cat_type: CatType::Basic,
                 radius: 70.0,
-                speed: 100.0,
+                speed: 150.0,
                 size: cgmath::vec2(30.0, 30.0),
                 annoyance_total: 0.0,
                 annoyance_rate: 1.0,
                 calming_rate: 0.5,
                 state: CatState::Idle,
                 velocity: cgmath::vec2(1.0, 0.0),
-                rw_radius: 6.0,
+                rw_radius: 9.0,
                 rw_theta: 0.0,
                 jitter_origin: cat_pos,
             });
