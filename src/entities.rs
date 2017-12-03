@@ -13,6 +13,7 @@ pub enum CatType {
     Basic,
 }
 
+#[derive(Clone, Copy)]
 pub enum CatState {
     Flee,
     Idle,
@@ -25,24 +26,26 @@ pub struct Cat {
     pub radius: f32,
     pub speed: f32,
     pub size: Vector2<f32>,
+    pub state: CatState,
 }
 
 impl Cat {
-    pub fn get_state(&self, dog: &Dog, cat_box: &CatBox) -> CatState {
+    pub fn update_state(&mut self, dog: &Dog, cat_box: &CatBox) -> CatState {
         let dog_to_cat = self.pos - dog.pos;
 
         match &self.cat_type {
             _ => { },
         }
 
-        if cat_box.in_bounds(&self.pos) {
-            return CatState::InPen;
-        }
-        if dog_to_cat.magnitude() < self.radius {
-            return CatState::Flee;
-        }
+        self.state = if cat_box.in_bounds(&self.pos) {
+            CatState::InPen
+        } else if dog_to_cat.magnitude() < self.radius {
+            CatState::Flee
+        } else {
+            CatState::Idle
+        };
 
-        CatState::Idle
+        self.state
     }
 
     pub fn flee(&mut self, bounds: &Vector2<u32>, dir: &Vector2<f32>) {
@@ -64,11 +67,11 @@ impl Cat {
     }
 
     fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
-        let br = self.pos + self.size;
+        let bottom_right = self.pos + self.size;
         let bound_x = bounds.x as f32;
         let bound_y = bounds.y as f32;
 
-        if br.x + change.x > bound_x {
+        if bottom_right.x + change.x > bound_x {
             self.pos.x = bound_x - self.size.x;
         } else if self.pos.x + change.x < 0.0 {
             self.pos.x = 0.0;
@@ -76,7 +79,7 @@ impl Cat {
             self.pos.x = self.pos.x + change.x;
         }
 
-        if br.y + change.y > bound_y {
+        if bottom_right.y + change.y > bound_y {
             self.pos.y = bound_y - self.size.y;
         } else if self.pos.y + change.y < 0.0 {
             self.pos.y = 0.0;
