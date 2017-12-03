@@ -21,11 +21,13 @@ pub struct GameRenderer<'a> {
     text: TextRenderer,
 
     start_menu: TextureRegion,
+    how_to_play: TextureRegion,
 
     cat_box: TextureRegion,
     basic_cat_walk: TextureRegion,
     basic_cat_walk_alt: TextureRegion,
     basic_cat_walk_animation: Animation,
+    basic_cat_idle_animation: Animation,
     basic_cat_walk_time: f32,
     wizard_dog_idle_animation: Animation,
     wizard_dog_idle_time: f32,
@@ -45,6 +47,10 @@ impl<'a> GameRenderer<'a> {
             let texture = Rc::new(midgar.graphics().load_texture("assets/start_menu_background.png", false));
             TextureRegion::new(texture)
         };
+        let how_to_play = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/how_to_play.png", false));
+            TextureRegion::new(texture)
+        };
         let cat_box = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
             TextureRegion::new(texture)
@@ -57,6 +63,13 @@ impl<'a> GameRenderer<'a> {
         let mut basic_cat_walk_animation = Animation::new(0.2, &[basic_cat_walk.clone(), basic_cat_walk_alt.clone()])
             .unwrap();
         basic_cat_walk_animation.play_mode = PlayMode::Loop;
+        let basic_cat_idle = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/basic_cat_idle.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut basic_cat_idle_animation = Animation::new(0.2, &basic_cat_idle)
+            .unwrap();
+        basic_cat_idle_animation.play_mode = PlayMode::Loop;
         let wizard_dog_idle = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/wizard_dog_idle.png", false));
             TextureRegion::split(texture, (32, 32))
@@ -83,11 +96,13 @@ impl<'a> GameRenderer<'a> {
             text: TextRenderer::new(midgar.graphics().display()),
 
             start_menu,
+            how_to_play,
 
             cat_box,
             basic_cat_walk,
             basic_cat_walk_alt,
             basic_cat_walk_animation,
+            basic_cat_idle_animation,
             basic_cat_walk_time: 0.0,
             wizard_dog_idle_animation,
             wizard_dog_idle_time: 0.0,
@@ -133,7 +148,21 @@ impl<'a> GameRenderer<'a> {
                                                config::SCREEN_SIZE.y as f32, 0.0,
                                                -1.0, 1.0);
                 self.sprite.set_projection_matrix(projection);
-                // TODO: Draw splash screen
+                // Draw how to play splash screen!
+                self.sprite.draw(&self.how_to_play.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                                 draw_params, &mut target);
+                // Draw corgi idle animation
+                self.wizard_dog_idle_time += dt;
+                let mut sprite = self.wizard_dog_idle_animation.current_key_frame(self.wizard_dog_idle_time)
+                    .draw(670.0, 50.0);
+                sprite.set_scale(cgmath::vec2(4.0, 4.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
+                // Draw cat animations
+                sprite = self.basic_cat_idle_animation.current_key_frame(self.game_time)
+                    .draw(380.0, 340.0);
+                sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
                 // Draw blinking text!
                 if self.game_time.fract() < 0.5 {
                     self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
