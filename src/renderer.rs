@@ -6,6 +6,7 @@ use entities::Camera;
 use midgar::{Midgar, Surface};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
+use midgar::graphics::texture::TextureRegion;
 
 use config;
 use world::*;
@@ -14,10 +15,18 @@ pub struct GameRenderer {
     projection: Matrix4<f32>,
     sprite: SpriteRenderer,
     shape: ShapeRenderer,
+
+    cat_box: TextureRegion,
 }
 
 impl GameRenderer {
     pub fn new(midgar: &Midgar) -> Self {
+        // Load textures.
+        let cat_box = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", true));
+            TextureRegion::new(texture)
+        };
+
         let projection = cgmath::ortho(-(config::SCREEN_SIZE.x as f32 / 2.0), config::SCREEN_SIZE.x as f32 / 2.0,
                                        config::SCREEN_SIZE.y as f32 / 2.0, -(config::SCREEN_SIZE.y as f32 / 2.0),
                                        -1.0, 1.0);
@@ -26,6 +35,8 @@ impl GameRenderer {
             projection: projection,
             sprite: SpriteRenderer::new(midgar.graphics().display(), projection),
             shape: ShapeRenderer::new(midgar.graphics().display(), projection),
+
+            cat_box,
         }
     }
 
@@ -44,17 +55,19 @@ impl GameRenderer {
         let mut target = midgar.graphics().display().draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        // Draw cat box.
+        // Some colors!
         let white = [1.0, 1.0, 1.0];
         let grey = [0.5, 0.5, 0.5];
         let black = [0.0, 0.0, 0.0];
         let blue_violet = [138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0];
-        self.shape.draw_filled_rect(world.cat_box().pos.x, world.cat_box().pos.y,
-                                    world.cat_box().size.x, world.cat_box().size.y,
-                                    white, &mut target);
-        self.shape.draw_filled_rect(world.cat_box().pos.x, world.cat_box().pos.y,
-                                    world.cat_box().size.x - 4.0, world.cat_box().size.y - 4.0,
-                                    black, &mut target);
+
+        let draw_params = SpriteDrawParams::new()
+            .magnify_filter(MagnifySamplerFilter::Nearest)
+            .alpha(true);
+
+        // Draw cat box.
+        self.sprite.draw(&self.cat_box.draw(world.cat_box().pos.x, world.cat_box().pos.y),
+                         draw_params, &mut target);
 
         // Draw cats!
         for cat in &world.cats {

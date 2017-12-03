@@ -21,7 +21,7 @@ impl GameWorld {
         let level = Level {
             cat_box: CatBox {
                 pos: cgmath::vec2(200.0, 200.0),
-                size: cgmath::vec2(80.0, 80.0),
+                size: cgmath::vec2(100.0, 100.0),
             },
             num_cats: 10,
             bounds: cgmath::vec2(config::SCREEN_SIZE.x, config::SCREEN_SIZE.y),
