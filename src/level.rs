@@ -55,6 +55,8 @@ impl Level {
         let range_y = Range::new(20.0, self.bounds.y as f32 - 20.0);
         let mut rng = rand::thread_rng();
 
+        let meow_range = Range::new(-3.0, 2.0);
+
         let mut cats = Vec::new();
         for _ in 0..self.num_cats {
             let mut cat_pos = cgmath::vec2(range_x.ind_sample(&mut rng), range_y.ind_sample(&mut rng));

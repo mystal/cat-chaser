@@ -1,7 +1,9 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
-use rand;
+use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
+use sounds::Sounds;
+use ears::AudioController;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {
@@ -29,6 +31,12 @@ const KITTEN_SPEED: f32 = 175.0;
 const KITTEN_RW_RADIUS: f32 = 12.0;
 const KITTEN_FLEE_SCALAR: f32 = 1.5;
 
+pub const CAT_COLORS: &[[f32; 3]] = &[
+    [203.0 / 255.0, 219.0 / 255.0, 252.0 / 255.0], // The default purple blue
+    [189.0 / 255.0, 245.0 / 255.0, 242.0 / 255.0], // Robin's egg blue-ish
+    [174.0 / 255.0, 245.0 / 255.0, 184.0 / 255.0], // Pastel green.
+    [255.0 / 255.0, 193.0 / 255.0, 229.0 / 255.0], // Not quite but sort of pink.
+];
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum DogState {
@@ -50,7 +58,6 @@ pub struct Dog {
     pub dog_state: DogState,
     pub hit_time: f32,
     pub hit_frame: u32,
-
 }
 
 impl Dog {
@@ -116,10 +123,15 @@ pub struct Cat {
     pub dog_target: Vector2<f32>,
     pub cannonballing_time: f32,
     pub flee_scalar: f32,
+    pub color: [f32; 3],
+    pub meow_interval: f32,
+    pub meow_time: f32,
 }
 
 impl Cat {
     pub fn new_basic_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+        let mut rng = rand::thread_rng();
+        let meow_range = Range::new(-3.0, 2.0);
         Cat {
             pos: pos,
             facing: Facing::Left, // TODO: Randomize!
@@ -139,10 +151,17 @@ impl Cat {
             dog_target: cgmath::vec2(0.0, 0.0),
             cannonballing_time: 0.0,
             flee_scalar: 1.0,
+            meow_interval: 3.0,
+            meow_time: meow_range.ind_sample(&mut rng),
+
+            color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
 
     pub fn new_kitten(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+        let mut rng = rand::thread_rng();
+        let meow_range = Range::new(-3.0, 2.0);
+
         Cat {
             pos: pos,
             facing: Facing::Left, // TODO: Randomize!
@@ -162,6 +181,10 @@ impl Cat {
             dog_target: cgmath::vec2(0.0, 0.0),
             cannonballing_time: 0.0,
             flee_scalar: KITTEN_FLEE_SCALAR,
+            meow_interval: 3.0,
+            meow_time: meow_range.ind_sample(&mut rng),
+
+            color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
 
@@ -271,7 +294,7 @@ impl Cat {
         }
         v = self.velocity;
         self.try_move(bounds, v * dt);
-        self.decrease_annoyance(dt)
+        self.decrease_annoyance(dt);
     }
 
     pub fn in_pen(&mut self, _bounds: &Vector2<u32>, dt: f32) {
@@ -290,6 +313,33 @@ impl Cat {
 
         if self.collides_with(dog) {
             dog.hit();
+        }
+    }
+
+    pub fn meow(&mut self, sounds: &mut Sounds, dt: f32) {
+        let mut rng = rand::thread_rng();
+        let rand_should_meow = true;
+
+        match self.state {
+            CatState::Jittering | CatState::Cannonballing => {
+                if rand_should_meow {
+                    let range = Range::new(1, 4);
+                    let i = range.ind_sample(&mut rng); 
+                    let angry_sound = match i {
+                        1 => &mut sounds.angry_meow_1,
+                        2 => &mut sounds.angry_meow_2,
+                        3 => &mut sounds.angry_meow_3,
+                        4 => &mut sounds.angry_meow_4,
+                        _ => &mut sounds.angry_meow_1,
+                    };
+                    angry_sound.play();
+                    self.meow_time = 0.0;
+                }
+            }
+            _ => {
+                    self.meow_time = 0.0;
+                    sounds.basic_meow.play();
+            }
         }
     }
 
