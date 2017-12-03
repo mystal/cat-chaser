@@ -1,9 +1,13 @@
 use midgar::{self, KeyCode, Midgar, Surface};
 
+use config::{self};
+use cgmath::{self, Vector2};
+use entities::Camera;
 use world::GameWorld;
 use renderer::GameRenderer;
 
 pub struct GameApp {
+    camera: Camera,
     world: GameWorld,
     renderer: GameRenderer,
 }
@@ -12,6 +16,11 @@ impl midgar::App for GameApp {
     fn create(midgar: &Midgar) -> Self {
         GameApp {
             world: GameWorld::new(),
+            camera: Camera {
+                pos: cgmath::vec2(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                bounds: config::SCREEN_SIZE.cast::<f32>(),
+                zoom: 1,
+            },
             renderer: GameRenderer::new(midgar),
         }
     }
@@ -26,6 +35,6 @@ impl midgar::App for GameApp {
 
         self.world.update(midgar, dt);
 
-        self.renderer.render(midgar, dt, &self.world);
+        self.renderer.render(midgar, dt, &self.world, &self.camera);
     }
 }

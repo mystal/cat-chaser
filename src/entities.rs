@@ -97,3 +97,9 @@ impl CatBox {
         point.x >= self.pos.x && point.x <= br.x && point.y >= br.y && point.y <= self.pos.y
     }
 }
+
+pub struct Camera {
+    pub pos: Vector2<f32>,
+    pub bounds: Vector2<f32>,
+    pub zoom: i32,
+}
