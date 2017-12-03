@@ -2,7 +2,7 @@ use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
-use sounds::Sounds;
+use sounds::{Sound, Sounds};
 use ears::AudioController;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -158,6 +158,8 @@ pub struct Cat {
     pub color: [f32; 3],
     pub meow_interval: f32,
     pub meow_time: f32,
+    pub meow_sound: Sound,
+    pub meow_sound_angry: Sound,
 }
 
 impl Cat {
@@ -185,6 +187,8 @@ impl Cat {
             flee_scalar: BASIC_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
+            meow_sound: Sounds::basic_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
 
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
@@ -215,7 +219,8 @@ impl Cat {
             flee_scalar: KITTEN_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
-
+            meow_sound: Sounds::kitten_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
@@ -245,6 +250,8 @@ impl Cat {
             flee_scalar: FAT_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
+            meow_sound: Sounds::fat_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
@@ -378,28 +385,14 @@ impl Cat {
     }
 
     pub fn meow(&mut self, sounds: &mut Sounds, dt: f32) {
-        let mut rng = rand::thread_rng();
-        let rand_should_meow = true;
-
         match self.state {
-            CatState::Jittering | CatState::Cannonballing => {
-                if rand_should_meow {
-                    let range = Range::new(1, 4);
-                    let i = range.ind_sample(&mut rng); 
-                    let angry_sound = match i {
-                        1 => &mut sounds.angry_meow_1,
-                        2 => &mut sounds.angry_meow_2,
-                        3 => &mut sounds.angry_meow_3,
-                        4 => &mut sounds.angry_meow_4,
-                        _ => &mut sounds.angry_meow_1,
-                    };
-                    angry_sound.play();
-                    self.meow_time = 0.0;
-                }
+            CatState::Jittering => {
+                self.meow_time = 0.0;
+                self.meow_sound_angry.play();
             }
             _ => {
-                    self.meow_time = 0.0;
-                    sounds.basic_meow.play();
+                self.meow_time = 0.0;
+                self.meow_sound.play();
             }
         }
     }
