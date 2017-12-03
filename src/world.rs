@@ -63,7 +63,7 @@ impl GameWorld {
     }
 
     fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
-        if midgar.input().was_key_pressed(KeyCode::Space) {
+        if midgar.input().was_key_pressed(KeyCode::R) {
             self.level = Level::new(1);
             self.restart();
         }
@@ -84,7 +84,10 @@ impl GameWorld {
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
-                // TODO: consider moving this into a poll input method
+        if midgar.input().was_key_pressed(KeyCode::R) {
+            self.restart();
+        }
+        // TODO: consider moving this into a poll input method
         // TODO: Clamp dog to level bounds.
         let mut dir = Vector2::zero();
         if midgar.input().is_key_held(self.dog.left_key) && !midgar.input().is_key_held(self.dog.right_key) {
