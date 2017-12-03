@@ -96,7 +96,7 @@ impl GameRenderer {
         let mut target = midgar.graphics().display().draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        match world.state {
+        match world.game_state {
             GameState::StartMenu => {
                 //do a thing
             },
@@ -104,14 +104,14 @@ impl GameRenderer {
                 //do a different thing
             },
             GameState::Running | GameState::Won | GameState::GameOver => {
-                self.draw_world(midgar, dt, world, camera);
+                self.draw_world(midgar, dt, world, camera, &mut target);
             },
         }
 
         target.finish().unwrap();
     }
 
-    fn draw_world(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera) {
+    fn draw_world<S: Surface>(&mut self, midgar: &Midgar, dt: f32, world: &GameWorld, camera: &Camera, target: &mut S) {
         // Some colors!
         let white = [1.0, 1.0, 1.0];
         let grey = [0.5, 0.5, 0.5];
@@ -124,7 +124,7 @@ impl GameRenderer {
 
         // Draw cat box.
         self.sprite.draw(&self.cat_box.draw(world.cat_box().pos.x, world.cat_box().pos.y),
-                         draw_params, &mut target);
+                         draw_params, target);
 
         // Draw cats!
         self.basic_cat_walk_time += dt;
@@ -133,7 +133,7 @@ impl GameRenderer {
                 .draw(cat.pos.x, cat.pos.y);
             sprite.set_flip_x(cat.facing == Facing::Right);
             sprite.set_color(cgmath::Vector3::new(1.0, 1.0 - cat.normalized_jitter(), 1.0 - cat.normalized_jitter()));
-            self.sprite.draw(&sprite, draw_params, &mut target);
+            self.sprite.draw(&sprite, draw_params, target);
         }
 
         // Draw dog, woof.
@@ -147,9 +147,9 @@ impl GameRenderer {
                 .draw(world.dog.pos.x, world.dog.pos.y)
         };
         sprite.set_flip_x(world.dog.facing == Facing::Right);
-        self.sprite.draw(&sprite, draw_params, &mut target);
+        self.sprite.draw(&sprite, draw_params, target);
 
-        match world.state {
+        match world.game_state {
             GameState::Running => {
                 //ui stuff
             },
