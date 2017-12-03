@@ -30,8 +30,11 @@ impl Level {
                 facing: Facing::Left, // TODO: Randomize!
                 cat_type: CatType::Basic,
                 radius: 70.0,
-                speed: 2.0,
+                speed: 60.0,
                 size: cgmath::vec2(30.0, 30.0),
+                annoyance_total: 0.0,
+                annoyance_rate: 1.0,
+                calming_rate: 0.5,
                 state: CatState::Idle,
                 velocity: cgmath::vec2(1.0, 0.0),
                 rw_radius: 0.1,

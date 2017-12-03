@@ -78,7 +78,7 @@ impl GameWorld {
         for cat in &mut self.cats {
             match cat.update_state(&self.dog, &self.level.cat_box) {
                 CatState::Idle => { cat.idle(&self.level.bounds) },
-                CatState::InPen => { cat.in_pen(&self.level.bounds) },
+                CatState::InPen => { cat.in_pen(&self.level.bounds, dt) },
                 CatState::Flee => {
                     let dir = &cat.pos - self.dog.pos;
                     if dir.x != 0.0 {
@@ -88,7 +88,7 @@ impl GameWorld {
                             Facing::Left
                         };
                     }
-                    cat.flee(&self.level.bounds, &dir)
+                    cat.flee(&self.level.bounds, &dir, dt)
                 },
                 _ => {},
             }
