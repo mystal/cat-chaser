@@ -38,6 +38,12 @@ pub struct GameRenderer<'a> {
     wizard_dog_run_animation: Animation,
     // TODO: Move this to Dog to start the animation at the right time.
 
+    linda_cat: Animation,
+    morgan_kitten: Animation,
+    justin_spin: Animation,
+    gabe_dog: Animation,
+    guest_fox: Animation,
+
     font: Font<'a>,
     cat_face: TextureRegion,
 
@@ -150,6 +156,46 @@ impl<'a> GameRenderer<'a> {
             .unwrap();
         wizard_dog_run_animation.play_mode = PlayMode::Loop;
 
+        let linda_cat = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/linda_cat.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut linda_cat = Animation::new(0.2, &linda_cat)
+            .unwrap();
+        linda_cat.play_mode = PlayMode::Loop;
+
+        let morgan_kitten = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/morgan_kitten.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut morgan_kitten = Animation::new(0.2, &morgan_kitten)
+            .unwrap();
+        morgan_kitten.play_mode = PlayMode::Loop;
+
+        let justin_spin = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/justin_spin.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut justin_spin = Animation::new(0.1, &justin_spin)
+            .unwrap();
+        justin_spin.play_mode = PlayMode::Loop;
+
+        let gabe_dog = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/gabe_dog.png", false));
+            TextureRegion::split(texture, (32, 32))
+        };
+        let mut gabe_dog = Animation::new(0.1, &gabe_dog)
+            .unwrap();
+        gabe_dog.play_mode = PlayMode::Loop;
+
+        let guest_fox = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/guest_fox.png", false));
+            TextureRegion::split(texture, (20, 20))
+        };
+        let mut guest_fox = Animation::new(0.2, &guest_fox)
+            .unwrap();
+        guest_fox.play_mode = PlayMode::Loop;
+
         let cat_face = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/cat_face.png", false));
             TextureRegion::new(texture)
@@ -180,6 +226,12 @@ impl<'a> GameRenderer<'a> {
             fat_cat_walk_animation: fat_cat_walk_animation,
             basic_cat_ball_animation,
             fat_cat_ball_animation,
+
+            linda_cat,
+            morgan_kitten,
+            justin_spin,
+            gabe_dog,
+            guest_fox,
 
             font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf"),
             cat_face: cat_face,
@@ -213,6 +265,63 @@ impl<'a> GameRenderer<'a> {
                     self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
                                         40, 452.0, 542.0, 500, &projection, &mut target);
                     self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
+                                        40, 450.0, 540.0, 500, &projection, &mut target);
+                }
+            },
+            GameState::Credits => {
+                target.clear_color(1.0, 1.0, 1.0, 1.0);
+                let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
+                                               config::SCREEN_SIZE.y as f32, 0.0,
+                                               -1.0, 1.0);
+                self.sprite.set_projection_matrix(projection);
+
+                // Draw our sprites!
+                let mut sprite = self.linda_cat.current_key_frame(self.game_time)
+                    .draw(200.0, 50.0);
+                sprite.set_scale(cgmath::vec2(4.0, 4.0));
+                sprite.set_flip_x(true);
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                let mut sprite = self.morgan_kitten.current_key_frame(self.game_time)
+                    .draw(200.0, 160.0);
+                sprite.set_scale(cgmath::vec2(4.0, 4.0));
+                sprite.set_flip_x(true);
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                let mut sprite = self.justin_spin.current_key_frame(self.game_time)
+                    .draw(200.0, 270.0);
+                sprite.set_scale(cgmath::vec2(4.0, 4.0));
+                sprite.set_flip_x(true);
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                let mut sprite = self.gabe_dog.current_key_frame(self.game_time)
+                    .draw(200.0, 380.0);
+                sprite.set_scale(cgmath::vec2(3.5, 3.5));
+                sprite.set_flip_x(true);
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                let mut sprite = self.guest_fox.current_key_frame(self.game_time)
+                    .draw(200.0, 490.0);
+                sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
+
+                // TODO: Draw our names!
+                self.text.draw_text("Linda Cai", &self.font, [0.0, 0.0, 0.0],
+                                    40, 300.0, 60.0, 500, &projection, &mut target);
+                self.text.draw_text("Morgan Tenney", &self.font, [0.0, 0.0, 0.0],
+                                    40, 300.0, 180.0, 500, &projection, &mut target);
+                self.text.draw_text("Justin Hamilton", &self.font, [0.0, 0.0, 0.0],
+                                    40, 300.0, 265.0, 500, &projection, &mut target);
+                self.text.draw_text("Gabriel Martinez", &self.font, [0.0, 0.0, 0.0],
+                                    40, 300.0, 375.0, 500, &projection, &mut target);
+                self.text.draw_text("Thaminda Edirisooriya", &self.font, [0.0, 0.0, 0.0],
+                                    30, 300.0, 485.0, 500, &projection, &mut target);
+
+                // Draw blinking text!
+                if self.game_time.fract() < 0.5 {
+                    self.text.draw_text("Press Tab to return!", &self.font, [0.0, 0.0, 0.0],
+                                        40, 452.0, 542.0, 500, &projection, &mut target);
+                    self.text.draw_text("Press Tab to return!", &self.font, [1.0, 1.0, 1.0],
                                         40, 450.0, 540.0, 500, &projection, &mut target);
                 }
             },
@@ -419,9 +528,6 @@ impl<'a> GameRenderer<'a> {
                                     40, 252.0, 502.0, 800, &projection, target);
                 self.text.draw_text(text, &self.font, [1.0, 1.0, 1.0],
                                     40, 250.0, 500.0, 800, &projection, target);
-            },
-            GameState::GameOver => {
-                // TODO: Draw lose text!
             },
             _ => {},
         }

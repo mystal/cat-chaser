@@ -12,6 +12,7 @@ const MOVE_SPEED: f32 = 150.0;
 #[derive(Clone, Copy, PartialEq)]
 pub enum GameState {
     StartMenu,
+    Credits,
     HowToPlay,
     Running,
     Won,
@@ -63,6 +64,7 @@ impl GameWorld {
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
             GameState::StartMenu => self.update_start_menu(midgar, dt),
+            GameState::Credits => self.update_credits(midgar, dt),
             GameState::HowToPlay => self.update_how_to_play(midgar, dt),
             GameState::Running => self.update_running(midgar, dt),
             GameState::Won => self.update_won(midgar, dt),
@@ -90,6 +92,14 @@ impl GameWorld {
     fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::HowToPlay;
+        } else if midgar.input().was_key_pressed(KeyCode::Tab) {
+            self.game_state = GameState::Credits;
+        }
+    }
+
+    fn update_credits(&mut self, midgar: &Midgar, _dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::Return) || midgar.input().was_key_pressed(KeyCode::Tab) {
+            self.game_state = GameState::StartMenu;
         }
     }
 
