@@ -3,6 +3,7 @@ use midgar::KeyCode;
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
 use sounds::{Sound, Sounds, AudioController};
+use std::collections::HashMap;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {
@@ -49,6 +50,46 @@ pub enum DogState {
     Blinking(bool),
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PowerUpType {
+    Calming,
+}
+
+pub struct PowerUps {
+    power_ups: HashMap<PowerUpType, f32>,
+}
+
+impl PowerUps {
+    pub fn new() -> Self {
+        PowerUps {
+            power_ups: HashMap::new(),
+        }
+    }
+
+    pub fn update(&mut self, dt: f32) {
+        for (_, duration) in self.power_ups.iter_mut() {
+            *duration -= dt;
+        }
+    }
+
+    pub fn add_power_up(&mut self, power_up: PowerUpType) {
+        if !self.is_active(power_up) {
+            let duration = match power_up {
+                PowerUpType::Calming => 5.0,
+                _ => 5.0,
+            };
+            self.power_ups.insert(power_up, duration);
+        }
+    }
+
+    pub fn is_active(&self, power_up: PowerUpType) -> bool {
+        match self.power_ups.get(&power_up) {
+            Some(&d) => d > 0.0,
+            None => false
+        }
+    }
+}
+
 pub struct Dog {
     pub pos: Vector2<f32>,
     pub vel: Vector2<f32>,
@@ -63,6 +104,8 @@ pub struct Dog {
     pub dog_state: DogState,
     pub hit_time: f32,
     pub hit_frame: u32,
+
+    pub power_ups: PowerUps,
 
     pub yip_sound: Sound,
     pub woof_sound: Sound,
@@ -86,6 +129,8 @@ impl Dog {
                 }
             }
         }
+
+        self.power_ups.update(dt);
     }
 
     fn update_blink(&mut self, value: bool, dt: f32) {
@@ -432,6 +477,10 @@ impl Cat {
         };
 
         self.pos = new_pos;
+    }
+
+    pub fn calm_down(&mut self, dt: f32) {
+        self.annoyance_total = 0.0;
     }
 
     fn decrease_annoyance(&mut self, dt: f32) {

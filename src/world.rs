@@ -44,6 +44,7 @@ impl GameWorld {
             dog_state: DogState::Chasing,
             hit_time: 0.0,
             hit_frame: 0,
+            power_ups: PowerUps::new(),
             yip_sound,
             woof_sound: Sounds::dog_woof(),
         };
@@ -123,6 +124,7 @@ impl GameWorld {
             return;
         }
         if midgar.input().was_key_pressed(KeyCode::Space) {
+            self.dog.power_ups.add_power_up(PowerUpType::Calming);
             self.dog.woof();
         }
 
@@ -198,6 +200,10 @@ impl GameWorld {
                 } else {
                     Facing::Left
                 };
+            }
+
+            if self.dog.power_ups.is_active(PowerUpType::Calming) {
+                cat.calm_down(dt);
             }
         }
 
