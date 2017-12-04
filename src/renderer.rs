@@ -286,9 +286,16 @@ impl<'a> GameRenderer<'a> {
 
                 // Draw a huge corgi!
                 let mut sprite = self.wizard_dog_run_animation.current_key_frame(self.game_time)
-                    .draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0);
+                    .draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0 - 50.0);
                 sprite.set_scale(cgmath::vec2(16.0, 16.0));
                 self.sprite.draw(&sprite, draw_params, &mut target);
+
+                // Draw win text!
+                let text = "You are the most magical corgi in all the land!\nPress R to start anew!";
+                self.text.draw_text(text, &self.font, [0.0, 0.0, 0.0],
+                                    40, 22.0, 502.0, 800, &projection, &mut target);
+                self.text.draw_text(text, &self.font, [1.0, 1.0, 1.0],
+                                    40, 20.0, 500.0, 800, &projection, &mut target);
             },
         }
 
