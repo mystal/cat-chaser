@@ -19,8 +19,8 @@ const JITTER_AMOUNT: f32 = 2.0;
 const HIT_TIME: f32 = 0.5;
 const BLINK_FRAMES: u32 = 2;
 
-const BASIC_CAT_ANNOYANCE_RATE: f32 = 0.75;
-const BASIC_CAT_CALMING_RATE: f32 = 0.5;
+const BASIC_CAT_ANNOYANCE_RATE: f32 = 1.0;
+const BASIC_CAT_CALMING_RATE: f32 = 0.75;
 const BASIC_CAT_SPEED: f32 = 150.0;
 const BASIC_CAT_RW_RADIUS: f32 = 9.0;
 const BASIC_CAT_FLEE_SCALAR: f32 = 1.0;
@@ -30,6 +30,12 @@ const KITTEN_CALMING_RATE: f32 = 0.0;
 const KITTEN_SPEED: f32 = 175.0;
 const KITTEN_RW_RADIUS: f32 = 12.0;
 const KITTEN_FLEE_SCALAR: f32 = 1.5;
+
+const FAT_CAT_ANNOYANCE_RATE: f32 = 1.5;
+const FAT_CAT_CALMING_RATE: f32 = 0.5;
+const FAT_CAT_SPEED: f32 = 100.0;
+const FAT_CAT_RW_RADIUS: f32 = 6.0;
+const FAT_CAT_FLEE_SCALAR: f32 = 1.0;
 
 pub const CAT_COLORS: &[[f32; 3]] = &[
     [203.0 / 255.0, 219.0 / 255.0, 252.0 / 255.0], // The default purple blue
@@ -93,6 +99,7 @@ impl Dog {
 pub enum CatType {
     Basic,
     Kitten,
+    Fat,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -150,7 +157,7 @@ impl Cat {
             targeting_time: 0.0,
             dog_target: cgmath::vec2(0.0, 0.0),
             cannonballing_time: 0.0,
-            flee_scalar: 1.0,
+            flee_scalar: BASIC_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
 
@@ -184,6 +191,35 @@ impl Cat {
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
 
+            color: *rng.choose(CAT_COLORS).unwrap(),
+        }
+    }
+
+    pub fn new_fat_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+        let mut rng = rand::thread_rng();
+        let meow_range = Range::new(-1.0, 1.0);
+
+        Cat {
+            pos: pos,
+            facing: Facing::Left, // TODO: Randomize!
+            cat_type: CatType::Fat,
+            radius: 70.0,
+            speed: FAT_CAT_SPEED,
+            size: cgmath::vec2(30.0, 30.0),
+            annoyance_total: 0.0,
+            annoyance_rate: FAT_CAT_ANNOYANCE_RATE,
+            calming_rate: FAT_CAT_CALMING_RATE,
+            state: CatState::Idle,
+            velocity: vel,
+            rw_radius: FAT_CAT_RW_RADIUS,
+            rw_theta: 0.0,
+            jitter_origin: pos,
+            targeting_time: 0.0,
+            dog_target: cgmath::vec2(0.0, 0.0),
+            cannonballing_time: 0.0,
+            flee_scalar: FAT_CAT_FLEE_SCALAR,
+            meow_interval: 3.0,
+            meow_time: meow_range.ind_sample(&mut rng),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
