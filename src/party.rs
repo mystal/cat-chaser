@@ -5,7 +5,7 @@ use rand::distributions::{IndependentSample, Range};
 use config;
 use entities::CAT_COLORS;
 
-const NUM_ITEMS: u32 = 50;
+const NUM_ITEMS: u32 = 60;
 
 const PARTY_ITEM_SPEED: f32 = 60.0;
 
@@ -29,7 +29,7 @@ impl PartyItem {
         let mut rng = rand::thread_rng();
         let rotation_range = Range::new(0.0, 359.0);
         let x_range = Range::new(0.0, 800.0);
-        let y_range = Range::new(-600.0, 0.0);
+        let y_range = Range::new(-700.0, 0.0);
 
         PartyItem {
             kind: rng.gen::<PartyItemKind>(),
