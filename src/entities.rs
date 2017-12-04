@@ -55,8 +55,25 @@ pub enum PowerUpType {
     Calming,
 }
 
+pub struct PowerUp {
+    power_up_type: PowerUpType,
+    duration: f32,
+    cooldown: f32,
+}
+
+impl PowerUp {
+    pub fn update(&self, dt) {
+        duration -= dt;
+        if (duration <= 0.0) {
+            self.cooldown -= dt;
+        } else {
+            duration -= dt;
+        }
+    }
+}
+
 pub struct PowerUps {
-    power_ups: HashMap<PowerUpType, f32>,
+    power_ups: Vec<PowerUp>,
 }
 
 impl PowerUps {
@@ -67,16 +84,19 @@ impl PowerUps {
     }
 
     pub fn update(&mut self, dt: f32) {
-        for (_, duration) in self.power_ups.iter_mut() {
-            *duration -= dt;
+        for (_, power_up) in self.power_ups.iter_mut() {
+            power_up.update(dt);
         }
     }
 
     pub fn add_power_up(&mut self, power_up: PowerUpType) {
         if !self.is_active(power_up) {
             let duration = match power_up {
-                PowerUpType::Calming => 5.0,
-                _ => 5.0,
+                PowerUpType::Calming => PowerUp {
+                    power_up,
+                    duration: 5.0,
+                    cooldown: 10.0,
+                }
             };
             self.power_ups.insert(power_up, duration);
         }
