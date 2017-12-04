@@ -1,10 +1,13 @@
+use cgmath::{self, Vector2};
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
 
 use config;
 use entities::CAT_COLORS;
 
-const NUM_ITEMS: u32 = 30;
+const NUM_ITEMS: u32 = 50;
+
+const PARTY_ITEM_SPEED: f32 = 60.0;
 
 #[derive(Rand)]
 pub enum PartyItemKind {
@@ -14,26 +17,56 @@ pub enum PartyItemKind {
 }
 
 pub struct PartyItem {
-    kind: PartyItemKind,
-    color: [f32; 3],
-    rotation: f32,
+    pub kind: PartyItemKind,
+    pub color: [f32; 3],
+    pub rotation: f32,
+    pub pos: Vector2<f32>,
+    pub flip: bool,
 }
 
 impl PartyItem {
     fn new() -> Self {
         let mut rng = rand::thread_rng();
         let rotation_range = Range::new(0.0, 359.0);
+        let x_range = Range::new(0.0, 800.0);
+        let y_range = Range::new(-600.0, 0.0);
 
         PartyItem {
             kind: rng.gen::<PartyItemKind>(),
             color: *rng.choose(CAT_COLORS).unwrap(),
             rotation: rotation_range.ind_sample(&mut rng),
+            pos: cgmath::vec2(x_range.ind_sample(&mut rng),
+                              y_range.ind_sample(&mut rng)),
+            flip: rng.gen(),
+            //rot_dir: 
+        }
+    }
+
+    fn update(&mut self, dt: f32) {
+        // TODO: Update rotation
+        self.rotation += match self.kind {
+            PartyItemKind::BasicCat => 180.0 * dt,
+            PartyItemKind::FatCat => 90.0 * dt,
+            PartyItemKind::Kitten => 360.0 * dt,
+        };
+
+        // Update position.
+        self.pos.y += PARTY_ITEM_SPEED * dt;
+
+        // TODO: Wrap around once hit the bottom of the screen.
+        if self.pos.y > config::SCREEN_SIZE.y as f32 + 50.0 {
+            let mut rng = rand::thread_rng();
+            let rotation_range = Range::new(0.0, 359.0);
+            let x_range = Range::new(0.0, 800.0);
+            self.pos.x = x_range.ind_sample(&mut rng);
+            self.pos.y = -50.0;
+            self.rotation = rotation_range.ind_sample(&mut rng);
         }
     }
 }
 
 pub struct Party {
-    party_items: Vec<PartyItem>,
+    pub party_items: Vec<PartyItem>,
 }
 
 impl Party {
@@ -45,6 +78,12 @@ impl Party {
 
         Party {
             party_items,
+        }
+    }
+
+    pub fn update(&mut self, dt: f32) {
+        for item in &mut self.party_items {
+            item.update(dt);
         }
     }
 }

@@ -101,11 +101,14 @@ impl GameWorld {
         }
     }
 
-    fn update_game_over(&mut self, midgar: &Midgar, _dt: f32) {
+    fn update_game_over(&mut self, midgar: &Midgar, dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::R) {
             self.level = Level::new(1);
             self.restart();
+            return;
         }
+
+        self.the_party.update(dt);
     }
 
     fn update_won(&mut self, midgar: &Midgar, dt: f32) {

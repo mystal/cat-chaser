@@ -12,6 +12,7 @@ use midgar::graphics::texture::TextureRegion;
 
 use config;
 use entities::{CAT_COLORS, Facing};
+use party::PartyItemKind;
 use world::*;
 
 pub struct GameRenderer<'a> {
@@ -264,11 +265,26 @@ impl<'a> GameRenderer<'a> {
             GameState::GameOver => {
                 self.draw_world(dt, world, camera, &mut target);
 
-                // TODO: Draw the party!
                 let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                                config::SCREEN_SIZE.y as f32, 0.0,
                                                -1.0, 1.0);
                 self.sprite.set_projection_matrix(projection);
+
+                // Draw the party!
+                for item in &world.the_party.party_items {
+                    let mut sprite = match item.kind {
+                        PartyItemKind::BasicCat => self.basic_cat_idle_animation.current_key_frame(self.game_time),
+                        PartyItemKind::FatCat => self.fat_cat_idle_animation.current_key_frame(self.game_time),
+                        PartyItemKind::Kitten => self.kitten_idle_animation.current_key_frame(self.game_time),
+                    }.draw(item.pos.x, item.pos.y);
+                    sprite.set_scale(cgmath::vec2(3.0, 3.0));
+                    sprite.set_color(item.color.into());
+                    sprite.set_flip_x(item.flip);
+                    sprite.set_rotation(item.rotation);
+                    self.sprite.draw(&sprite, draw_params, &mut target);
+                }
+
+                // Draw a huge corgi!
                 let mut sprite = self.wizard_dog_run_animation.current_key_frame(self.game_time)
                     .draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0);
                 sprite.set_scale(cgmath::vec2(16.0, 16.0));
