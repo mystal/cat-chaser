@@ -44,7 +44,6 @@ impl<'a> midgar::App for GameApp<'a> {
             self.sounds.background_music.set_volume(0.2);
             self.sounds.background_music.play();
         }
-        println!("Intro: {}, Bg: {}", self.sounds.intro_music.get_volume(), self.sounds.background_music.get_volume());
         self.world.update(midgar, dt);
 
         self.renderer.render(midgar, dt, &self.world, &self.camera);
