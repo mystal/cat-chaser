@@ -257,9 +257,22 @@ impl<'a> GameRenderer<'a> {
                                         40, 450.0, 540.0, 500, &projection, &mut target);
                 }
             },
-            GameState::Running | GameState::Won | GameState::GameOver => {
+            GameState::Running | GameState::Won => {
                 self.draw_world(dt, world, camera, &mut target);
                 self.draw_ui(dt, world, &mut target);
+            },
+            GameState::GameOver => {
+                self.draw_world(dt, world, camera, &mut target);
+
+                // TODO: Draw the party!
+                let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
+                                               config::SCREEN_SIZE.y as f32, 0.0,
+                                               -1.0, 1.0);
+                self.sprite.set_projection_matrix(projection);
+                let mut sprite = self.wizard_dog_run_animation.current_key_frame(self.game_time)
+                    .draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0);
+                sprite.set_scale(cgmath::vec2(16.0, 16.0));
+                self.sprite.draw(&sprite, draw_params, &mut target);
             },
         }
 

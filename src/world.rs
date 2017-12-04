@@ -3,9 +3,9 @@ use midgar::Midgar;
 use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::KeyCode;
 use entities::*;
-use sounds::Sounds;
+use sounds::{Sounds, AudioController};
 use level::{Level, MAX_LEVEL};
-
+use party::Party;
 
 const MOVE_SPEED: f32 = 150.0;
 
@@ -25,11 +25,15 @@ pub struct GameWorld {
     pub dog: Dog,
     pub cats: Vec<Cat>,
     pub cats_scored: u32,
+
+    pub the_party: Party,
 }
 
 impl GameWorld {
     pub fn new() -> Self {
         let level = Level::new(1);
+        let mut yip_sound = Sounds::dog_yip();
+        yip_sound.set_volume(3.0);
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
@@ -42,6 +46,8 @@ impl GameWorld {
             dog_state: DogState::Chasing,
             hit_time: 0.0,
             hit_frame: 0,
+            yip_sound,
+            woof_sound: Sounds::dog_woof(),
         };
         let cats = level.generate_cats();
 
@@ -52,6 +58,7 @@ impl GameWorld {
             dog,
             cats,
             cats_scored: 0,
+            the_party: Party::new(),
         }
     }
 
@@ -118,6 +125,9 @@ impl GameWorld {
             self.next_level();
             return;
         }
+        if midgar.input().was_key_pressed(KeyCode::Space) {
+            self.dog.woof();
+        }
 
         // TODO: consider moving this into a poll input method
         // TODO: Clamp dog to level bounds.
@@ -145,7 +155,8 @@ impl GameWorld {
             };
         }
         self.dog.vel = dir * MOVE_SPEED;
-        self.dog.pos += self.dog.vel * dt;
+        let delta_pos = self.dog.vel * dt;
+        self.dog.try_move(&self.level.bounds, delta_pos);
 
         self.dog.update(dt);
 
@@ -174,13 +185,13 @@ impl GameWorld {
             if cat.state == CatState::Idle || cat.state == CatState::InPen || cat.state == CatState::Flee {
                 // Basic meow
                 if cat.meow_time >= cat.meow_interval {
-                    cat.meow(&mut self.sounds, dt);
+                    cat.meow();
                 }
                 cat.meow_time += dt;
             } else if prev_state != cat.state {
                 // Angry meow
                 if cat.state == CatState::Jittering || cat.state == CatState::Cannonballing {
-                    cat.meow(&mut self.sounds, dt);
+                    cat.meow();
                 }
             }
 

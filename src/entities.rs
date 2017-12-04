@@ -2,8 +2,7 @@ use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
-use sounds::Sounds;
-use ears::AudioController;
+use sounds::{Sound, Sounds, AudioController};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {
@@ -64,12 +63,16 @@ pub struct Dog {
     pub dog_state: DogState,
     pub hit_time: f32,
     pub hit_frame: u32,
+
+    pub yip_sound: Sound,
+    pub woof_sound: Sound,
 }
 
 impl Dog {
     pub fn hit(&mut self) {
         self.dog_state = DogState::Blinking(true);
         self.hit_time = HIT_TIME;
+        self.yip_sound.play();
     }
 
     pub fn update(&mut self, dt: f32) {
@@ -92,7 +95,36 @@ impl Dog {
         } else {
             self.dog_state = DogState::Chasing;
         }
+    }
 
+    pub fn woof(&mut self) {
+        self.woof_sound.play();
+    }
+
+    // NOTE: This is similar to Cat::try_move, but lets you move a little further out of the bounds.
+    pub fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
+        let half_size = self.size * 0.5;
+        let (min_x, max_x) = (0.0, bounds.x as f32);
+        let (min_y, may_y) = (0.0, bounds.y as f32);
+
+        // Clamp new_pos to min and max values.
+        let mut new_pos = self.pos + change;
+        new_pos.x = if new_pos.x < min_x {
+            min_x
+        } else if new_pos.x > max_x {
+            max_x
+        } else {
+            new_pos.x
+        };
+        new_pos.y = if new_pos.y < min_y {
+            min_y
+        } else if new_pos.y > may_y {
+            may_y
+        } else {
+            new_pos.y
+        };
+
+        self.pos = new_pos;
     }
 }
 
@@ -133,6 +165,8 @@ pub struct Cat {
     pub color: [f32; 3],
     pub meow_interval: f32,
     pub meow_time: f32,
+    pub meow_sound: Sound,
+    pub meow_sound_angry: Sound,
 }
 
 impl Cat {
@@ -160,6 +194,8 @@ impl Cat {
             flee_scalar: BASIC_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
+            meow_sound: Sounds::basic_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
 
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
@@ -190,7 +226,8 @@ impl Cat {
             flee_scalar: KITTEN_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
-
+            meow_sound: Sounds::kitten_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
@@ -220,6 +257,8 @@ impl Cat {
             flee_scalar: FAT_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
+            meow_sound: Sounds::fat_meow(),
+            meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
@@ -352,29 +391,15 @@ impl Cat {
         }
     }
 
-    pub fn meow(&mut self, sounds: &mut Sounds, dt: f32) {
-        let mut rng = rand::thread_rng();
-        let rand_should_meow = true;
-
+    pub fn meow(&mut self) {
         match self.state {
-            CatState::Jittering | CatState::Cannonballing => {
-                if rand_should_meow {
-                    let range = Range::new(1, 4);
-                    let i = range.ind_sample(&mut rng); 
-                    let angry_sound = match i {
-                        1 => &mut sounds.angry_meow_1,
-                        2 => &mut sounds.angry_meow_2,
-                        3 => &mut sounds.angry_meow_3,
-                        4 => &mut sounds.angry_meow_4,
-                        _ => &mut sounds.angry_meow_1,
-                    };
-                    angry_sound.play();
-                    self.meow_time = 0.0;
-                }
+            CatState::Jittering => {
+                self.meow_time = 0.0;
+                self.meow_sound_angry.play();
             }
             _ => {
-                    self.meow_time = 0.0;
-                    sounds.basic_meow.play();
+                self.meow_time = 0.0;
+                self.meow_sound.play();
             }
         }
     }
