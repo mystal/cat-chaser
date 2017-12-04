@@ -2,8 +2,7 @@ use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
-use sounds::{Sound, Sounds};
-use ears::AudioController;
+use sounds::{Sound, Sounds, AudioController};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {
@@ -64,12 +63,16 @@ pub struct Dog {
     pub dog_state: DogState,
     pub hit_time: f32,
     pub hit_frame: u32,
+
+    pub yip_sound: Sound,
+    pub woof_sound: Sound,
 }
 
 impl Dog {
     pub fn hit(&mut self) {
         self.dog_state = DogState::Blinking(true);
         self.hit_time = HIT_TIME;
+        self.yip_sound.play();
     }
 
     pub fn update(&mut self, dt: f32) {
@@ -92,6 +95,10 @@ impl Dog {
         } else {
             self.dog_state = DogState::Chasing;
         }
+    }
+
+    pub fn woof(&mut self) {
+        self.woof_sound.play();
     }
 
     // NOTE: This is similar to Cat::try_move, but lets you move a little further out of the bounds.
@@ -384,7 +391,7 @@ impl Cat {
         }
     }
 
-    pub fn meow(&mut self, sounds: &mut Sounds, dt: f32) {
+    pub fn meow(&mut self) {
         match self.state {
             CatState::Jittering => {
                 self.meow_time = 0.0;

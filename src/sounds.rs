@@ -1,13 +1,14 @@
-pub use ears::Sound;
-use ears::AudioController;
+pub use ears::{Sound, AudioController};
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
 
-pub struct Sounds {}
+pub struct Sounds {
+}
 
 impl Sounds {
     pub fn new() -> Self {
-        Sounds {}
+        Sounds {
+        }
     }
 
     pub fn angry_meow() -> Sound {
@@ -33,5 +34,13 @@ impl Sounds {
 
     pub fn fat_meow() -> Sound {
         Sound::new("assets/sounds/fat_cat_meow_1.wav").expect("Error on loading fat_meow_1.")
+    }
+
+    pub fn dog_yip() -> Sound {
+        Sound::new("assets/sounds/dog_yip_1.wav").expect("Error on loading dog_yip_1.")
+    }
+
+    pub fn dog_woof() -> Sound {
+        Sound::new("assets/sounds/dog_woof_1.wav").expect("Error on loading dog_woof_1.")
     }
 }
