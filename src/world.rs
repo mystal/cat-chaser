@@ -5,7 +5,7 @@ use midgar::KeyCode;
 use entities::*;
 use sounds::{Sounds, AudioController};
 use level::{Level, MAX_LEVEL};
-
+use party::Party;
 
 const MOVE_SPEED: f32 = 150.0;
 
@@ -25,6 +25,8 @@ pub struct GameWorld {
     pub dog: Dog,
     pub cats: Vec<Cat>,
     pub cats_scored: u32,
+
+    pub the_party: Party,
 }
 
 impl GameWorld {
@@ -56,6 +58,7 @@ impl GameWorld {
             dog,
             cats,
             cats_scored: 0,
+            the_party: Party::new(),
         }
     }
 
