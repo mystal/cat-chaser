@@ -1,13 +1,19 @@
-pub use ears::{Sound, AudioController};
+pub use ears::{Sound, AudioController, Music};
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
 
 pub struct Sounds {
+    pub intro_music: Music,
+    pub background_music: Music,
 }
 
 impl Sounds {
     pub fn new() -> Self {
+        let mut background_music = Music::new("assets/sounds/trolling_doggo_loop.wav").expect("Error on loading trolling_doggo_loop.");
+        background_music.set_looping(true);
         Sounds {
+            intro_music: Music::new("assets/sounds/trolling_doggo.wav").expect("Error on loading trolling_doggo."),
+            background_music,
         }
     }
 
