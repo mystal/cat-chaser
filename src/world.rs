@@ -21,7 +21,6 @@ pub enum GameState {
 pub struct GameWorld {
     pub game_state: GameState,
     pub level: Level,
-    pub sounds: Sounds,
     pub dog: Dog,
     pub cats: Vec<Cat>,
     pub cats_scored: u32,
@@ -33,7 +32,7 @@ impl GameWorld {
     pub fn new() -> Self {
         let level = Level::new(1);
         let mut yip_sound = Sounds::dog_yip();
-        yip_sound.set_volume(3.0);
+//        yip_sound.set_volume(3.0);
         let dog = Dog {
             pos: level.cat_box.pos,
             vel: Vector2::zero(),
@@ -54,7 +53,6 @@ impl GameWorld {
         GameWorld {
             game_state: GameState::StartMenu,
             level,
-            sounds: Sounds::new(),
             dog,
             cats,
             cats_scored: 0,
@@ -216,7 +214,6 @@ impl GameWorld {
             } else if self.cats_scored == self.level.num_cats && self.level.level_num >= MAX_LEVEL {
                 self.game_state = GameState::GameOver;
             }
-
         }
     }
 
