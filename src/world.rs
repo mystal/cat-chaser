@@ -208,9 +208,12 @@ impl GameWorld {
 
         if self.game_state != GameState::Won {
             // Check win condition!
-            if self.cats_scored == self.level.num_cats {
+            if self.cats_scored == self.level.num_cats && self.level.level_num < MAX_LEVEL {
                 self.game_state = GameState::Won;
+            } else if self.cats_scored == self.level.num_cats && self.level.level_num >= MAX_LEVEL {
+                self.game_state = GameState::GameOver;
             }
+
         }
     }
 
