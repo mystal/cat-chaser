@@ -92,7 +92,32 @@ impl Dog {
         } else {
             self.dog_state = DogState::Chasing;
         }
+    }
 
+    // NOTE: This is similar to Cat::try_move, but lets you move a little further out of the bounds.
+    pub fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
+        let half_size = self.size * 0.5;
+        let (min_x, max_x) = (0.0, bounds.x as f32);
+        let (min_y, may_y) = (0.0, bounds.y as f32);
+
+        // Clamp new_pos to min and max values.
+        let mut new_pos = self.pos + change;
+        new_pos.x = if new_pos.x < min_x {
+            min_x
+        } else if new_pos.x > max_x {
+            max_x
+        } else {
+            new_pos.x
+        };
+        new_pos.y = if new_pos.y < min_y {
+            min_y
+        } else if new_pos.y > may_y {
+            may_y
+        } else {
+            new_pos.y
+        };
+
+        self.pos = new_pos;
     }
 }
 

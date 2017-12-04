@@ -145,7 +145,8 @@ impl GameWorld {
             };
         }
         self.dog.vel = dir * MOVE_SPEED;
-        self.dog.pos += self.dog.vel * dt;
+        let delta_pos = self.dog.vel * dt;
+        self.dog.try_move(&self.level.bounds, delta_pos);
 
         self.dog.update(dt);
 
