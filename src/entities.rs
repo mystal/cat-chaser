@@ -170,7 +170,7 @@ pub struct Cat {
 }
 
 impl Cat {
-    pub fn new_basic_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+    pub fn new_basic_cat(pos: Vector2<f32>, vel: Vector2<f32>, sounds: &Sounds) -> Self {
         let mut rng = rand::thread_rng();
         let meow_range = Range::new(-3.0, 2.0);
         Cat {
@@ -194,14 +194,14 @@ impl Cat {
             flee_scalar: BASIC_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
-            meow_sound: Sounds::basic_meow(),
-            meow_sound_angry: Sounds::angry_meow(),
+            meow_sound: sounds.basic_meow(),
+            meow_sound_angry: sounds.angry_meow(),
 
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
 
-    pub fn new_kitten(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+    pub fn new_kitten(pos: Vector2<f32>, vel: Vector2<f32>, sounds: &Sounds) -> Self {
         let mut rng = rand::thread_rng();
         let meow_range = Range::new(-3.0, 2.0);
 
@@ -226,13 +226,13 @@ impl Cat {
             flee_scalar: KITTEN_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
-            meow_sound: Sounds::kitten_meow(),
-            meow_sound_angry: Sounds::angry_meow(),
+            meow_sound: sounds.kitten_meow(),
+            meow_sound_angry: sounds.angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }
 
-    pub fn new_fat_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
+    pub fn new_fat_cat(pos: Vector2<f32>, vel: Vector2<f32>, sounds: &Sounds) -> Self {
         let mut rng = rand::thread_rng();
         let meow_range = Range::new(-1.0, 1.0);
 
@@ -257,8 +257,8 @@ impl Cat {
             flee_scalar: FAT_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
             meow_time: meow_range.ind_sample(&mut rng),
-            meow_sound: Sounds::fat_meow(),
-            meow_sound_angry: Sounds::angry_meow(),
+            meow_sound: sounds.fat_meow(),
+            meow_sound_angry: sounds.angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
         }
     }

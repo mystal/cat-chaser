@@ -1,0 +1,5 @@
+name = "Cat Chaser"
+executable = "launchers/run_mac.sh"
+identifier = "cat_chaser"
+icon = ["icons/icon.png"]
+resources = ["assets", "libs"]

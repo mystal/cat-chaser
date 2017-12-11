@@ -27,12 +27,14 @@ pub struct GameWorld {
     pub cats_scored: u32,
 
     pub the_party: Party,
+
+    pub sounds: Sounds,
 }
 
 impl GameWorld {
-    pub fn new() -> Self {
+    pub fn new(sounds: Sounds) -> Self {
         let level = Level::new(1);
-        let mut yip_sound = Sounds::dog_yip();
+        let mut yip_sound = sounds.dog_yip();
 //        yip_sound.set_volume(3.0);
         let dog = Dog {
             pos: level.cat_box.pos,
@@ -47,9 +49,9 @@ impl GameWorld {
             hit_time: 0.0,
             hit_frame: 0,
             yip_sound,
-            woof_sound: Sounds::dog_woof(),
+            woof_sound: sounds.dog_woof(),
         };
-        let cats = level.generate_cats();
+        let cats = level.generate_cats(&sounds);
 
         GameWorld {
             game_state: GameState::StartMenu,
@@ -58,6 +60,8 @@ impl GameWorld {
             cats,
             cats_scored: 0,
             the_party: Party::new(),
+
+            sounds,
         }
     }
 
@@ -74,7 +78,7 @@ impl GameWorld {
 
     fn restart(&mut self) {
         self.dog.pos = self.level.cat_box.pos;
-        let cats = self.level.generate_cats();
+        let cats = self.level.generate_cats(&self.sounds);
         self.cats = cats;
         self.game_state = GameState::Running;
     }

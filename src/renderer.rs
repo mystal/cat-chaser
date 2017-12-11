@@ -51,30 +51,30 @@ pub struct GameRenderer<'a> {
 }
 
 impl<'a> GameRenderer<'a> {
-    pub fn new(midgar: &Midgar) -> Self {
+    pub fn new(midgar: &Midgar, assets_path: &str) -> Self {
         // Load textures.
         let start_menu = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/start_menu_background.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/start_menu_background.png", assets_path), false));
             TextureRegion::new(texture)
         };
 
         let how_to_play = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/how_to_play.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/how_to_play.png", assets_path), false));
             TextureRegion::new(texture)
         };
 
         let background = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/hardwood_floor.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/hardwood_floor.png", assets_path), false));
             TextureRegion::with_sub_field(texture, (0, 0), (config::SCREEN_SIZE.x, config::SCREEN_SIZE.y))
         };
 
         let cat_box = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_box.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/cat_box.png", assets_path), false));
             TextureRegion::new(texture)
         };
 
         let (basic_cat_walk, basic_cat_walk_alt) = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/walk/basic_cat_walk.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/walk/basic_cat_walk.png", assets_path), false));
             (TextureRegion::with_sub_field(texture.clone(), (0, 0), (32, 32)),
              TextureRegion::with_sub_field(texture.clone(), (32, 0), (32, 32)))
         };
@@ -83,7 +83,7 @@ impl<'a> GameRenderer<'a> {
         basic_cat_walk_animation.play_mode = PlayMode::Loop;
 
         let basic_cat_idle = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/idle/basic_cat_idle.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/idle/basic_cat_idle.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut basic_cat_idle_animation = Animation::new(0.2, &basic_cat_idle)
@@ -91,7 +91,7 @@ impl<'a> GameRenderer<'a> {
         basic_cat_idle_animation.play_mode = PlayMode::Loop;
 
         let basic_cat_ball = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/ball/basic_cat_bowling_ball.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/ball/basic_cat_bowling_ball.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut basic_cat_ball_animation = Animation::new(0.2, &basic_cat_ball)
@@ -99,7 +99,7 @@ impl<'a> GameRenderer<'a> {
         basic_cat_ball_animation.play_mode = PlayMode::Loop;
 
         let (fat_cat_walk, fat_cat_walk_alt) = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/walk/fat_cat_walk.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/walk/fat_cat_walk.png", assets_path), false));
             (TextureRegion::with_sub_field(texture.clone(), (0, 0), (32, 32)),
              TextureRegion::with_sub_field(texture.clone(), (32, 0), (32, 32)))
         };
@@ -108,7 +108,7 @@ impl<'a> GameRenderer<'a> {
         fat_cat_walk_animation.play_mode = PlayMode::Loop;
 
         let fat_cat_idle = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/idle/fat_cat_idle.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/idle/fat_cat_idle.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut fat_cat_idle_animation = Animation::new(0.2, &fat_cat_idle)
@@ -116,7 +116,7 @@ impl<'a> GameRenderer<'a> {
         fat_cat_idle_animation.play_mode = PlayMode::Loop;
 
         let fat_cat_ball = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/ball/fat_cat_bowling_ball.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/ball/fat_cat_bowling_ball.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut fat_cat_ball_animation = Animation::new(0.2, &fat_cat_ball)
@@ -124,7 +124,7 @@ impl<'a> GameRenderer<'a> {
         fat_cat_ball_animation.play_mode = PlayMode::Loop;
 
         let (kitten_walk, kitten_walk_alt) = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/walk/kitten_walk.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/walk/kitten_walk.png", assets_path), false));
             (TextureRegion::with_sub_field(texture.clone(), (0, 0), (32, 32)),
              TextureRegion::with_sub_field(texture.clone(), (32, 0), (32, 32)))
         };
@@ -133,7 +133,7 @@ impl<'a> GameRenderer<'a> {
         kitten_walk_animation.play_mode = PlayMode::Loop;
 
         let kitten_idle = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/idle/kitten_idle.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/idle/kitten_idle.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut kitten_idle_animation = Animation::new(0.2, &kitten_idle)
@@ -141,7 +141,7 @@ impl<'a> GameRenderer<'a> {
         kitten_idle_animation.play_mode = PlayMode::Loop;
 
         let wizard_dog_idle = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/idle/wizard_dog_idle.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/idle/wizard_dog_idle.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut wizard_dog_idle_animation = Animation::new(0.2, &wizard_dog_idle)
@@ -149,7 +149,7 @@ impl<'a> GameRenderer<'a> {
         wizard_dog_idle_animation.play_mode = PlayMode::Loop;
 
         let wizard_dog_run = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/walk/wizard_dog_run.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/walk/wizard_dog_run.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut wizard_dog_run_animation = Animation::new(0.1, &wizard_dog_run)
@@ -157,7 +157,7 @@ impl<'a> GameRenderer<'a> {
         wizard_dog_run_animation.play_mode = PlayMode::Loop;
 
         let linda_cat = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/linda_cat.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/credits/linda_cat.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut linda_cat = Animation::new(0.2, &linda_cat)
@@ -165,7 +165,7 @@ impl<'a> GameRenderer<'a> {
         linda_cat.play_mode = PlayMode::Loop;
 
         let morgan_kitten = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/morgan_kitten.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/credits/morgan_kitten.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut morgan_kitten = Animation::new(0.2, &morgan_kitten)
@@ -173,7 +173,7 @@ impl<'a> GameRenderer<'a> {
         morgan_kitten.play_mode = PlayMode::Loop;
 
         let justin_spin = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/justin_spin.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/credits/justin_spin.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut justin_spin = Animation::new(0.1, &justin_spin)
@@ -181,7 +181,7 @@ impl<'a> GameRenderer<'a> {
         justin_spin.play_mode = PlayMode::Loop;
 
         let gabe_dog = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/gabe_dog.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/credits/gabe_dog.png", assets_path), false));
             TextureRegion::split(texture, (32, 32))
         };
         let mut gabe_dog = Animation::new(0.1, &gabe_dog)
@@ -189,7 +189,7 @@ impl<'a> GameRenderer<'a> {
         gabe_dog.play_mode = PlayMode::Loop;
 
         let guest_fox = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/credits/guest_fox.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/credits/guest_fox.png", assets_path), false));
             TextureRegion::split(texture, (20, 20))
         };
         let mut guest_fox = Animation::new(0.2, &guest_fox)
@@ -197,7 +197,7 @@ impl<'a> GameRenderer<'a> {
         guest_fox.play_mode = PlayMode::Loop;
 
         let cat_face = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/cat_face.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture(format!("{}/cat_face.png", assets_path), false));
             TextureRegion::new(texture)
         };
 
@@ -233,7 +233,7 @@ impl<'a> GameRenderer<'a> {
             gabe_dog,
             guest_fox,
 
-            font: text::load_font_from_path("assets/fonts/Kenney Pixel.ttf"),
+            font: text::load_font_from_path(&format!("{}/fonts/Kenney Pixel.ttf", assets_path)),
             cat_face: cat_face,
 
             game_time: 0.0,

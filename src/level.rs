@@ -1,9 +1,10 @@
 use cgmath::{self, InnerSpace, MetricSpace, Vector2};
 use rand::{self, Rng};
 use rand::distributions::{IndependentSample, Range};
-use config;
 
+use config;
 use entities::*;
+use sounds::Sounds;
 
 pub const MAX_LEVEL: u32 = 5;
 
@@ -56,7 +57,7 @@ impl Level {
         return x + y + z;
     }
 
-    pub fn generate_cats(&self) -> Vec<Cat> {
+    pub fn generate_cats(&self, sounds: &Sounds) -> Vec<Cat> {
         // Spawn cats a bit away from walls and away from the cat box.
         let cat_box_radius = 80.0;
         let range_x = Range::new(20.0, self.bounds.x as f32 - 20.0);
@@ -83,13 +84,13 @@ impl Level {
 
             let cat = if basic_cats < total_basic {
                 basic_cats += 1;
-                Cat::new_basic_cat(cat_pos, vel)
+                Cat::new_basic_cat(cat_pos, vel, sounds)
             } else if kittens < total_kittens {
                 kittens += 1;
-                Cat::new_kitten(cat_pos, vel)
+                Cat::new_kitten(cat_pos, vel, sounds)
             } else {
                 fat_cats += 1;
-                Cat::new_fat_cat(cat_pos, vel)
+                Cat::new_fat_cat(cat_pos, vel, sounds)
             };
             cats.push(cat);
         }
