@@ -2,7 +2,7 @@ use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
 use rand::{self, Rng};
 use rand::distributions::{Distribution, Uniform};
-use sounds::{Sound, Sounds, AudioController};
+use crate::sounds::{Sound, Sounds, AudioController};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Facing {

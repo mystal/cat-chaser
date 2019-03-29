@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use cgmath::{self, Matrix4};
 use cgmath::prelude::*;
-use entities::{Camera, DogState, CatState, CatType};
+use crate::entities::{Camera, DogState, CatState, CatType};
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
@@ -10,10 +10,10 @@ use midgar::graphics::text::{self, Font, TextRenderer};
 use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::TextureRegion;
 
-use config;
-use entities::{CAT_COLORS, Facing};
-use party::PartyItemKind;
-use world::*;
+use crate::config;
+use crate::entities::{CAT_COLORS, Facing};
+use crate::party::PartyItemKind;
+use crate::world::*;
 
 pub struct GameRenderer<'a> {
     projection: Matrix4<f32>,

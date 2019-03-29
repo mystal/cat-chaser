@@ -2,10 +2,10 @@ use midgar::Midgar;
 
 use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::KeyCode;
-use entities::*;
-use sounds::{Sounds, AudioController};
-use level::{Level, MAX_LEVEL};
-use party::Party;
+use crate::entities::*;
+use crate::sounds::{Sounds, AudioController};
+use crate::level::{Level, MAX_LEVEL};
+use crate::party::Party;
 
 const MOVE_SPEED: f32 = 150.0;
 

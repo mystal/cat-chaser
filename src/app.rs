@@ -1,11 +1,11 @@
 use midgar::{self, KeyCode, Midgar};
 
-use config;
+use crate::config;
 use cgmath;
-use entities::Camera;
-use world::GameWorld;
-use renderer::GameRenderer;
-use sounds::{Sounds, AudioController};
+use crate::entities::Camera;
+use crate::world::GameWorld;
+use crate::renderer::GameRenderer;
+use crate::sounds::{Sounds, AudioController};
 
 pub struct GameApp<'a> {
     camera: Camera,

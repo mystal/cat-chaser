@@ -3,8 +3,8 @@ use rand::{self, Rng};
 use rand::distributions::{Distribution, Standard, Uniform};
 use rand::seq::SliceRandom;
 
-use config;
-use entities::CAT_COLORS;
+use crate::config;
+use crate::entities::CAT_COLORS;
 
 const NUM_ITEMS: u32 = 60;
 

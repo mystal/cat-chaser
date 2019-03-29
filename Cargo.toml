@@ -2,7 +2,7 @@
 name = "cat-chaser"
 version = "0.1.0"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
-#edition = "2018"
+edition = "2018"
 
 [dependencies]
 cgmath = "0.15"

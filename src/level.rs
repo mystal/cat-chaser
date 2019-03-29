@@ -1,9 +1,9 @@
 use cgmath::{self, InnerSpace, MetricSpace, Vector2};
 use rand::{self, Rng};
 use rand::distributions::{Distribution, Uniform};
-use config;
+use crate::config;
 
-use entities::*;
+use crate::entities::*;
 
 pub const MAX_LEVEL: u32 = 5;
 
