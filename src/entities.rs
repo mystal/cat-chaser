@@ -1,7 +1,7 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
-use rand::{self, Rng};
 use rand::distributions::{Distribution, Uniform};
+use rand::seq::SliceRandom;
 use crate::sounds::{Sound, Sounds, AudioController};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -103,7 +103,6 @@ impl Dog {
 
     // NOTE: This is similar to Cat::try_move, but lets you move a little further out of the bounds.
     pub fn try_move(&mut self, bounds: &Vector2<u32>, change: Vector2<f32>) {
-        let half_size = self.size * 0.5;
         let (min_x, max_x) = (0.0, bounds.x as f32);
         let (min_y, may_y) = (0.0, bounds.y as f32);
 
@@ -197,7 +196,7 @@ impl Cat {
             meow_sound: Sounds::basic_meow(),
             meow_sound_angry: Sounds::angry_meow(),
 
-            color: *rng.choose(CAT_COLORS).unwrap(),
+            color: *CAT_COLORS.choose(&mut rng).unwrap(),
         }
     }
 
@@ -228,7 +227,7 @@ impl Cat {
             meow_time: meow_range.sample(&mut rng),
             meow_sound: Sounds::kitten_meow(),
             meow_sound_angry: Sounds::angry_meow(),
-            color: *rng.choose(CAT_COLORS).unwrap(),
+            color: *CAT_COLORS.choose(&mut rng).unwrap(),
         }
     }
 
@@ -259,7 +258,7 @@ impl Cat {
             meow_time: meow_range.sample(&mut rng),
             meow_sound: Sounds::fat_meow(),
             meow_sound_angry: Sounds::angry_meow(),
-            color: *rng.choose(CAT_COLORS).unwrap(),
+            color: *CAT_COLORS.choose(&mut rng).unwrap(),
         }
     }
 

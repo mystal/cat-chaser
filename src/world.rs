@@ -3,7 +3,7 @@ use midgar::Midgar;
 use cgmath::{self, InnerSpace, Vector2, Zero};
 use midgar::KeyCode;
 use crate::entities::*;
-use crate::sounds::{Sounds, AudioController};
+use crate::sounds::Sounds;
 use crate::level::{Level, MAX_LEVEL};
 use crate::party::Party;
 
