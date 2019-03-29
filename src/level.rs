@@ -1,6 +1,6 @@
 use cgmath::{self, InnerSpace, MetricSpace, Vector2};
 use rand::{self, Rng};
-use rand::distributions::{IndependentSample, Range};
+use rand::distributions::{Distribution, Uniform};
 use config;
 
 use entities::*;
@@ -59,11 +59,11 @@ impl Level {
     pub fn generate_cats(&self) -> Vec<Cat> {
         // Spawn cats a bit away from walls and away from the cat box.
         let cat_box_radius = 80.0;
-        let range_x = Range::new(20.0, self.bounds.x as f32 - 20.0);
-        let range_y = Range::new(20.0, self.bounds.y as f32 - 20.0);
+        let dist_x = Uniform::new(20.0, self.bounds.x as f32 - 20.0);
+        let dist_y = Uniform::new(20.0, self.bounds.y as f32 - 20.0);
         let mut rng = rand::thread_rng();
 
-        let meow_range = Range::new(-3.0, 2.0);
+        let meow_range = Uniform::new(-3.0, 2.0);
 
         let mut cats = Vec::new();
         let mut basic_cats: u32 = 0;
@@ -73,10 +73,10 @@ impl Level {
         let (total_basic, total_kittens, _total_fat) = self.cats;
 
         for _ in 0..self.num_cats {
-            let mut cat_pos = cgmath::vec2(range_x.ind_sample(&mut rng), range_y.ind_sample(&mut rng));
+            let mut cat_pos = cgmath::vec2(dist_x.sample(&mut rng), dist_y.sample(&mut rng));
             // TODO: We should probably try to space out the cats from each other.
             while cat_pos.distance(self.cat_box.pos) < cat_box_radius {
-                cat_pos = cgmath::vec2(range_x.ind_sample(&mut rng), range_y.ind_sample(&mut rng));
+                cat_pos = cgmath::vec2(dist_x.sample(&mut rng), dist_y.sample(&mut rng));
             }
             let vel = cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
                                    rng.gen::<f32>() * 2.0 - 1.0).normalize();

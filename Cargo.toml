@@ -2,13 +2,13 @@
 name = "cat-chaser"
 version = "0.1.0"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
+#edition = "2018"
 
 [dependencies]
 cgmath = "0.15"
 midgar = { git = "https://github.com/mystal/midgar-engine", branch = "ld40" }
-rand = "0.3"
-rand_derive = "0.3"
-ears = "0.4.0"
+rand = "0.6"
+ears = "0.5"
 
 #[patch.'https://github.com/mystal/midgar-engine']
 #midgar = { path = "../midgar-engine" }

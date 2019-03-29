@@ -1,6 +1,7 @@
 use cgmath::{self, Vector2};
 use rand::{self, Rng};
-use rand::distributions::{IndependentSample, Range};
+use rand::distributions::{Distribution, Standard, Uniform};
+use rand::seq::SliceRandom;
 
 use config;
 use entities::CAT_COLORS;
@@ -9,11 +10,20 @@ const NUM_ITEMS: u32 = 60;
 
 const PARTY_ITEM_SPEED: f32 = 60.0;
 
-#[derive(Rand)]
 pub enum PartyItemKind {
     BasicCat,
     FatCat,
     Kitten,
+}
+
+impl Distribution<PartyItemKind> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> PartyItemKind {
+        match rng.gen_range(0, 3) {
+            0 => PartyItemKind::BasicCat,
+            1 => PartyItemKind::FatCat,
+            _ => PartyItemKind::Kitten,
+        }
+    }
 }
 
 pub struct PartyItem {
@@ -27,16 +37,16 @@ pub struct PartyItem {
 impl PartyItem {
     fn new() -> Self {
         let mut rng = rand::thread_rng();
-        let rotation_range = Range::new(0.0, 359.0);
-        let x_range = Range::new(0.0, 800.0);
-        let y_range = Range::new(-700.0, 0.0);
+        let rotation_range = Uniform::new(0.0, 359.0);
+        let x_range = Uniform::new(0.0, 800.0);
+        let y_range = Uniform::new(-700.0, 0.0);
 
         PartyItem {
             kind: rng.gen::<PartyItemKind>(),
-            color: *rng.choose(CAT_COLORS).unwrap(),
-            rotation: rotation_range.ind_sample(&mut rng),
-            pos: cgmath::vec2(x_range.ind_sample(&mut rng),
-                              y_range.ind_sample(&mut rng)),
+            color: *CAT_COLORS.choose(&mut rng).unwrap(),
+            rotation: rotation_range.sample(&mut rng),
+            pos: cgmath::vec2(x_range.sample(&mut rng),
+                              y_range.sample(&mut rng)),
             flip: rng.gen(),
             //rot_dir: 
         }
@@ -56,11 +66,11 @@ impl PartyItem {
         // TODO: Wrap around once hit the bottom of the screen.
         if self.pos.y > config::SCREEN_SIZE.y as f32 + 50.0 {
             let mut rng = rand::thread_rng();
-            let rotation_range = Range::new(0.0, 359.0);
-            let x_range = Range::new(0.0, 800.0);
-            self.pos.x = x_range.ind_sample(&mut rng);
+            let rotation_range = Uniform::new(0.0, 359.0);
+            let x_range = Uniform::new(0.0, 800.0);
+            self.pos.x = x_range.sample(&mut rng);
             self.pos.y = -50.0;
-            self.rotation = rotation_range.ind_sample(&mut rng);
+            self.rotation = rotation_range.sample(&mut rng);
         }
     }
 }

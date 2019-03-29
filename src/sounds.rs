@@ -1,6 +1,6 @@
 pub use ears::{Sound, AudioController, Music};
 use rand::{self, Rng};
-use rand::distributions::{IndependentSample, Range};
+use rand::distributions::{Distribution, Uniform};
 
 pub struct Sounds {
     pub intro_music: Music,
@@ -19,8 +19,8 @@ impl Sounds {
 
     pub fn angry_meow() -> Sound {
         let mut rng = rand::thread_rng();
-        let range = Range::new(1, 4);
-        let i = range.ind_sample(&mut rng); 
+        let range = Uniform::new(1, 4);
+        let i = range.sample(&mut rng); 
         match i {
             1 => Sound::new("assets/sounds/angry_cat_meow_1.wav").expect("Error on loading angry_meow_1."),
             2 => Sound::new("assets/sounds/angry_cat_meow_2.wav").expect("Error on loading angry_meow_2."),

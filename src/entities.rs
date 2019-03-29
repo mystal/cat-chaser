@@ -1,7 +1,7 @@
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::KeyCode;
 use rand::{self, Rng};
-use rand::distributions::{IndependentSample, Range};
+use rand::distributions::{Distribution, Uniform};
 use sounds::{Sound, Sounds, AudioController};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -172,7 +172,7 @@ pub struct Cat {
 impl Cat {
     pub fn new_basic_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
         let mut rng = rand::thread_rng();
-        let meow_range = Range::new(-3.0, 2.0);
+        let meow_range = Uniform::new(-3.0, 2.0);
         Cat {
             pos: pos,
             facing: Facing::Left, // TODO: Randomize!
@@ -193,7 +193,7 @@ impl Cat {
             cannonballing_time: 0.0,
             flee_scalar: BASIC_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
-            meow_time: meow_range.ind_sample(&mut rng),
+            meow_time: meow_range.sample(&mut rng),
             meow_sound: Sounds::basic_meow(),
             meow_sound_angry: Sounds::angry_meow(),
 
@@ -203,7 +203,7 @@ impl Cat {
 
     pub fn new_kitten(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
         let mut rng = rand::thread_rng();
-        let meow_range = Range::new(-3.0, 2.0);
+        let meow_range = Uniform::new(-3.0, 2.0);
 
         Cat {
             pos: pos,
@@ -225,7 +225,7 @@ impl Cat {
             cannonballing_time: 0.0,
             flee_scalar: KITTEN_FLEE_SCALAR,
             meow_interval: 3.0,
-            meow_time: meow_range.ind_sample(&mut rng),
+            meow_time: meow_range.sample(&mut rng),
             meow_sound: Sounds::kitten_meow(),
             meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
@@ -234,7 +234,7 @@ impl Cat {
 
     pub fn new_fat_cat(pos: Vector2<f32>, vel: Vector2<f32>) -> Self {
         let mut rng = rand::thread_rng();
-        let meow_range = Range::new(-1.0, 1.0);
+        let meow_range = Uniform::new(-1.0, 1.0);
 
         Cat {
             pos: pos,
@@ -256,7 +256,7 @@ impl Cat {
             cannonballing_time: 0.0,
             flee_scalar: FAT_CAT_FLEE_SCALAR,
             meow_interval: 3.0,
-            meow_time: meow_range.ind_sample(&mut rng),
+            meow_time: meow_range.sample(&mut rng),
             meow_sound: Sounds::fat_meow(),
             meow_sound_angry: Sounds::angry_meow(),
             color: *rng.choose(CAT_COLORS).unwrap(),
@@ -292,11 +292,11 @@ impl Cat {
 
     pub fn jitter(&mut self, dt: f32, dog: &Dog) {
         let mut rng = rand::thread_rng();
-        let x_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
-        let y_range = Range::new(-JITTER_AMOUNT, JITTER_AMOUNT);
+        let x_range = Uniform::new(-JITTER_AMOUNT, JITTER_AMOUNT);
+        let y_range = Uniform::new(-JITTER_AMOUNT, JITTER_AMOUNT);
 
-        let x = x_range.ind_sample(&mut rng);
-        let y = y_range.ind_sample(&mut rng);
+        let x = x_range.sample(&mut rng);
+        let y = y_range.sample(&mut rng);
 
         self.pos.x = self.jitter_origin.x + x;
         self.pos.y = self.jitter_origin.y + y;
@@ -343,10 +343,10 @@ impl Cat {
     }
 
     pub fn idle(&mut self, bounds: &Vector2<u32>, cat_box: &CatBox, dt: f32) {
-        let range_theta = Range::new(-0.3, 0.3);
+        let range_theta = Uniform::new(-0.3, 0.3);
         let mut rng = rand::thread_rng();
         // random update rw_theta
-        self.rw_theta = self.rw_theta + range_theta.ind_sample(&mut rng);
+        self.rw_theta = self.rw_theta + range_theta.sample(&mut rng);
 
         // 'circle' vector by (velocity rotated by theta).normalized * rw_radius
         let t = self.rw_theta;
