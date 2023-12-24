@@ -1,3 +1,6 @@
-/target/
-**/*.rs.bk
+/target
+.vscode
+*.rs.bk
 *.DS_Store
+
+window_state.ron

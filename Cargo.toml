@@ -1,14 +1,99 @@
 [package]
 name = "cat-chaser"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.74.1"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["fast-compile"]
+fast-compile = ["bevy/dynamic_linking"]
+verbose_logs = []
 
 [dependencies]
-cgmath = "0.15"
-midgar = { git = "https://github.com/mystal/midgar-engine", branch = "ld40" }
-rand = "0.6"
-ears = "0.5"
+# For better sprite animations.
+benimator = "4"
+# To help with loading assets.
+bevy_asset_loader = { version = "0.18", features = ["2d", "standard_dynamic_assets"] }
+# To add support for loading RON config assets.
+bevy_common_assets = { version = "0.8", features = ["ron"]}
+# For in-game and debug UI.
+bevy_egui = { version = "0.24", default-features = false }
+# Generic debug UI to inspect entities and components.
+# TODO: Put behind a feature flag?
+bevy-inspector-egui = { version = "0.21", default-features = false, features = ["highlight_changes"] }
+# Audio support
+# bevy_kira_audio = { version = "0.18", default-features = false, features = ["wav"] }
+# 2D physics. Mostly used for collision detection.
+bevy_rapier2d = "0.23"
+# For quick, simple random number generation.
+fastrand = "2"
 
-#[patch.'https://github.com/mystal/midgar-engine']
-#midgar = { path = "../midgar-engine" }
+# For working with enums.
+num_enum = "0.7"
+strum = { version = "0.25", features = ["derive"] }
+
+# For saving window state.
+serde = "1"
+ron = "0.8"
+
+# Base engine dependency.
+[dependencies.bevy]
+version = "0.12"
+default-features = false
+features = [
+    #Multi-threading
+    "multi-threaded",
+
+    # Windowing
+    "bevy_winit",
+    "x11",
+
+    # Assets
+    "bevy_asset",
+    "png",
+
+    # Rendering
+    "bevy_core_pipeline",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+
+    # Input
+    "bevy_gilrs",
+]
+# Explicitly specify bevy_window to add serialize feature.
+[dependencies.bevy_window]
+version = "0.12"
+features = ["serialize"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# Show panics in the browser console: https://bevy-cheatbook.github.io/platforms/wasm/panic-console.html
+console_error_panic_hook = "0.1"
+# TODO: Use "webgl2" feature for wasm builds.
+
+# Enable only a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
+# When doing trunk builds, uncomment these lines to get smaller wasm binaries.
+# [profile.release]
+# opt-level = "s"
+# lto = "thin"
+
+# TODO: If/when trunk supports calling custom cargo profiles, we can use this instead of the above hack.
+# Release profile optimizing for smaller binary size. Primarily for wasm builds.
+[profile.distweb]
+inherits = "dist"
+opt-level = "s"
+
