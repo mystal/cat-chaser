@@ -4,8 +4,6 @@ use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::window::{Cursor, WindowMode, WindowResolution};
 // use bevy_kira_audio::AudioPlugin;
-// TODO: Move to physics.
-use bevy_rapier2d::prelude::*;
 
 // mod app;
 // mod config;
@@ -16,7 +14,12 @@ use bevy_rapier2d::prelude::*;
 // mod sounds;
 // mod party;
 
+mod debug;
+mod dog;
+mod game;
+mod input;
 mod log;
+mod physics;
 mod window;
 
 const GAME_SIZE: [u32; 2] = [400, 300];
@@ -24,15 +27,13 @@ const DEFAULT_SCALE: u8 = 2;
 const ALLOW_EXIT: bool = cfg!(not(target_arch = "wasm32"));
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
-enum AppState {
+enum GameState {
     #[default]
     Loading,
     InGame,
 }
 
 fn main() {
-    // eprintln!("{}", env!("CARGO_PKG_NAME"));
-
     // When building for WASM, print panics to the browser console.
     #[cfg(target_arch = "wasm32")]
     console_error_panic_hook::set_once();
@@ -66,7 +67,7 @@ fn main() {
 
     let mut app = App::new();
     app
-        .insert_resource(ClearColor(Color::rgb_u8(24, 24, 24)))
+        .insert_resource(ClearColor(Color::BLACK))
 
         // External plugins
         .add_plugins(default_plugins)
@@ -77,19 +78,15 @@ fn main() {
             // scale_factor: (saved_window_state.scale as f64) / 2.0,
             ..default()
         })
-        .insert_resource(RapierConfiguration {
-            gravity: Vec2::ZERO,
-            ..default()
-        })
-        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(30.0))
 
         // App setup
-        .add_state::<AppState>()
+        .add_state::<GameState>()
         .add_plugins((
             window::WindowPlugin::new(saved_window_state),
-            // debug::DebugPlugin,
-            // game::GamePlugin,
-            // physics::PhysicsPlugin,
+            input::InputPlugin,
+            physics::PhysicsPlugin,
+            game::GamePlugin,
+            debug::DebugPlugin,
         ));
 
     if ALLOW_EXIT {
