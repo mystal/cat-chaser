@@ -1,4 +1,5 @@
 /target
+/builds
 .vscode
 *.rs.bk
 *.DS_Store
