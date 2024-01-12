@@ -14,6 +14,7 @@ use bevy::window::{Cursor, WindowMode, WindowResolution};
 // mod sounds;
 // mod party;
 
+mod assets;
 mod debug;
 mod dog;
 mod game;
@@ -22,15 +23,20 @@ mod log;
 mod physics;
 mod window;
 
-const GAME_SIZE: [u32; 2] = [400, 300];
+const GAME_SIZE: UVec2 = UVec2::new(400, 300);
 const DEFAULT_SCALE: u8 = 2;
 const ALLOW_EXIT: bool = cfg!(not(target_arch = "wasm32"));
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
-enum GameState {
+enum AppState {
     #[default]
     Loading,
-    InGame,
+    StartMenu,
+    Credits,
+    HowToPlay,
+    Playing,
+    Won,
+    GameOver,
 }
 
 fn main() {
@@ -80,13 +86,14 @@ fn main() {
         })
 
         // App setup
-        .add_state::<GameState>()
+        .add_state::<AppState>()
         .add_plugins((
             window::WindowPlugin::new(saved_window_state),
             input::InputPlugin,
             physics::PhysicsPlugin,
-            game::GamePlugin,
+            assets::AssetsPlugin,
             debug::DebugPlugin,
+            game::GamePlugin,
         ));
 
     if ALLOW_EXIT {

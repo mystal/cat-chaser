@@ -22,6 +22,7 @@ pub struct Dog {
 #[derive(Bundle)]
 pub struct DogBundle {
     // animated sprite, input
+    name: Name,
     dog: Dog,
     sprite: SpriteBundle,
     velocity: Velocity,
@@ -42,6 +43,7 @@ pub struct DogBundle {
 impl DogBundle {
     pub fn new(pos: Vec2) -> Self {
         Self {
+            name: Name::new("Dog"),
             dog: Dog {
                 speed: 150.0,
             },
