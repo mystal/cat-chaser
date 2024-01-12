@@ -3,7 +3,7 @@ name = "cat-chaser"
 version = "0.2.0"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 edition = "2021"
-rust-version = "1.74.1"
+rust-version = "1.75"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,14 +16,14 @@ verbose_logs = []
 # For better sprite animations.
 benimator = "4"
 # To help with loading assets.
-bevy_asset_loader = { version = "0.18", features = ["2d", "standard_dynamic_assets"] }
+bevy_asset_loader = { version = "0.19", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.
 bevy_common_assets = { version = "0.8", features = ["ron"]}
 # For in-game and debug UI.
-bevy_egui = { version = "0.23", default-features = false }
+bevy_egui = { version = "0.24", default-features = false }
 # Generic debug UI to inspect entities and components.
 # TODO: Put behind a feature flag?
-bevy-inspector-egui = { version = "0.21", default-features = false, features = ["highlight_changes"] }
+bevy-inspector-egui = { version = "0.22", default-features = false, features = ["highlight_changes"] }
 # Audio support
 # bevy_kira_audio = { version = "0.18", default-features = false, features = ["wav"] }
 # 2D physics. Mostly used for collision detection.
@@ -47,13 +47,16 @@ features = [
     #Multi-threading
     "multi-threaded",
 
-    # Windowing
-    "bevy_winit",
-    "x11",
-
     # Assets
     "bevy_asset",
     "png",
+
+    # Input
+    "bevy_gilrs",
+
+    # Windowing
+    "bevy_winit",
+    "x11",
 
     # Rendering
     "bevy_core_pipeline",
@@ -61,8 +64,8 @@ features = [
     "bevy_sprite",
     "bevy_text",
 
-    # Input
-    "bevy_gilrs",
+    # Web support
+    "webgl2",
 ]
 # Explicitly specify bevy_window to add serialize feature.
 [dependencies.bevy_window]
