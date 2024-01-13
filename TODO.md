@@ -4,5 +4,6 @@
 * [ ] Cats
 * [ ] Levels!
 * [ ] Menus
+* [ ] Loading screen?
 * [ ] Sound effects
 * [ ] Background music

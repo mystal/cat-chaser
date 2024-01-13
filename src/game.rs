@@ -32,7 +32,7 @@ fn setup_game(
         height: GAME_SIZE.y as f32,
     };
     commands.spawn(camera_bundle);
-    commands.spawn(DogBundle::new(Vec2::ZERO));
+    commands.spawn(DogBundle::new(Vec2::ZERO, assets.wizard_dog.clone()));
 
     let floor_image_size = images.get(&assets.floor).unwrap().size();
     let mut floor_mesh = Mesh::from(shape::Quad::default());

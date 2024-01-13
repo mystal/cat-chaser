@@ -14,7 +14,9 @@ verbose_logs = []
 
 [dependencies]
 # For better sprite animations.
-benimator = "4"
+# benimator = "4"
+# Directly load and render Aseprite animations
+bevy_aseprite = "0.12"
 # To help with loading assets.
 bevy_asset_loader = { version = "0.19", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::render::texture::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor};
+use bevy_aseprite::Aseprite;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::AudioSource;
 
@@ -35,6 +36,9 @@ pub struct GameAssets {
     pub floor: Handle<Image>,
     #[asset(path = "cat_box.png")]
     pub cat_box: Handle<Image>,
+
+    #[asset(path = "wizard_dog.aseprite")]
+    pub wizard_dog: Handle<Aseprite>,
 }
 
 #[derive(Resource, AssetCollection)]

@@ -3,6 +3,7 @@
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::window::{Cursor, WindowMode, WindowResolution};
+use bevy_aseprite::AsepritePlugin;
 use bevy_kira_audio::AudioPlugin;
 
 // mod app;
@@ -81,6 +82,7 @@ fn main() {
             FrameTimeDiagnosticsPlugin::default(),
             bevy_egui::EguiPlugin,
             AudioPlugin,
+            AsepritePlugin,
         ))
         .insert_resource(bevy_egui::EguiSettings {
             // TODO: Take DPI scaling into account as well.

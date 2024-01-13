@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_aseprite::{Aseprite, AsepriteBundle, anim::AsepriteAnimation};
 use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::{
@@ -15,14 +16,23 @@ impl Plugin for DogPlugin {
         app
             .add_systems(Update, (
                 dog_movement.before(physics::update_movement),
+                dog_animation.after(dog_movement),
                 dog_bark,
             ).run_if(in_state(AppState::Playing)));
     }
 }
 
+#[derive(Default, PartialEq, Eq)]
+pub enum DogAnim {
+    #[default]
+    Idle,
+    Run,
+}
+
 #[derive(Component)]
 pub struct Dog {
     speed: f32,
+    anim: DogAnim,
 }
 
 #[derive(Bundle)]
@@ -30,7 +40,7 @@ pub struct DogBundle {
     // animated sprite, input
     name: Name,
     dog: Dog,
-    sprite: SpriteBundle,
+    sprite: AsepriteBundle,
     velocity: Velocity,
     collider: ColliderBundle,
     input: PlayerInput,
@@ -47,17 +57,16 @@ pub struct DogBundle {
 }
 
 impl DogBundle {
-    pub fn new(pos: Vec2) -> Self {
+    pub fn new(pos: Vec2, sprite: Handle<Aseprite>) -> Self {
         Self {
             name: Name::new("Dog"),
             dog: Dog {
                 speed: 150.0,
+                anim: DogAnim::Idle,
             },
-            sprite: SpriteBundle {
-                sprite: Sprite {
-                    custom_size: Some(Vec2::new(32.0, 32.0)),
-                    ..default()
-                },
+            sprite: AsepriteBundle {
+                aseprite: sprite,
+                animation: AsepriteAnimation::from("idle_front"),
                 transform: Transform::from_translation(pos.extend(0.0)),
                 ..default()
             },
@@ -73,6 +82,26 @@ fn dog_movement(
 ) {
     for (dog, input, mut velocity) in dog_q.iter_mut() {
         velocity.inner = input.movement * dog.speed;
+    }
+}
+
+fn dog_animation(
+    mut dog_q: Query<(&mut Dog, &mut AsepriteAnimation, &mut TextureAtlasSprite, &Velocity)>,
+) {
+    // Update which animation is playing based on movement.
+    for (mut dog, mut anim, mut sprite, velocity) in dog_q.iter_mut() {
+        if velocity.inner.x == 0.0 {
+            if dog.anim != DogAnim::Idle {
+                dog.anim = DogAnim::Idle;
+                *anim = AsepriteAnimation::from("idle_front");
+            }
+        } else {
+            if dog.anim != DogAnim::Run {
+                dog.anim = DogAnim::Run;
+                *anim = AsepriteAnimation::from("run_front");
+                sprite.flip_x = velocity.inner.x > 0.0;
+            }
+        }
     }
 }
 
