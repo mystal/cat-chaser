@@ -58,7 +58,7 @@ pub fn read_player_input(
     }
 
     // Bark
-    bark |= keys.pressed(KeyCode::Space) && !egui_ctx.ctx_mut().wants_keyboard_input();
+    bark |= keys.just_pressed(KeyCode::Space) && !egui_ctx.ctx_mut().wants_keyboard_input();
 
     // Store results in player input components.
     for mut input in player_q.iter_mut() {

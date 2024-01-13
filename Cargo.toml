@@ -25,7 +25,7 @@ bevy_egui = { version = "0.24", default-features = false }
 # TODO: Put behind a feature flag?
 bevy-inspector-egui = { version = "0.22", default-features = false, features = ["highlight_changes"] }
 # Audio support
-# bevy_kira_audio = { version = "0.18", default-features = false, features = ["wav"] }
+bevy_kira_audio = { version = "0.18", default-features = false, features = ["wav"] }
 # 2D physics. Mostly used for collision detection.
 bevy_rapier2d = "0.23"
 # For quick, simple random number generation.

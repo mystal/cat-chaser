@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::window::{Cursor, WindowMode, WindowResolution};
-// use bevy_kira_audio::AudioPlugin;
+use bevy_kira_audio::AudioPlugin;
 
 // mod app;
 // mod config;
@@ -76,9 +76,12 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
 
         // External plugins
-        .add_plugins(default_plugins)
-        .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        .add_plugins(bevy_egui::EguiPlugin)
+        .add_plugins((
+            default_plugins,
+            FrameTimeDiagnosticsPlugin::default(),
+            bevy_egui::EguiPlugin,
+            AudioPlugin,
+        ))
         .insert_resource(bevy_egui::EguiSettings {
             // TODO: Take DPI scaling into account as well.
             // scale_factor: (saved_window_state.scale as f64) / 2.0,

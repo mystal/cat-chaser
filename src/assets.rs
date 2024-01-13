@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::render::texture::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor};
 use bevy_asset_loader::prelude::*;
+use bevy_kira_audio::AudioSource;
 
 use crate::{
     AppState,
@@ -15,6 +16,7 @@ impl Plugin for AssetsPlugin {
                 LoadingState::new(AppState::Loading)
                     .continue_to_state(AppState::Playing)
                     .load_collection::<GameAssets>()
+                    .load_collection::<SfxAssets>()
             )
             .add_systems(OnExit(AppState::Loading), assets_loaded);
     }
@@ -33,6 +35,14 @@ pub struct GameAssets {
     pub floor: Handle<Image>,
     #[asset(path = "cat_box.png")]
     pub cat_box: Handle<Image>,
+}
+
+#[derive(Resource, AssetCollection)]
+pub struct SfxAssets {
+    #[asset(path = "sounds/dog_yip_1.wav")]
+    pub dog_yip: Handle<AudioSource>,
+    #[asset(path = "sounds/dog_woof_1.wav")]
+    pub dog_woof: Handle<AudioSource>,
 }
 
 fn assets_loaded(

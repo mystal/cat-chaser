@@ -1,6 +1,9 @@
 use bevy::prelude::*;
+use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::{
+    AppState,
+    assets::SfxAssets,
     input::PlayerInput,
     physics::{self, groups, ColliderBundle, Velocity},
 };
@@ -10,7 +13,10 @@ pub struct DogPlugin;
 impl Plugin for DogPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, dog_movement.before(physics::update_movement));
+            .add_systems(Update, (
+                dog_movement.before(physics::update_movement),
+                dog_bark,
+            ).run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -67,5 +73,18 @@ fn dog_movement(
 ) {
     for (dog, input, mut velocity) in dog_q.iter_mut() {
         velocity.inner = input.movement * dog.speed;
+    }
+}
+
+fn dog_bark(
+    audio: Res<Audio>,
+    sfx: Res<SfxAssets>,
+    dog_q: Query<&PlayerInput, With<Dog>>,
+) {
+    let bark = dog_q.get_single()
+        .map(|input| input.bark)
+        .unwrap_or(false);
+    if bark {
+        audio.play(sfx.dog_woof.clone());
     }
 }

@@ -1,4 +1,8 @@
-# TODO
-
-* Cats run
-* Win check
+# Bevy Port TODO
+* [ ] Load sprites
+* [ ] Animated sprites
+* [ ] Cats
+* [ ] Levels!
+* [ ] Menus
+* [ ] Sound effects
+* [ ] Background music
