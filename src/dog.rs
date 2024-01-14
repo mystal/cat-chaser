@@ -90,6 +90,8 @@ fn dog_animation(
 ) {
     // Update which animation is playing based on movement.
     for (mut dog, mut anim, mut sprite, velocity) in dog_q.iter_mut() {
+        // TODO: Trying to debug why the wrong frame is used in run_front.
+        // trace!("Dog frame: {}", anim.current_frame());
         if velocity.inner.x == 0.0 {
             if dog.anim != DogAnim::Idle {
                 dog.anim = DogAnim::Idle;
@@ -99,8 +101,8 @@ fn dog_animation(
             if dog.anim != DogAnim::Run {
                 dog.anim = DogAnim::Run;
                 *anim = AsepriteAnimation::from("run_front");
-                sprite.flip_x = velocity.inner.x > 0.0;
             }
+            sprite.flip_x = velocity.inner.x > 0.0;
         }
     }
 }
