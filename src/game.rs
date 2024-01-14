@@ -5,6 +5,7 @@ use crate::{
     GAME_SIZE, AppState,
     assets::GameAssets,
     dog::{DogBundle, DogPlugin},
+    physics::{ColliderBundle, groups},
 };
 
 pub struct GamePlugin;
@@ -26,14 +27,18 @@ fn setup_game(
 ) {
     debug!("Setup game");
 
+    // Spawn camera.
     let mut camera_bundle = Camera2dBundle::default();
     camera_bundle.projection.scaling_mode = ScalingMode::Fixed {
         width: GAME_SIZE.x as f32,
         height: GAME_SIZE.y as f32,
     };
     commands.spawn(camera_bundle);
+
+    // Spawn dog.
     commands.spawn(DogBundle::new(Vec2::ZERO, assets.wizard_dog.clone()));
 
+    // Spawn floor.
     let floor_image_size = images.get(&assets.floor).unwrap().size();
     let mut floor_mesh = Mesh::from(shape::Quad::default());
     if let Some(VertexAttributeValues::Float32x2(uvs)) = floor_mesh.attribute_mut(Mesh::ATTRIBUTE_UV_0) {
@@ -42,17 +47,27 @@ fn setup_game(
             uv[1] *= GAME_SIZE.y as f32 / floor_image_size.y as f32 / 2.0;
         }
     }
-    let transform = Transform {
-        translation: Vec3::new(0.0, 0.0, -1.0),
-        scale: GAME_SIZE.as_vec2().extend(1.0),
-        ..default()
-    };
     let floor_bundle = ColorMesh2dBundle {
-        transform,
+        transform: Transform {
+            translation: Vec3::new(0.0, 0.0, -1.0),
+            scale: GAME_SIZE.as_vec2().extend(1.0),
+            ..default()
+        },
         material: materials.add(assets.floor.clone().into()),
         mesh: meshes.add(floor_mesh.into()).into(),
         ..default()
     };
     commands.spawn(floor_bundle)
         .insert(Name::new("Floor"));
+
+    // Spawn cat_box.
+    commands.spawn((
+        Name::new("CatBox"),
+        SpriteBundle {
+            transform: Transform::from_translation(Vec3::new(-100.0, 50.0, -0.5)),
+            texture: assets.cat_box.clone(),
+            ..default()
+        },
+        ColliderBundle::rect((60.0, 60.0).into(), groups::CATBOX, groups::CAT),
+    ));
 }
