@@ -3,10 +3,10 @@ use bevy_aseprite::{Aseprite, AsepriteBundle, anim::AsepriteAnimation};
 use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::{
-    AppState,
+    GAME_SIZE, AppState,
     assets::SfxAssets,
     input::PlayerInput,
-    physics::{self, groups, ColliderBundle, Velocity},
+    physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
 };
 
 pub struct DogPlugin;
@@ -44,6 +44,7 @@ pub struct DogBundle {
     velocity: Velocity,
     collider: ColliderBundle,
     input: PlayerInput,
+    bounds: MovementBounds,
     /*
     pub facing: Facing,
 
@@ -73,6 +74,10 @@ impl DogBundle {
             velocity: Velocity::default(),
             collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::DOG, groups::CAT),
             input: PlayerInput::default(),
+            bounds: MovementBounds {
+                min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
+                max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
+            },
         }
     }
 }

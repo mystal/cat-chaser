@@ -59,13 +59,25 @@ impl Velocity {
     }
 }
 
+// TODO: Consider implementing a new method that enforces min and max.
+#[derive(Component)]
+pub struct MovementBounds {
+    pub min: Vec2,
+    pub max: Vec2,
+}
+
 pub fn update_movement(
     time: Res<Time>,
-    mut movement_q: Query<(&Velocity, &mut Transform)>,
+    mut movement_q: Query<(&Velocity, &mut Transform, Option<&MovementBounds>)>,
 ) {
     // TODO: Take into account level bounds and clamp to them.
-    for (velocity, mut transform) in movement_q.iter_mut() {
+    for (velocity, mut transform, bounds) in movement_q.iter_mut() {
         transform.translation += velocity.inner.extend(0.0) * time.delta_seconds();
+        // TODO: Move bounds clamping to a different system that uses change detection of transform.
+        if let Some(bounds) = bounds {
+            transform.translation.x = transform.translation.x.clamp(bounds.min.x, bounds.max.x);
+            transform.translation.y = transform.translation.y.clamp(bounds.min.y, bounds.max.y);
+        }
     }
 }
 
