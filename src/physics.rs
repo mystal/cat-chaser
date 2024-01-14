@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 pub use bevy_rapier2d::{
@@ -33,6 +35,20 @@ impl Plugin for PhysicsPlugin {
 #[derive(Clone, Copy, Default, Component)]
 pub struct Velocity {
     pub inner: Vec2,
+}
+
+impl Deref for Velocity {
+    type Target = Vec2;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl DerefMut for Velocity {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
 }
 
 impl Velocity {
