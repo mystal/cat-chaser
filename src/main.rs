@@ -6,20 +6,13 @@ use bevy::window::{Cursor, WindowMode, WindowResolution};
 use bevy_aseprite::AsepritePlugin;
 use bevy_kira_audio::AudioPlugin;
 
-// mod app;
-// mod config;
-// mod entities;
-// mod level;
-// mod renderer;
-// mod world;
-// mod sounds;
-// mod party;
-
 mod assets;
+mod cats;
 mod debug;
 mod dog;
 mod game;
 mod input;
+mod level;
 mod log;
 mod physics;
 mod window;
@@ -99,6 +92,7 @@ fn main() {
             assets::AssetsPlugin,
             debug::DebugPlugin,
             game::GamePlugin,
+            level::LevelPlugin,
         ));
 
     if ALLOW_EXIT {

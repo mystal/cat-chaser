@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::render::texture::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor};
 use bevy_aseprite::Aseprite;
 use bevy_asset_loader::prelude::*;
-use bevy_kira_audio::AudioSource;
+use bevy_kira_audio::{Audio, AudioControl, AudioSource};
 
 use crate::{
     AppState,
@@ -39,6 +39,13 @@ pub struct GameAssets {
 
     #[asset(path = "wizard_dog.aseprite")]
     pub wizard_dog: Handle<Aseprite>,
+
+    #[asset(path = "basic_cat.aseprite")]
+    pub basic_cat: Handle<Aseprite>,
+    // #[asset(path = "fat_cat.aseprite")]
+    pub fat_cat: Handle<Aseprite>,
+    // #[asset(path = "kitten.aseprite")]
+    pub kitten: Handle<Aseprite>,
 }
 
 #[derive(Resource, AssetCollection)]
@@ -47,10 +54,14 @@ pub struct SfxAssets {
     pub dog_yip: Handle<AudioSource>,
     #[asset(path = "sounds/dog_woof_1.wav")]
     pub dog_woof: Handle<AudioSource>,
+    #[asset(path = "sounds/trolling_doggo.ogg")]
+    pub bgm: Handle<AudioSource>,
 }
 
 fn assets_loaded(
+    audio: Res<Audio>,
     assets: Res<GameAssets>,
+    sfx: Res<SfxAssets>,
     mut images: ResMut<Assets<Image>>,
 ) {
     debug!("Loaded assets!");
@@ -63,4 +74,7 @@ fn assets_loaded(
             ..default()
         });
     }
+
+    audio.play(sfx.bgm.clone())
+        .loop_from(24.0);
 }

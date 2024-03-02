@@ -450,8 +450,6 @@ dependencies = [
 [[package]]
 name = "bevy_aseprite"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "521170c5366f277bd52050f75e4308df35e7c680f24f5800f1abf56c9c772f62"
 dependencies = [
  "anyhow",
  "bevy",
@@ -462,8 +460,6 @@ dependencies = [
 [[package]]
 name = "bevy_aseprite_derive"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "192e876a533ef9110d47dde52a61c8cd4d1bfd311311ad661e1378eaff6bbdb4"
 dependencies = [
  "bevy_aseprite_reader",
  "heck",
@@ -475,8 +471,6 @@ dependencies = [
 [[package]]
 name = "bevy_aseprite_reader"
 version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baeca09bb10df657a4e80f87768e3c918443dbbe2493a961dc2e254a6b0feafb"
 dependencies = [
  "flate2",
  "image",
@@ -3667,7 +3661,9 @@ checksum = "62e48dba70095f265fdb269b99619b95d04c89e619538138383e63310b14d941"
 dependencies = [
  "lazy_static",
  "symphonia-codec-pcm",
+ "symphonia-codec-vorbis",
  "symphonia-core",
+ "symphonia-format-ogg",
  "symphonia-format-wav",
  "symphonia-metadata",
 ]
@@ -3683,6 +3679,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "symphonia-codec-vorbis"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3953397e3506aa01350c4205817e4f95b58d476877a42f0458d07b665749e203"
+dependencies = [
+ "log",
+ "symphonia-core",
+ "symphonia-utils-xiph",
+]
+
+[[package]]
 name = "symphonia-core"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3693,6 +3700,18 @@ dependencies = [
  "bytemuck",
  "lazy_static",
  "log",
+]
+
+[[package]]
+name = "symphonia-format-ogg"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9bf1a00ccd11452d44048a0368828040f778ae650418dbd9d8765b7ee2574c8d"
+dependencies = [
+ "log",
+ "symphonia-core",
+ "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
@@ -3716,6 +3735,16 @@ dependencies = [
  "lazy_static",
  "log",
  "symphonia-core",
+]
+
+[[package]]
+name = "symphonia-utils-xiph"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a450ca645b80d69aff8b35576cbfdc7f20940b29998202aab910045714c951f8"
+dependencies = [
+ "symphonia-core",
+ "symphonia-metadata",
 ]
 
 [[package]]

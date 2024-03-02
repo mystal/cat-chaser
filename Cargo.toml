@@ -16,6 +16,7 @@ verbose_logs = []
 # For better sprite animations.
 # benimator = "4"
 # Directly load and render Aseprite animations
+# TODO: Try out bevy_asepritesheet
 bevy_aseprite = "0.12"
 # To help with loading assets.
 bevy_asset_loader = { version = "0.19", features = ["2d", "standard_dynamic_assets"] }
@@ -27,8 +28,9 @@ bevy_egui = { version = "0.24", default-features = false }
 # TODO: Put behind a feature flag?
 bevy-inspector-egui = { version = "0.22", default-features = false, features = ["highlight_changes"] }
 # Audio support
-bevy_kira_audio = { version = "0.18", default-features = false, features = ["wav"] }
+bevy_kira_audio = { version = "0.18", default-features = false, features = ["ogg", "wav"] }
 # 2D physics. Mostly used for collision detection.
+# TODO: Try out bevy_xpbd
 bevy_rapier2d = "0.23"
 # For quick, simple random number generation.
 fastrand = "2"
@@ -101,4 +103,7 @@ lto = "thin"
 [profile.distweb]
 inherits = "dist"
 opt-level = "s"
+
+[patch.crates-io]
+bevy_aseprite = { path = "../../rust-libs/bevy_aseprite/" }
 

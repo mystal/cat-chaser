@@ -68,7 +68,7 @@ impl DogBundle {
             sprite: AsepriteBundle {
                 aseprite: sprite,
                 animation: AsepriteAnimation::from("idle_front"),
-                transform: Transform::from_translation(pos.extend(0.0)),
+                transform: Transform::from_translation(pos.extend(2.0)),
                 ..default()
             },
             velocity: Velocity::default(),
