@@ -22,17 +22,9 @@ impl Plugin for DogPlugin {
     }
 }
 
-#[derive(Default, PartialEq, Eq)]
-pub enum DogAnim {
-    #[default]
-    Idle,
-    Run,
-}
-
 #[derive(Component)]
 pub struct Dog {
     speed: f32,
-    anim: DogAnim,
 }
 
 #[derive(Bundle)]
@@ -63,7 +55,7 @@ impl DogBundle {
             name: Name::new("Dog"),
             dog: Dog {
                 speed: 150.0,
-                anim: DogAnim::Idle,
+                // anim: DogAnim::Idle,
             },
             sprite: AsepriteBundle {
                 aseprite: sprite,
@@ -91,20 +83,18 @@ fn dog_movement(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut Dog, &mut AsepriteAnimation, &mut TextureAtlasSprite, &Velocity)>,
+    mut dog_q: Query<(&mut AsepriteAnimation, &mut TextureAtlasSprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
-    for (mut dog, mut anim, mut sprite, velocity) in dog_q.iter_mut() {
+    for (mut anim, mut sprite, velocity) in dog_q.iter_mut() {
         // TODO: Trying to debug why the wrong frame is used in run_front.
         // trace!("Dog frame: {}", anim.current_frame());
         if velocity.inner.x == 0.0 {
-            if dog.anim != DogAnim::Idle {
-                dog.anim = DogAnim::Idle;
+            if !anim.is_tag("idle_front") {
                 *anim = AsepriteAnimation::from("idle_front");
             }
         } else {
-            if dog.anim != DogAnim::Run {
-                dog.anim = DogAnim::Run;
+            if !anim.is_tag("run_front") {
                 *anim = AsepriteAnimation::from("run_front");
             }
             sprite.flip_x = velocity.inner.x > 0.0;

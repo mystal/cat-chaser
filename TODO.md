@@ -6,13 +6,16 @@
 * [ ] Dog
   * [x] Movement
   * [x] Bark
+  * [ ] Get hit and blink
 * [ ] Cats
   * Different Cat types
     * [ ] Basic
     * [ ] Chonk
     * [ ] Kitten
+  * [ ] Cat colors
   * Behaviors
     * [ ] Wandering
+    * [x] Flee
     * [ ] In Pen
     * [ ] Angry!
 * [ ] Levels!

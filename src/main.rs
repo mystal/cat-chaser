@@ -93,6 +93,7 @@ fn main() {
             debug::DebugPlugin,
             game::GamePlugin,
             level::LevelPlugin,
+            cats::CatsPlugin,
         ));
 
     if ALLOW_EXIT {
