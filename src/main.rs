@@ -77,11 +77,6 @@ fn main() {
             AudioPlugin,
             AsepritePlugin,
         ))
-        .insert_resource(bevy_egui::EguiSettings {
-            // TODO: Take DPI scaling into account as well.
-            // scale_factor: (saved_window_state.scale as f64) / 2.0,
-            ..default()
-        })
 
         // App setup
         .add_state::<AppState>()

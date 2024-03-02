@@ -196,7 +196,7 @@ fn cat_animation(
     for (mut anim, mut sprite, cat, velocity) in cat_q.iter_mut() {
         match cat.state {
             CatState::Wander => {
-                if velocity.x == 0.0 {
+                if **velocity == Vec2::ZERO {
                     if !anim.is_tag("idle") {
                         *anim = AsepriteAnimation::from("idle");
                     }
@@ -211,7 +211,7 @@ fn cat_animation(
                 if !anim.is_tag("walk") {
                     *anim = AsepriteAnimation::from("walk");
                 }
-                if velocity.x != 0.0 {
+                if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
             },
