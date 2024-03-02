@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use bevy_aseprite::{Aseprite, AsepriteBundle, anim::AsepriteAnimation};
+use bevy_rapier2d::prelude::RapierContext;
 
 use crate::{
     GAME_SIZE, AppState,
     dog::Dog,
+    game::CatBox,
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
 };
 
@@ -62,8 +64,8 @@ impl CatBundle {
             velocity: Velocity::default(),
             collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
             bounds: MovementBounds {
-                min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
-                max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
+                min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(15.0, 15.0),
+                max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(15.0, 15.0),
             },
         }
     }
@@ -124,34 +126,55 @@ impl ChonkCatBundle {
 }
 
 fn update_cats(
-    mut cat_q: Query<(&mut Cat, &Transform, &mut Velocity)>,
+    rapier_ctx: Res<RapierContext>,
+    mut cat_q: Query<(Entity, &mut Cat, &Transform, &mut Velocity)>,
     dog_q: Query<&GlobalTransform, (With<Dog>, Without<Cat>)>,
+    cat_box_q: Query<Entity, With<CatBox>>,
 ) {
     let dog_pos = dog_q.get_single()
         .map(|trans| trans.translation().truncate())
         .ok();
-    for (mut cat, transform, mut velocity) in cat_q.iter_mut() {
+    let cat_box = cat_box_q.get_single().ok();
+    for (entity, mut cat, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
-        // TODO: Update state first and then run state logic.
+
+        let in_pen = cat_box.map(|cat_box|
+            rapier_ctx.intersection_pair(entity, cat_box) == Some(true))
+            .unwrap_or(false);
+        let dog_in_range = dog_pos.map(|dog_pos|
+            pos.distance_squared(dog_pos) < FLEE_RANGE.powi(2))
+            .unwrap_or(false);
+        let dog_out_of_range = dog_pos.map(|dog_pos|
+            pos.distance_squared(dog_pos) > (FLEE_RANGE + FLEE_BUFFER).powi(2))
+            .unwrap_or(false);
+
+        // Update cat state first.
         match cat.state {
             CatState::Wander => {
-                // If dog is within a certain radius, switch to Flee.
-                if let Some(dog_pos) = dog_pos {
-                    if pos.distance_squared(dog_pos) < FLEE_RANGE.powi(2) {
-                        cat.state = CatState::Flee;
-                    }
+                if in_pen {
+                    cat.state = CatState::InPen;
+                } else if dog_in_range {
+                    cat.state = CatState::Flee;
                 }
+            },
+            CatState::Flee => {
+                if in_pen {
+                    cat.state = CatState::InPen;
+                } else if dog_out_of_range {
+                    cat.state = CatState::Wander;
+                }
+            },
+            CatState::Jittering => todo!(),
+            CatState::Cannonballing => todo!(),
+            CatState::InPen => {},
+        }
 
+        // Perform cat state logic.
+        match cat.state {
+            CatState::Wander => {
                 **velocity = Vec2::ZERO;
             },
             CatState::Flee => {
-                // If dog is outside certain radius, switch to Wander.
-                if let Some(dog_pos) = dog_pos {
-                    if pos.distance_squared(dog_pos) > (FLEE_RANGE + FLEE_BUFFER).powi(2) {
-                        cat.state = CatState::Wander;
-                    }
-                }
-
                 if let Some(dog_pos) = dog_pos {
                     let flee_dir = (pos - dog_pos).normalize_or_zero();
                     **velocity = flee_dir * 100.0;
@@ -159,7 +182,9 @@ fn update_cats(
             },
             CatState::Jittering => todo!(),
             CatState::Cannonballing => todo!(),
-            CatState::InPen => todo!(),
+            CatState::InPen => {
+                **velocity = Vec2::ZERO;
+            },
         }
     }
 }
@@ -194,7 +219,7 @@ fn cat_animation(
             CatState::Cannonballing => todo!(),
             CatState::InPen => {
                 if !anim.is_tag("idle") {
-                    *anim = AsepriteAnimation::from("idle_front");
+                    *anim = AsepriteAnimation::from("idle");
                 }
             },
         }
@@ -212,7 +237,6 @@ fn init_cat_color(
     mut cat_q: Query<&mut TextureAtlasSprite, (Added<TextureAtlasSprite>, With<Cat>)>,
 ) {
     for mut sprite in cat_q.iter_mut() {
-        dbg!("blah");
         let color = fastrand::choice(CAT_COLORS).unwrap();
         sprite.color = Color::rgb(color[0], color[1], color[2]);
     }

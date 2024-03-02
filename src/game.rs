@@ -8,6 +8,9 @@ use crate::{
     physics::{ColliderBundle, groups},
 };
 
+#[derive(Component)]
+pub struct CatBox;
+
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
@@ -62,6 +65,7 @@ fn setup_game(
 
     // Spawn cat_box.
     commands.spawn((
+        CatBox,
         Name::new("CatBox"),
         SpriteBundle {
             transform: Transform::from_translation(Vec3::new(-100.0, 50.0, -0.5)),

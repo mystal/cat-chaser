@@ -12,11 +12,11 @@
     * [ ] Basic
     * [ ] Chonk
     * [ ] Kitten
-  * [ ] Cat colors
+  * [x] Cat colors
   * Behaviors
     * [ ] Wandering
     * [x] Flee
-    * [ ] In Pen
+    * [x] In Pen
     * [ ] Angry!
 * [ ] Levels!
 * [ ] Menus
@@ -32,3 +32,4 @@
 * [ ] Update to bevy 0.13
 * [ ] Try out bevy_xpbd
 * [ ] Either fix bevy_aseprite or find a different aseprite plugin
+* [ ] Make a schedule for the game, something like: Input, Logic, Movement, UI

@@ -14,7 +14,9 @@ pub mod groups {
     pub const DOG: Group = Group::GROUP_2;
     pub const CAT: Group = Group::GROUP_3;
 
+    #[allow(unused)]
     pub const ALL: Group = Group::ALL;
+    #[allow(unused)]
     pub const NONE: Group = Group::NONE;
 }
 
