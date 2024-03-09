@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_aseprite::{Aseprite, AsepriteBundle, anim::AsepriteAnimation};
+use bevy_asepritesheet::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::{
@@ -8,6 +8,11 @@ use crate::{
     input::PlayerInput,
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
 };
+
+// TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
+// now.
+const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
+const RUN_ANIM: AnimHandle = AnimHandle::from_index(0);
 
 pub struct DogPlugin;
 
@@ -31,7 +36,7 @@ pub struct Dog {
 pub struct DogBundle {
     name: Name,
     dog: Dog,
-    sprite: AsepriteBundle,
+    sprite: AnimatedSpriteBundle,
     velocity: Velocity,
     collider: ColliderBundle,
     input: PlayerInput,
@@ -39,16 +44,19 @@ pub struct DogBundle {
 }
 
 impl DogBundle {
-    pub fn new(pos: Vec2, sprite: Handle<Aseprite>) -> Self {
+    pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
         Self {
             name: Name::new("Dog"),
             dog: Dog {
                 speed: 150.0,
             },
-            sprite: AsepriteBundle {
-                aseprite: sprite,
-                animation: AsepriteAnimation::from("idle_front"),
-                transform: Transform::from_translation(pos.extend(2.0)),
+            sprite: AnimatedSpriteBundle {
+                animator: SpriteAnimator::from_anim(IDLE_ANIM),
+                spritesheet,
+                sprite_bundle: SpriteSheetBundle {
+                    transform: Transform::from_translation(pos.extend(2.0)),
+                    ..default()
+                },
                 ..default()
             },
             velocity: Velocity::default(),
@@ -71,21 +79,21 @@ fn dog_movement(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut AsepriteAnimation, &mut TextureAtlasSprite, &Velocity), With<Dog>>,
+    mut dog_q: Query<(&mut SpriteAnimator, &mut TextureAtlasSprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
-    for (mut anim, mut sprite, velocity) in dog_q.iter_mut() {
-        // TODO: Trying to debug why the wrong frame is used in run_front.
-        // trace!("Dog frame: {}", anim.current_frame());
+    for (mut animator, mut sprite, velocity) in dog_q.iter_mut() {
         if **velocity == Vec2::ZERO {
-            if !anim.is_tag("idle_front") {
-                *anim = AsepriteAnimation::from("idle_front");
+            if !animator.is_cur_anim(IDLE_ANIM) {
+                animator.set_anim(IDLE_ANIM);
             }
         } else {
-            if !anim.is_tag("run_front") {
-                *anim = AsepriteAnimation::from("run_front");
+            if !animator.is_cur_anim(RUN_ANIM) {
+                animator.set_anim(RUN_ANIM);
             }
-            sprite.flip_x = velocity.x > 0.0;
+            if velocity.x != 0.0 {
+                sprite.flip_x = velocity.x > 0.0;
+            }
         }
     }
 }

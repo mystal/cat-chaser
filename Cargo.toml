@@ -13,11 +13,8 @@ fast-compile = ["bevy/dynamic_linking"]
 verbose_logs = []
 
 [dependencies]
-# For better sprite animations.
-# benimator = "4"
-# Directly load and render Aseprite animations
-# TODO: Try out bevy_asepritesheet
-bevy_aseprite = "0.12"
+# Load and render Aseprite animations from JSON
+bevy_asepritesheet = "0.5"
 # To help with loading assets.
 bevy_asset_loader = { version = "0.19", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.
@@ -105,5 +102,4 @@ inherits = "dist"
 opt-level = "s"
 
 [patch.crates-io]
-bevy_aseprite = { path = "../../rust-libs/bevy_aseprite/" }
-
+bevy_asepritesheet = { path = "../../rust-libs/bevy_asepritesheet/" }

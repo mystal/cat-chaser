@@ -448,35 +448,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_aseprite"
-version = "0.12.0"
+name = "bevy_asepritesheet"
+version = "0.5.2"
 dependencies = [
- "anyhow",
  "bevy",
- "bevy_aseprite_derive",
- "bevy_aseprite_reader",
-]
-
-[[package]]
-name = "bevy_aseprite_derive"
-version = "0.3.1"
-dependencies = [
- "bevy_aseprite_reader",
- "heck",
- "proc-macro-error",
- "quote",
- "syn 2.0.42",
-]
-
-[[package]]
-name = "bevy_aseprite_reader"
-version = "0.1.1"
-dependencies = [
- "flate2",
- "image",
- "nom",
- "thiserror",
- "tracing",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -1344,7 +1321,7 @@ version = "0.2.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
- "bevy_aseprite",
+ "bevy_asepritesheet",
  "bevy_asset_loader",
  "bevy_common_assets",
  "bevy_egui",
@@ -2335,6 +2312,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "itoa"
+version = "1.0.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
+
+[[package]]
 name = "jni"
 version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3202,30 +3185,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "proc-macro-error"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da25490ff9892aab3fcf7c36f08cfb902dd3e71ca0f9f9517bea02a73a5ce38c"
-dependencies = [
- "proc-macro-error-attr",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
- "version_check",
-]
-
-[[package]]
-name = "proc-macro-error-attr"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1be40180e52ecc98ad80b184934baf3d0d29f979574e439af5a55274b35f869"
-dependencies = [
- "proc-macro2",
- "quote",
- "version_check",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3472,6 +3431,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ffc183a10b4478d04cbbbfc96d0873219d962dd5accaff2ffbd4ceb7df837f4"
 
 [[package]]
+name = "ryu"
+version = "1.0.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e86697c916019a8588c99b5fac3cead74ec0b4b819707a682fd4d23fa0ce1ba1"
+
+[[package]]
 name = "safe_arch"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3519,6 +3484,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.42",
+]
+
+[[package]]
+name = "serde_json"
+version = "1.0.109"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb0652c533506ad7a2e353cce269330d6afd8bdfb6d75e0ace5b35aacbd7b9e9"
+dependencies = [
+ "itoa",
+ "ryu",
+ "serde",
 ]
 
 [[package]]
