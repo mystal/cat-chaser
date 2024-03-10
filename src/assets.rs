@@ -30,9 +30,9 @@ pub struct GameAssets {
     #[asset(path = "fonts/Kenney Pixel.ttf")]
     pub font: Handle<Font>,
 
-    #[asset(path = "start_menu_background.png")]
+    #[asset(path = "ui/start_menu_background.png")]
     pub start_menu: Handle<Image>,
-    #[asset(path = "how_to_play.png")]
+    #[asset(path = "ui/how_to_play.png")]
     pub how_to_play: Handle<Image>,
     #[asset(path = "level/hardwood_floor.png")]
     pub floor: Handle<Image>,
