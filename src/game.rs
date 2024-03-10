@@ -1,5 +1,4 @@
 use bevy::{prelude::*, render::camera::ScalingMode};
-use bevy::render::mesh::VertexAttributeValues;
 
 use crate::{
     GAME_SIZE, AppState,
@@ -24,9 +23,6 @@ impl Plugin for GamePlugin {
 fn setup_game(
     mut commands: Commands,
     assets: Res<GameAssets>,
-    images: Res<Assets<Image>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
 ) {
     debug!("Setup game");
 
@@ -42,26 +38,28 @@ fn setup_game(
     commands.spawn(DogBundle::new(Vec2::ZERO, assets.wizard_dog.clone()));
 
     // Spawn floor.
-    let floor_image_size = images.get(&assets.floor).unwrap().size();
-    let mut floor_mesh = Mesh::from(shape::Quad::default());
-    if let Some(VertexAttributeValues::Float32x2(uvs)) = floor_mesh.attribute_mut(Mesh::ATTRIBUTE_UV_0) {
-        for uv in uvs {
-            uv[0] *= GAME_SIZE.x as f32 / floor_image_size.x as f32 / 2.0;
-            uv[1] *= GAME_SIZE.y as f32 / floor_image_size.y as f32 / 2.0;
-        }
-    }
-    let floor_bundle = ColorMesh2dBundle {
-        transform: Transform {
-            translation: Vec3::new(0.0, 0.0, -1.0),
-            scale: GAME_SIZE.as_vec2().extend(1.0),
+    let floor_bundle = SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(GAME_SIZE.as_vec2() / 2.0),
             ..default()
         },
-        material: materials.add(assets.floor.clone().into()),
-        mesh: meshes.add(floor_mesh.into()).into(),
+        texture: assets.floor.clone(),
+        transform: Transform {
+            translation: Vec3::new(0.0, 0.0, -1.0),
+            scale: Vec3::new(2.0, 2.0, 1.0),
+            ..default()
+        },
         ..default()
     };
-    commands.spawn(floor_bundle)
-        .insert(Name::new("Floor"));
+    commands.spawn((
+        Name::new("Floor"),
+        floor_bundle,
+        ImageScaleMode::Tiled {
+            tile_x: true,
+            tile_y: true,
+            stretch_value: 1.0,
+        }
+    ));
 
     // Spawn cat_box.
     commands.spawn((

@@ -1,13 +1,10 @@
 use bevy::prelude::*;
-use bevy::render::texture::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor};
 use bevy::sprite::Anchor;
 use bevy_asepritesheet::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl, AudioSource};
 
-use crate::{
-    AppState,
-};
+use crate::AppState;
 
 pub struct AssetsPlugin;
 
@@ -66,7 +63,6 @@ fn assets_loaded(
     audio: Res<Audio>,
     mut assets: ResMut<GameAssets>,
     sfx: Res<SfxAssets>,
-    mut images: ResMut<Assets<Image>>,
 ) {
     debug!("Loaded assets!");
 
@@ -76,15 +72,6 @@ fn assets_loaded(
     assets.basic_cat = load_spritesheet(&mut commands, &asset_server, "basic_cat.sprite.json", Anchor::Center);
     assets.kitten = load_spritesheet(&mut commands, &asset_server, "kitten.sprite.json", Anchor::Center);
     assets.fat_cat = load_spritesheet(&mut commands, &asset_server, "fat_cat.sprite.json", Anchor::Center);
-
-    // Set repeat address mode on tiling textures.
-    if let Some(image) = images.get_mut(&assets.floor) {
-        image.sampler = ImageSampler::Descriptor(ImageSamplerDescriptor {
-            address_mode_u: ImageAddressMode::Repeat,
-            address_mode_v: ImageAddressMode::Repeat,
-            ..default()
-        });
-    }
 
     audio.play(sfx.bgm.clone())
         .loop_from(24.0)

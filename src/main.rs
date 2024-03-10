@@ -77,7 +77,7 @@ fn main() {
         ))
 
         // App setup
-        .add_state::<AppState>()
+        .init_state::<AppState>()
         .add_plugins((
             window::WindowPlugin::new(saved_window_state),
             input::InputPlugin,

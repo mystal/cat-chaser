@@ -198,7 +198,7 @@ fn update_cats(
 }
 
 fn cat_animation(
-    mut cat_q: Query<(&mut SpriteAnimator, &mut TextureAtlasSprite, &Cat, &Velocity)>,
+    mut cat_q: Query<(&mut SpriteAnimator, &mut Sprite, &Cat, &Velocity)>,
 ) {
     // Update which animation is playing based on state and velocity.
     for (mut animator, mut sprite, cat, velocity) in cat_q.iter_mut() {
@@ -244,7 +244,7 @@ const CAT_COLORS: &[[f32; 3]] = &[
 ];
 
 fn init_cat_color(
-    mut cat_q: Query<&mut TextureAtlasSprite, (Added<TextureAtlasSprite>, With<Cat>)>,
+    mut cat_q: Query<&mut Sprite, (Added<Sprite>, With<Cat>)>,
 ) {
     for mut sprite in cat_q.iter_mut() {
         let color = fastrand::choice(CAT_COLORS).unwrap();

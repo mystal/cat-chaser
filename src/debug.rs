@@ -86,7 +86,7 @@ fn update_mouse_cursor(
 }
 
 fn toggle_debug_ui(
-    keys: ResMut<Input<KeyCode>>,
+    keys: ResMut<ButtonInput<KeyCode>>,
     mut debug_state: ResMut<DebugState>,
     mut egui_ctx: EguiContexts,
 ) {
@@ -94,13 +94,13 @@ fn toggle_debug_ui(
         return;
     }
 
-    if keys.just_pressed(KeyCode::Back) {
+    if keys.just_pressed(KeyCode::Backspace) {
         debug_state.enabled = !debug_state.enabled;
     }
 }
 
 fn toggle_physics_debug_render(
-    keys: ResMut<Input<KeyCode>>,
+    keys: ResMut<ButtonInput<KeyCode>>,
     mut egui_ctx: EguiContexts,
     mut debug_render_context: ResMut<DebugRenderContext>,
 ) {
@@ -108,7 +108,7 @@ fn toggle_physics_debug_render(
         return;
     }
 
-    if keys.just_pressed(KeyCode::Key0) {
+    if keys.just_pressed(KeyCode::Digit0) {
         debug_render_context.enabled = !debug_render_context.enabled;
     }
 }

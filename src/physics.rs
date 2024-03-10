@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 pub use bevy_rapier2d::{
-    prelude::{ActiveEvents, ActiveCollisionTypes, CollisionEvent},
+    prelude::{ActiveEvents, ActiveCollisionTypes},
     geometry::Group,
 };
 

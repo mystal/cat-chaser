@@ -79,7 +79,7 @@ fn dog_movement(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut SpriteAnimator, &mut TextureAtlasSprite, &Velocity), With<Dog>>,
+    mut dog_q: Query<(&mut SpriteAnimator, &mut Sprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
     for (mut animator, mut sprite, velocity) in dog_q.iter_mut() {

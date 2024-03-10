@@ -17,9 +17,9 @@ pub struct PlayerInput {
 }
 
 pub fn read_player_input(
-    keys: Res<Input<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     gamepads: Res<Gamepads>,
-    pad_buttons: Res<Input<GamepadButton>>,
+    pad_buttons: Res<ButtonInput<GamepadButton>>,
     axes: Res<Axis<GamepadAxis>>,
     mut egui_ctx: EguiContexts,
     mut player_q: Query<&mut PlayerInput>,
@@ -52,8 +52,8 @@ pub fn read_player_input(
     // Read input from mouse/keyboard.
     // Movement
     if movement == Vec2::ZERO && !egui_ctx.ctx_mut().wants_keyboard_input() {
-        let x = (keys.pressed(KeyCode::D) as i8 - keys.pressed(KeyCode::A) as i8) as f32;
-        let y = (keys.pressed(KeyCode::W) as i8 - keys.pressed(KeyCode::S) as i8) as f32;
+        let x = (keys.pressed(KeyCode::KeyD) as i8 - keys.pressed(KeyCode::KeyA) as i8) as f32;
+        let y = (keys.pressed(KeyCode::KeyW) as i8 - keys.pressed(KeyCode::KeyS) as i8) as f32;
         movement = Vec2::new(x, y).normalize_or_zero();
     }
 

@@ -29,7 +29,8 @@
   * [x] Background music
 
 ## Tech
-* [ ] Update to bevy 0.13
+* [x] Update to bevy 0.13
 * [ ] Try out bevy_xpbd
-* [ ] Either fix bevy_aseprite or find a different aseprite plugin
+* [x] Either fix bevy_aseprite or find a different aseprite plugin
+  * Switched to bevy_asepritesheet
 * [ ] Make a schedule for the game, something like: Input, Logic, Movement, UI
