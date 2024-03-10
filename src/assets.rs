@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy::render::texture::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor};
 use bevy::sprite::Anchor;
-//use bevy_aseprite::Aseprite;
 use bevy_asepritesheet::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl, AudioSource};

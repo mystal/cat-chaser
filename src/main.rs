@@ -3,7 +3,6 @@
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::window::{Cursor, WindowMode, WindowResolution};
-use bevy_aseprite::AsepritePlugin;
 use bevy_kira_audio::AudioPlugin;
 
 mod assets;
@@ -75,7 +74,6 @@ fn main() {
             FrameTimeDiagnosticsPlugin::default(),
             bevy_egui::EguiPlugin,
             AudioPlugin,
-            AsepritePlugin,
         ))
 
         // App setup
