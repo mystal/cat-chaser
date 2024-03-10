@@ -88,5 +88,6 @@ fn assets_loaded(
     }
 
     audio.play(sfx.bgm.clone())
-        .loop_from(24.0);
+        .loop_from(24.0)
+        .with_volume(0.2);
 }
