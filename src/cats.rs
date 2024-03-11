@@ -30,6 +30,13 @@ impl Plugin for CatsPlugin {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum CatKind {
+    Basic,
+    Kitten,
+    Chonk,
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, Default)]
 pub enum CatState {
     #[default]
@@ -40,13 +47,24 @@ pub enum CatState {
     InPen,
 }
 
-#[derive(Default, Component)]
+#[derive(Component)]
 pub struct Cat {
+    kind: CatKind,
     state: CatState,
+    // TODO: Play sound once in a while.
+}
+
+impl Cat {
+    fn new(kind: CatKind) -> Self {
+        Self {
+            kind,
+            state: CatState::default(),
+        }
+    }
 }
 
 #[derive(Bundle)]
-struct CatBundle {
+pub struct CatBundle {
     cat: Cat,
     name: Name,
     sprite: AnimatedSpriteBundle,
@@ -56,9 +74,9 @@ struct CatBundle {
 }
 
 impl CatBundle {
-    fn new(name: &'static str, pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+    fn new(name: &'static str, pos: Vec2, spritesheet: Handle<Spritesheet>, kind: CatKind) -> Self {
         Self {
-            cat: Cat::default(),
+            cat: Cat::new(kind),
             name: Name::new(name),
             sprite: AnimatedSpriteBundle {
                 animator: SpriteAnimator::from_anim(IDLE_ANIM),
@@ -77,59 +95,17 @@ impl CatBundle {
             },
         }
     }
-}
 
-#[derive(Component)]
-pub struct BasicCat;
-
-#[derive(Bundle)]
-pub struct BasicCatBundle {
-    basic_cat: BasicCat,
-    cat: CatBundle,
-}
-
-impl BasicCatBundle {
-    pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
-        Self {
-            basic_cat: BasicCat,
-            cat: CatBundle::new("BasicCat", pos, spritesheet),
-        }
+    pub fn basic(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+        Self::new("BasicCat", pos, spritesheet, CatKind::Basic)
     }
-}
 
-#[derive(Component)]
-pub struct KittenCat;
-
-#[derive(Bundle)]
-pub struct KittenBundle {
-    kitten: KittenCat,
-    cat: CatBundle,
-}
-
-impl KittenBundle {
-    pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
-        Self {
-            kitten: KittenCat,
-            cat: CatBundle::new("Kitten", pos, spritesheet),
-        }
+    pub fn kitten(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+        Self::new("KittenCat", pos, spritesheet, CatKind::Kitten)
     }
-}
 
-#[derive(Component)]
-pub struct ChonkCat;
-
-#[derive(Bundle)]
-pub struct ChonkCatBundle {
-    chonk_cat: ChonkCat,
-    cat: CatBundle,
-}
-
-impl ChonkCatBundle {
-    pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
-        Self {
-            chonk_cat: ChonkCat,
-            cat: CatBundle::new("ChonkCat", pos, spritesheet),
-        }
+    pub fn chonk(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+        Self::new("ChonkCat", pos, spritesheet, CatKind::Chonk)
     }
 }
 
