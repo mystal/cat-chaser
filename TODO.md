@@ -6,18 +6,19 @@
 * [ ] Dog
   * [x] Movement
   * [x] Bark
-  * [ ] Get hit and blink
+  * [ ] Get hit and play sound and blink
 * [ ] Cats
   * Different Cat types
-    * [ ] Basic
-    * [ ] Chonk
-    * [ ] Kitten
+    * [x] Basic
+    * [x] Chonk
+    * [x] Kitten
   * [x] Cat colors
   * Behaviors
     * [ ] Wandering
     * [x] Flee
     * [x] In Pen
     * [ ] Angry!
+* [ ] Level win condition
 * [ ] Levels!
 * [ ] Menus
 * [ ] HUD
@@ -25,7 +26,7 @@
 * Audio
   * Sound effects
     * [x] Dog bark
-    * [ ] Cat sounds
+    * [x] Cat sounds
   * [x] Background music
 
 ## Tech

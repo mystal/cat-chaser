@@ -1,9 +1,13 @@
+use std::ops::Range;
+
 use bevy::prelude::*;
 use bevy_asepritesheet::prelude::*;
+use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::RapierContext;
 
 use crate::{
     GAME_SIZE, AppState,
+    assets::SfxAssets,
     dog::Dog,
     game::CatBox,
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
@@ -17,6 +21,8 @@ const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
 const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 10.0;
 
+const MEOW_RANGE: Range<f32> = 5.0..8.0;
+
 pub struct CatsPlugin;
 
 impl Plugin for CatsPlugin {
@@ -25,6 +31,7 @@ impl Plugin for CatsPlugin {
             .add_systems(Update, (
                 update_cats.before(physics::update_movement),
                 cat_animation.after(update_cats),
+                cat_meows,
                 init_cat_color,
             ).run_if(in_state(AppState::Playing)));
     }
@@ -51,15 +58,22 @@ pub enum CatState {
 pub struct Cat {
     kind: CatKind,
     state: CatState,
-    // TODO: Play sound once in a while.
+    meow_timer: Timer,
 }
 
 impl Cat {
     fn new(kind: CatKind) -> Self {
+        let meow_time = MEOW_RANGE.start + (fastrand::f32() * (MEOW_RANGE.end - MEOW_RANGE.start));
         Self {
             kind,
             state: CatState::default(),
+            meow_timer: Timer::from_seconds(meow_time, TimerMode::Once),
         }
+    }
+
+    fn reset_meow(&mut self) {
+        let meow_time = MEOW_RANGE.start + (fastrand::f32() * (MEOW_RANGE.end - MEOW_RANGE.start));
+        self.meow_timer = Timer::from_seconds(meow_time, TimerMode::Once);
     }
 }
 
@@ -208,6 +222,25 @@ fn cat_animation(
                     animator.set_anim(IDLE_ANIM);
                 }
             },
+        }
+    }
+}
+
+fn cat_meows(
+    time: Res<Time>,
+    audio: Res<Audio>,
+    sounds: Res<SfxAssets>,
+    mut cat_q: Query<&mut Cat>,
+) {
+    let dt = time.delta();
+    for mut cat in cat_q.iter_mut() {
+        if cat.meow_timer.tick(dt).finished() {
+            audio.play(match cat.kind {
+                CatKind::Basic => sounds.basic_cat_meow.clone(),
+                CatKind::Kitten => sounds.kitten_meow.clone(),
+                CatKind::Chonk => sounds.fat_cat_meow.clone(),
+            });
+            cat.reset_meow();
         }
     }
 }
