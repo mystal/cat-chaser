@@ -96,6 +96,10 @@ impl CatBundle {
                 animator: SpriteAnimator::from_anim(IDLE_ANIM),
                 spritesheet,
                 sprite_bundle: SpriteSheetBundle {
+                    sprite: Sprite {
+                        flip_x: fastrand::bool(),
+                        ..default()
+                    },
                     transform: Transform::from_translation(pos.extend(2.0)),
                     ..default()
                 },

@@ -1,14 +1,13 @@
-use bevy::{prelude::*, render::camera::ScalingMode};
+use bevy::prelude::*;
+use bevy::render::camera::ScalingMode;
 
 use crate::{
-    GAME_SIZE, AppState,
+    AppState, GAME_SIZE,
     assets::GameAssets,
-    dog::{DogBundle, DogPlugin},
-    physics::{ColliderBundle, groups},
+    dog::DogPlugin,
+    level::NextLevelEvent,
+    physics::{groups, ColliderBundle},
 };
-
-#[derive(Component)]
-pub struct CatBox;
 
 pub struct GamePlugin;
 
@@ -20,8 +19,12 @@ impl Plugin for GamePlugin {
     }
 }
 
+#[derive(Component)]
+pub struct CatBox;
+
 fn setup_game(
     mut commands: Commands,
+    mut next_level: EventWriter<NextLevelEvent>,
     assets: Res<GameAssets>,
 ) {
     debug!("Setup game");
@@ -33,9 +36,6 @@ fn setup_game(
         height: GAME_SIZE.y as f32,
     };
     commands.spawn(camera_bundle);
-
-    // Spawn dog.
-    commands.spawn(DogBundle::new(Vec2::ZERO, assets.wizard_dog.clone()));
 
     // Spawn floor.
     let floor_bundle = SpriteBundle {
@@ -72,4 +72,6 @@ fn setup_game(
         },
         ColliderBundle::rect((60.0, 60.0).into(), groups::CATBOX, groups::CAT),
     ));
+
+    next_level.send_default();
 }

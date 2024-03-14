@@ -2,16 +2,23 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy_asepritesheet::prelude::*;
 use bevy_asset_loader::prelude::*;
+use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_kira_audio::{Audio, AudioControl, AudioSource};
 
-use crate::AppState;
+use crate::{
+    AppState,
+    level::Levels,
+};
 
 pub struct AssetsPlugin;
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_plugins(AsepritesheetPlugin::new(&["sprite.json"]))
+            .add_plugins((
+                AsepritesheetPlugin::new(&["sprite.json"]),
+                RonAssetPlugin::<Levels>::new(&["level.ron"]),
+            ))
             .add_loading_state(
                 LoadingState::new(AppState::Loading)
                     .continue_to_state(AppState::Playing)
@@ -45,6 +52,9 @@ pub struct GameAssets {
     pub fat_cat: Handle<Spritesheet>,
     // #[asset(path = "kitten.aseprite")]
     pub kitten: Handle<Spritesheet>,
+
+    #[asset(path = "all_levels.level.ron")]
+    pub levels: Handle<Levels>,
 }
 
 #[derive(Resource, AssetCollection)]
