@@ -3,6 +3,11 @@
 * [x] Loading infrastructure
 * [x] Animated sprites
   * Mostly working, seems to be a bug with bevy_aseprite
+* [ ] Set window icon: https://bevy-cheatbook.github.io/window/icon.html
+* [ ] Set exe/app icon
+  * On Linux
+  * On Windows: https://bevy-cheatbook.github.io/platforms/windows.html#creating-an-icon-for-your-app
+  * On macOS
 * [ ] Dog
   * [x] Movement
   * [x] Bark
