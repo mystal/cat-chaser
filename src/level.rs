@@ -17,6 +17,7 @@ impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<CurrentLevel>()
+            .init_resource::<Levels>()
             .add_event::<NextLevelEvent>()
             .add_systems(Update, spawn_next_level.run_if(in_state(AppState::Playing)))
             .add_systems(Update, debug_next_level.run_if(in_state(AppState::Playing)));
@@ -33,7 +34,7 @@ pub struct LevelCats {
     pub chonk: u8,
 }
 
-#[derive(Debug, Deserialize, Asset, TypePath)]
+#[derive(Debug, Default, Deserialize, Resource, Asset, TypePath)]
 pub struct Levels(Vec<LevelCats>);
 
 impl Deref for Levels {
@@ -55,7 +56,7 @@ fn spawn_next_level(
     mut commands: Commands,
     mut next_level: EventReader<NextLevelEvent>,
     assets: Res<GameAssets>,
-    level_assets: Res<Assets<Levels>>,
+    levels: Res<Levels>,
     mut current_level: ResMut<CurrentLevel>,
     cats_q: Query<Entity, With<Cat>>,
     dog_q: Query<Entity, With<Dog>>,
@@ -85,8 +86,6 @@ fn spawn_next_level(
     commands.spawn(DogBundle::new(dog_pos, assets.wizard_dog.clone()));
 
     // Then spawn new cats.
-    let levels = level_assets.get(&assets.levels)
-        .expect("Invalid level assets!");
     let level_index = if current_level.index + 1 < levels.len() {
         current_level.index + 1
     } else {

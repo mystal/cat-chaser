@@ -24,7 +24,7 @@
     * [x] In Pen
     * [ ] Angry!
 * [ ] Level win condition
-* [ ] Levels!
+* [x] Levels!
 * [ ] Menus
 * [ ] HUD
 * [ ] Loading screen?

@@ -76,11 +76,19 @@ pub struct SfxAssets {
 fn assets_loaded(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut level_assets: ResMut<Assets<Levels>>,
     audio: Res<Audio>,
     mut assets: ResMut<GameAssets>,
+    mut levels: ResMut<Levels>,
     sfx: Res<SfxAssets>,
 ) {
     debug!("Loaded assets!");
+
+    // Move loaded Levels to a resource and remove the asset/clear the handle.
+    if let Some(loaded_levels) = level_assets.remove(assets.levels.clone()) {
+        *levels = loaded_levels;
+        assets.levels = Handle::default();
+    }
 
     // Load Aseprite spritesheets.
     // TODO: See if we can do this during our standard load phase.
