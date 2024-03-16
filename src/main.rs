@@ -6,6 +6,7 @@ use bevy::window::{Cursor, WindowMode, WindowResolution};
 use bevy_kira_audio::AudioPlugin;
 
 mod assets;
+mod camera;
 mod cats;
 mod debug;
 mod dog;
@@ -84,6 +85,7 @@ fn main() {
             physics::PhysicsPlugin,
             assets::AssetsPlugin,
             debug::DebugPlugin,
+            camera::CameraPlugin,
             game::GamePlugin,
             level::LevelPlugin,
             cats::CatsPlugin,

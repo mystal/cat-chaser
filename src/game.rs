@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::render::camera::ScalingMode;
 
 use crate::{
     AppState, GAME_SIZE,
@@ -28,14 +27,6 @@ fn setup_game(
     assets: Res<GameAssets>,
 ) {
     debug!("Setup game");
-
-    // Spawn camera.
-    let mut camera_bundle = Camera2dBundle::default();
-    camera_bundle.projection.scaling_mode = ScalingMode::Fixed {
-        width: GAME_SIZE.x as f32,
-        height: GAME_SIZE.y as f32,
-    };
-    commands.spawn(camera_bundle);
 
     // Spawn floor.
     let floor_bundle = SpriteBundle {
