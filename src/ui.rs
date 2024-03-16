@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 mod classes;
 mod hud;
+mod menus;
 
 pub struct UiPlugin;
 
@@ -9,6 +10,7 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_plugins(hud::HudPlugin)
+            .add_plugins(menus::MenusPlugin)
             .add_systems(Startup, setup_ui);
     }
 }

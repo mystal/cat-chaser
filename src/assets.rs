@@ -21,7 +21,7 @@ impl Plugin for AssetsPlugin {
             ))
             .add_loading_state(
                 LoadingState::new(AppState::Loading)
-                    .continue_to_state(AppState::Playing)
+                    .continue_to_state(AppState::StartMenu)
                     .load_collection::<GameAssets>()
                     .load_collection::<SfxAssets>()
             )
@@ -34,18 +34,27 @@ pub struct GameAssets {
     #[asset(path = "fonts/Kenney Pixel.ttf")]
     pub font: Handle<Font>,
 
+    // Menu assets.
     #[asset(path = "ui/start_menu_background.png")]
     pub start_menu: Handle<Image>,
     #[asset(path = "ui/how_to_play.png")]
     pub how_to_play: Handle<Image>,
+
+    // HUD assets.
+    #[asset(path = "ui/cat_face.png")]
+    pub cat_face: Handle<Image>,
+
+    // Game world assets.
     #[asset(path = "level/hardwood_floor.png")]
     pub floor: Handle<Image>,
     #[asset(path = "level/cat_box.png")]
     pub cat_box: Handle<Image>,
 
+    // Doggo!
     // #[asset(path = "wizard_dog.sprite.json")]
     pub wizard_dog: Handle<Spritesheet>,
 
+    // Cat assets.
     // #[asset(path = "basic_cat.aseprite")]
     pub basic_cat: Handle<Spritesheet>,
     // #[asset(path = "fat_cat.aseprite")]
@@ -53,11 +62,9 @@ pub struct GameAssets {
     // #[asset(path = "kitten.aseprite")]
     pub kitten: Handle<Spritesheet>,
 
+    // Level data.
     #[asset(path = "all_levels.level.ron")]
     pub levels: Handle<Levels>,
-
-    #[asset(path = "ui/cat_face.png")]
-    pub cat_face: Handle<Image>,
 }
 
 #[derive(Resource, AssetCollection)]
