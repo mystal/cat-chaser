@@ -15,6 +15,7 @@ mod input;
 mod level;
 mod log;
 mod physics;
+mod ui;
 mod window;
 
 const GAME_SIZE: UVec2 = UVec2::new(400, 300);
@@ -86,6 +87,7 @@ fn main() {
             assets::AssetsPlugin,
             debug::DebugPlugin,
             camera::CameraPlugin,
+            ui::UiPlugin,
             game::GamePlugin,
             level::LevelPlugin,
             cats::CatsPlugin,

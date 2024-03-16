@@ -56,8 +56,8 @@ pub enum CatState {
 
 #[derive(Component)]
 pub struct Cat {
-    kind: CatKind,
-    state: CatState,
+    pub kind: CatKind,
+    pub state: CatState,
     meow_timer: Timer,
 }
 

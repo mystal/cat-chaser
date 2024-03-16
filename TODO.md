@@ -26,7 +26,7 @@
 * [ ] Level win condition
 * [x] Levels!
 * [ ] Menus
-* [ ] HUD
+* [x] HUD
 * [ ] Loading screen?
 * Audio
   * Sound effects

@@ -55,6 +55,9 @@ pub struct GameAssets {
 
     #[asset(path = "all_levels.level.ron")]
     pub levels: Handle<Levels>,
+
+    #[asset(path = "ui/cat_face.png")]
+    pub cat_face: Handle<Image>,
 }
 
 #[derive(Resource, AssetCollection)]

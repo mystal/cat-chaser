@@ -19,7 +19,7 @@ bevy_asepritesheet = "0.6"
 bevy_asset_loader = { version = "0.20", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.
 bevy_common_assets = { version = "0.10", features = ["ron"]}
-# For in-game and debug UI.
+# For debug UI.
 bevy_egui = { version = "0.25", default-features = false }
 # Generic debug UI to inspect entities and components.
 # TODO: Put behind a feature flag?
@@ -29,6 +29,9 @@ bevy_kira_audio = { version = "0.19", default-features = false, features = ["ogg
 # 2D physics. Mostly used for collision detection.
 # TODO: Try out bevy_xpbd
 bevy_rapier2d = "0.25"
+# For in-game UI.
+bevy-ui-dsl = "0.8"
+
 # For quick, simple random number generation.
 fastrand = "2"
 
@@ -60,6 +63,9 @@ features = [
     "bevy_render",
     "bevy_sprite",
     "bevy_text",
+
+    # UI
+    "bevy_ui",
 
     # Web support
     "webgl2",
