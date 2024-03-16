@@ -46,7 +46,7 @@ impl Deref for Levels {
 
 #[derive(Default, Resource)]
 pub struct CurrentLevel {
-    pub index: u8,
+    pub index: usize,
     pub cats: LevelCats,
     pub cats_herded: u8,
 }
@@ -77,15 +77,26 @@ fn spawn_next_level(
     }
 
     // Spawn a new dog.
+    // TODO: Figure out why dog doesn't spawn in CatBox in first level?
+    // Probably an ordering issue. CatBox probably doesn't exist yet.
     let dog_pos = catbox_q.get_single()
         .map(|t| t.translation().truncate())
         .unwrap_or_default();
     commands.spawn(DogBundle::new(dog_pos, assets.wizard_dog.clone()));
 
     // Then spawn new cats.
-    let levels = level_assets.get(&assets.levels).unwrap();
-    let level_index = current_level.index + 1;
-    let level_cats = levels.get(level_index as usize).unwrap();
+    let levels = level_assets.get(&assets.levels)
+        .expect("Invalid level assets!");
+    let level_index = if current_level.index + 1 < levels.len() {
+        current_level.index + 1
+    } else {
+        1
+    };
+    let Some(level_cats) = levels.get(level_index) else {
+        *current_level = CurrentLevel::default();
+        error!("Could not load level {}. Levels list length: {}", level_index, levels.len());
+        return;
+    };
 
     // TODO: Spawn in random locations.
     for _ in 0..level_cats.basic {
