@@ -6,6 +6,7 @@ use bevy::window::{Cursor, WindowMode, WindowResolution};
 use bevy_kira_audio::AudioPlugin;
 
 mod assets;
+mod utils;
 mod camera;
 mod cats;
 mod debug;
@@ -84,6 +85,7 @@ fn main() {
             window::WindowPlugin::new(saved_window_state),
             input::InputPlugin,
             physics::PhysicsPlugin,
+            utils::UtilsPlugin,
             assets::AssetsPlugin,
             debug::DebugPlugin,
             camera::CameraPlugin,
