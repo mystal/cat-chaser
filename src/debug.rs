@@ -86,7 +86,7 @@ fn update_mouse_cursor(
 }
 
 fn toggle_debug_ui(
-    keys: ResMut<ButtonInput<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut debug_state: ResMut<DebugState>,
     mut egui_ctx: EguiContexts,
 ) {
@@ -100,7 +100,7 @@ fn toggle_debug_ui(
 }
 
 fn toggle_physics_debug_render(
-    keys: ResMut<ButtonInput<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut egui_ctx: EguiContexts,
     mut debug_render_context: ResMut<DebugRenderContext>,
 ) {
