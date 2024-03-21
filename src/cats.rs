@@ -1,6 +1,7 @@
-use std::ops::Range;
+use std::{f32::consts::TAU, ops::Range, time::Duration};
 
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use bevy_asepritesheet::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::RapierContext;
@@ -17,9 +18,14 @@ use crate::{
 // now.
 pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
 pub const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
+pub const ATTACK_ANIM: AnimHandle = AnimHandle::from_index(2);
 
 const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 10.0;
+
+const JITTER_TIME: f32 = 1.0;
+const CANNONBALL_TIME: f32 = 1.25;
+const CANNONBALL_SPEED: f32 = 240.0;
 
 const MEOW_RANGE: Range<f32> = 5.0..8.0;
 
@@ -30,7 +36,7 @@ impl Plugin for CatsPlugin {
         app
             .add_systems(Update, (
                 update_cats.before(physics::update_movement),
-                cat_animation.after(update_cats),
+                (cat_animation, cat_color).after(update_cats),
                 cat_meows,
                 init_cat_color,
             ).run_if(in_state(AppState::Playing)));
@@ -44,13 +50,31 @@ pub enum CatKind {
     Chonk,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Default)]
+impl CatKind {
+    fn walk_speed(&self) -> f32 {
+        match self {
+            CatKind::Basic => 150.0,
+            CatKind::Kitten => 175.0,
+            CatKind::Chonk => 100.0,
+        }
+    }
+
+    fn flee_speed(&self) -> f32 {
+        match self {
+            CatKind::Basic => 175.0,
+            CatKind::Kitten => 250.0,
+            CatKind::Chonk => 100.0,
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Default)]
 pub enum CatState {
     #[default]
     Wander,
     Flee,
-    Jittering,
-    Cannonballing,
+    Jittering { timer: Timer },
+    Cannonballing { timer: Timer },
     InPen,
 }
 
@@ -58,6 +82,7 @@ pub enum CatState {
 pub struct Cat {
     pub kind: CatKind,
     pub state: CatState,
+    color: Color,
     meow_timer: Timer,
 }
 
@@ -67,6 +92,7 @@ impl Cat {
         Self {
             kind,
             state: CatState::default(),
+            color: Color::WHITE,
             meow_timer: Timer::from_seconds(meow_time, TimerMode::Once),
         }
     }
@@ -77,9 +103,60 @@ impl Cat {
     }
 }
 
+#[derive(Component)]
+pub struct Annoyance {
+    current: f32,
+    annoyance_rate: f32,
+    calming_rate: f32,
+}
+
+impl Annoyance {
+    fn from_cat_kind(kind: CatKind) -> Self {
+        let time_to_annoy = match kind {
+            CatKind::Basic => 1.0,
+            CatKind::Kitten => 0.0,
+            CatKind::Chonk => 0.67,
+        };
+        let time_to_calm = match kind {
+            CatKind::Basic => 1.3,
+            CatKind::Kitten => 0.0,
+            CatKind::Chonk => 2.0,
+        };
+        Self::new(time_to_annoy, time_to_calm)
+    }
+
+    fn new(time_to_annoy: f32, time_to_calm: f32) -> Self {
+        Self {
+            current: 0.0,
+            annoyance_rate: 1.0 / time_to_annoy,
+            calming_rate: 1.0 / time_to_calm,
+        }
+    }
+
+    fn increase(&mut self, dt: Duration) -> bool {
+        self.current += self.annoyance_rate * dt.as_secs_f32();
+        self.current = self.current.clamp(0.0, 1.0);
+        self.is_annoyed()
+    }
+
+    fn decrease(&mut self, dt: Duration) {
+        self.current -= self.calming_rate * dt.as_secs_f32();
+        self.current = self.current.clamp(0.0, 1.0);
+    }
+
+    fn reset(&mut self) {
+        self.current = 0.0;
+    }
+
+    fn is_annoyed(&self) -> bool {
+        self.current >= 1.0
+    }
+}
+
 #[derive(Bundle)]
 pub struct CatBundle {
     cat: Cat,
+    annoyance: Annoyance,
     name: Name,
     sprite: AnimatedSpriteBundle,
     velocity: Velocity,
@@ -91,6 +168,7 @@ impl CatBundle {
     fn new(name: &'static str, pos: Vec2, spritesheet: Handle<Spritesheet>, kind: CatKind) -> Self {
         Self {
             cat: Cat::new(kind),
+            annoyance: Annoyance::from_cat_kind(kind),
             name: Name::new(name),
             sprite: AnimatedSpriteBundle {
                 animator: SpriteAnimator::from_anim(IDLE_ANIM),
@@ -128,16 +206,21 @@ impl CatBundle {
 }
 
 fn update_cats(
+    time: Res<Time>,
+    audio: Res<Audio>,
     rapier_ctx: Res<RapierContext>,
-    mut cat_q: Query<(Entity, &mut Cat, &Transform, &mut Velocity)>,
+    sounds: Res<SfxAssets>,
+    mut cat_q: Query<(Entity, &mut Cat, &mut Annoyance, &Transform, &mut Velocity)>,
     dog_q: Query<&GlobalTransform, (With<Dog>, Without<Cat>)>,
     cat_box_q: Query<Entity, With<CatBox>>,
 ) {
+    let dt = time.delta();
+
     let dog_pos = dog_q.get_single()
         .map(|trans| trans.translation().truncate())
         .ok();
     let cat_box = cat_box_q.get_single().ok();
-    for (entity, mut cat, transform, mut velocity) in cat_q.iter_mut() {
+    for (entity, mut cat, mut annoyance, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
 
         let in_pen = cat_box.map(|cat_box|
@@ -151,7 +234,7 @@ fn update_cats(
             .unwrap_or(false);
 
         // Update cat state first.
-        match cat.state {
+        match &cat.state {
             CatState::Wander => {
                 if in_pen {
                     cat.state = CatState::InPen;
@@ -162,28 +245,66 @@ fn update_cats(
             CatState::Flee => {
                 if in_pen {
                     cat.state = CatState::InPen;
+                } else if annoyance.is_annoyed() {
+                    cat.state = CatState::Jittering {
+                        timer: Timer::from_seconds(JITTER_TIME, TimerMode::Once),
+                    };
+                    let sound = fastrand::choice(sounds.angry_cat.iter()).unwrap();
+                    audio.play(sound.clone());
                 } else if dog_out_of_range {
                     cat.state = CatState::Wander;
                 }
             },
-            CatState::Jittering => todo!(),
-            CatState::Cannonballing => todo!(),
+            CatState::Jittering { timer } => {
+                if timer.finished() {
+                    cat.state = CatState::Cannonballing {
+                        timer: Timer::from_seconds(CANNONBALL_TIME, TimerMode::Once),
+                    };
+                    **velocity = if let Some(dog_pos) = dog_pos {
+                        // Cannonball towards dog.
+                        let move_dir = (dog_pos - pos).normalize_or_zero();
+                        move_dir * CANNONBALL_SPEED
+                    } else {
+                        Vec2::ZERO
+                    };
+                }
+            },
+            CatState::Cannonballing { timer } => {
+                if timer.finished() {
+                    cat.state = CatState::Wander;
+                    annoyance.reset();
+                }
+            },
             CatState::InPen => {},
         }
 
         // Perform cat state logic.
-        match cat.state {
+        match &cat.state {
+            CatState::Flee => {
+                annoyance.increase(dt);
+            }
+            CatState::Wander | CatState::InPen => {
+                annoyance.decrease(dt);
+            }
+            _ => {}
+        }
+        match &mut cat.state {
             CatState::Wander => {
+                // TODO: Wander logic.
                 **velocity = Vec2::ZERO;
             },
             CatState::Flee => {
                 if let Some(dog_pos) = dog_pos {
                     let flee_dir = (pos - dog_pos).normalize_or_zero();
-                    **velocity = flee_dir * 100.0;
+                    **velocity = flee_dir * cat.kind.flee_speed();
                 }
             },
-            CatState::Jittering => todo!(),
-            CatState::Cannonballing => todo!(),
+            CatState::Jittering { timer } => {
+                timer.tick(dt);
+            },
+            CatState::Cannonballing { timer } => {
+                timer.tick(dt);
+            },
             CatState::InPen => {
                 **velocity = Vec2::ZERO;
             },
@@ -196,7 +317,7 @@ fn cat_animation(
 ) {
     // Update which animation is playing based on state and velocity.
     for (mut animator, mut sprite, cat, velocity) in cat_q.iter_mut() {
-        match cat.state {
+        match &cat.state {
             CatState::Wander => {
                 if **velocity == Vec2::ZERO {
                     if !animator.is_cur_anim(IDLE_ANIM) {
@@ -219,14 +340,45 @@ fn cat_animation(
                     sprite.flip_x = velocity.x > 0.0;
                 }
             },
-            CatState::Jittering => todo!(),
-            CatState::Cannonballing => todo!(),
+            CatState::Jittering { .. } => {
+                if !animator.is_cur_anim(IDLE_ANIM) {
+                    animator.set_anim(IDLE_ANIM);
+                }
+            },
+            CatState::Cannonballing { .. } => {
+                if !animator.is_cur_anim(ATTACK_ANIM) {
+                    animator.set_anim(ATTACK_ANIM);
+                }
+            }
             CatState::InPen => {
                 if !animator.is_cur_anim(IDLE_ANIM) {
                     animator.set_anim(IDLE_ANIM);
                 }
             },
         }
+
+        // Jitter sprite!
+        // match &cat.state {
+        //     CatState::Jittering { .. } => {
+        //         let dir = Vec2::from_angle(fastrand::f32() * TAU);
+        //         let anchor = dir * ((3.0 / 16.0) * 0.5);
+        //         sprite.anchor = Anchor::Custom(anchor);
+        //     }
+        //     _ => {
+        //         sprite.anchor = Anchor::Center;
+        //     }
+        // }
+    }
+}
+
+fn cat_color(
+    mut cat_q: Query<(&Annoyance, &Cat, &mut Sprite), (With<Cat>, Changed<Annoyance>)>,
+) {
+    for (annoyance, cat, mut sprite) in cat_q.iter_mut() {
+        let base_linear = cat.color.rgb_linear_to_vec3();
+        let red_linear = Color::RED.rgb_linear_to_vec3();
+        let color_linear = base_linear.lerp(red_linear, annoyance.current);
+        sprite.color = Color::rgb_linear_from_array(color_linear);
     }
 }
 
@@ -238,6 +390,11 @@ fn cat_meows(
 ) {
     let dt = time.delta();
     for mut cat in cat_q.iter_mut() {
+        if matches!(cat.state, CatState::Jittering { .. } | CatState::Cannonballing { .. }) {
+            // Don't tick in annoyed states.
+            continue;
+        }
+
         if cat.meow_timer.tick(dt).finished() {
             audio.play(match cat.kind {
                 CatKind::Basic => sounds.basic_cat_meow.clone(),
@@ -257,10 +414,11 @@ pub const CAT_COLORS: &[[f32; 3]] = &[
 ];
 
 fn init_cat_color(
-    mut cat_q: Query<&mut Sprite, (Added<Sprite>, With<Cat>)>,
+    mut cat_q: Query<(&mut Sprite, &mut Cat), Added<Sprite>>,
 ) {
-    for mut sprite in cat_q.iter_mut() {
+    for (mut sprite, mut cat) in cat_q.iter_mut() {
         let color = fastrand::choice(CAT_COLORS).unwrap();
-        sprite.color = Color::rgb(color[0], color[1], color[2]);
+        sprite.color = Color::rgb_from_array(*color);
+        cat.color = Color::rgb_from_array(*color);
     }
 }

@@ -69,16 +69,28 @@ pub struct GameAssets {
 
 #[derive(Resource, AssetCollection)]
 pub struct SfxAssets {
+    // Dog sounds.
     #[asset(path = "sounds/dog_yip_1.wav")]
     pub dog_yip: Handle<AudioSource>,
     #[asset(path = "sounds/dog_woof_1.wav")]
     pub dog_woof: Handle<AudioSource>,
+
+    // Cat meows.
     #[asset(path = "sounds/basic_cat_meow_1.wav")]
     pub basic_cat_meow: Handle<AudioSource>,
     #[asset(path = "sounds/kitten_meow_1.wav")]
     pub kitten_meow: Handle<AudioSource>,
     #[asset(path = "sounds/fat_cat_meow_1.wav")]
     pub fat_cat_meow: Handle<AudioSource>,
+
+    #[asset(paths(
+        "sounds/angry_cat_meow_1.wav",
+        "sounds/angry_cat_meow_2.wav",
+        "sounds/angry_cat_meow_3.wav",
+        "sounds/angry_cat_meow_4.wav"
+    ), collection(typed))]
+    pub angry_cat: Vec<Handle<AudioSource>>,
+
     #[asset(path = "sounds/trolling_doggo.ogg")]
     pub bgm: Handle<AudioSource>,
 }
