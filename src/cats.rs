@@ -15,8 +15,8 @@ use crate::{
 
 // TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
 // now.
-const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
-const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
+pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
+pub const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
 
 const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 10.0;
@@ -249,7 +249,7 @@ fn cat_meows(
     }
 }
 
-const CAT_COLORS: &[[f32; 3]] = &[
+pub const CAT_COLORS: &[[f32; 3]] = &[
     [203.0 / 255.0, 219.0 / 255.0, 252.0 / 255.0], // The default purple blue
     [189.0 / 255.0, 245.0 / 255.0, 242.0 / 255.0], // Robin's egg blue-ish
     [174.0 / 255.0, 245.0 / 255.0, 184.0 / 255.0], // Pastel green.

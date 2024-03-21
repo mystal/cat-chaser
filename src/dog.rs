@@ -11,8 +11,8 @@ use crate::{
 
 // TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
 // now.
-const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
-const RUN_ANIM: AnimHandle = AnimHandle::from_index(0);
+pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
+pub const RUN_ANIM: AnimHandle = AnimHandle::from_index(0);
 
 pub struct DogPlugin;
 
