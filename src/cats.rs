@@ -251,7 +251,8 @@ fn update_cats(
                     };
                     **velocity = Vec2::ZERO;
                     let sound = fastrand::choice(sounds.angry_cat.iter()).unwrap();
-                    audio.play(sound.clone());
+                    audio.play(sound.clone())
+                        .with_volume(0.6);
                 } else if dog_out_of_range {
                     cat.state = CatState::Wander;
                 }
