@@ -22,12 +22,17 @@
     * [ ] Wandering
     * [x] Flee
     * [x] In Pen
-    * [ ] Angry!
+    * [x] Angry!
 * [ ] Level win condition
 * [x] Levels!
 * [ ] Menus
+  * [x] Start menu
+  * [x] How to play
+  * [ ] Credits
 * [x] HUD
-* [ ] Loading screen?
+* [ ] Loading screen
+* [ ] Full-screen support
+  * Adjust viewport and use black borders to make sure we render to a multiple of GAME_SIZE
 * Audio
   * Sound effects
     * [x] Dog bark
