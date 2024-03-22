@@ -78,7 +78,6 @@ features = ["serialize"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 # Show panics in the browser console: https://bevy-cheatbook.github.io/platforms/wasm/panic-console.html
 console_error_panic_hook = "0.1"
-# TODO: Use "webgl2" feature for wasm builds.
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
