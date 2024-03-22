@@ -249,6 +249,7 @@ fn update_cats(
                     cat.state = CatState::Jittering {
                         timer: Timer::from_seconds(JITTER_TIME, TimerMode::Once),
                     };
+                    **velocity = Vec2::ZERO;
                     let sound = fastrand::choice(sounds.angry_cat.iter()).unwrap();
                     audio.play(sound.clone());
                 } else if dog_out_of_range {
