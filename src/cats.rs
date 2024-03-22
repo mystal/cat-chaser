@@ -359,7 +359,7 @@ fn cat_animation(
             },
         }
 
-        // Jitter sprite!
+        // TODO: Jitter sprite!
         // match &cat.state {
         //     CatState::Jittering { .. } => {
         //         let dir = Vec2::from_angle(fastrand::f32() * TAU);
