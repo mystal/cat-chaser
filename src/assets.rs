@@ -84,10 +84,10 @@ pub struct SfxAssets {
     pub fat_cat_meow: Handle<AudioSource>,
 
     #[asset(paths(
-        "sounds/angry_cat_meow_1.wav",
-        "sounds/angry_cat_meow_2.wav",
-        "sounds/angry_cat_meow_3.wav",
-        "sounds/angry_cat_meow_4.wav"
+        "sounds/angry_cat_meow_1.ogg",
+        "sounds/angry_cat_meow_2.ogg",
+        "sounds/angry_cat_meow_3.ogg",
+        "sounds/angry_cat_meow_4.ogg"
     ), collection(typed))]
     pub angry_cat: Vec<Handle<AudioSource>>,
 
