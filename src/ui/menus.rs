@@ -36,7 +36,7 @@ fn show_start(
     rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
         image(c_start_image, p);
 
-        let blink = Blink::from_seconds(0.5);
+        let blink = Blink::from_seconds(0.5, true);
         // TODO: Add a drop shadow to the text.
         texti("Press Enter to play!", c_start_text, c_font_start, blink, p);
     });
@@ -180,7 +180,7 @@ fn show_how_to_play(
     ));
 
     rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
-        let blink = Blink::from_seconds(0.5);
+        let blink = Blink::from_seconds(0.5, true);
         // TODO: Add a drop shadow to the text.
         texti("Press Enter to play!", c_start_text, c_font_how_to_play, blink, p);
     });

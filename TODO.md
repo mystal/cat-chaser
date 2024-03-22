@@ -11,7 +11,7 @@
 * [ ] Dog
   * [x] Movement
   * [x] Bark
-  * [ ] Get hit and play sound and blink
+  * [x] Get hit and play sound and blink
 * [ ] Cats
   * Different Cat types
     * [x] Basic

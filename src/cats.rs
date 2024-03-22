@@ -211,14 +211,14 @@ fn update_cats(
     rapier_ctx: Res<RapierContext>,
     sounds: Res<SfxAssets>,
     mut cat_q: Query<(Entity, &mut Cat, &mut Annoyance, &Transform, &mut Velocity)>,
-    dog_q: Query<&GlobalTransform, (With<Dog>, Without<Cat>)>,
+    dog_q: Query<(&Dog, &GlobalTransform), Without<Cat>>,
     cat_box_q: Query<Entity, With<CatBox>>,
 ) {
     let dt = time.delta();
 
-    let dog_pos = dog_q.get_single()
-        .map(|trans| trans.translation().truncate())
-        .ok();
+    let (dog_recovering, dog_pos) = dog_q.get_single()
+        .map(|(dog, trans)| (dog.is_recovering(), Some(trans.translation().truncate())))
+        .unwrap_or((false, None));
     let cat_box = cat_box_q.get_single().ok();
     for (entity, mut cat, mut annoyance, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
@@ -231,14 +231,14 @@ fn update_cats(
             .unwrap_or(false);
         let dog_out_of_range = dog_pos.map(|dog_pos|
             pos.distance_squared(dog_pos) > (FLEE_RANGE + FLEE_BUFFER).powi(2))
-            .unwrap_or(false);
+            .unwrap_or(true);
 
         // Update cat state first.
         match &cat.state {
             CatState::Wander => {
                 if in_pen {
                     cat.state = CatState::InPen;
-                } else if dog_in_range {
+                } else if !dog_recovering && dog_in_range {
                     cat.state = CatState::Flee;
                 }
             },
@@ -253,7 +253,7 @@ fn update_cats(
                     let sound = fastrand::choice(sounds.angry_cat.iter()).unwrap();
                     audio.play(sound.clone())
                         .with_volume(0.6);
-                } else if dog_out_of_range {
+                } else if !dog_recovering && dog_out_of_range {
                     cat.state = CatState::Wander;
                 }
             },

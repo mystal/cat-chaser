@@ -1,12 +1,15 @@
 use bevy::prelude::*;
 use bevy_asepritesheet::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
+use bevy_rapier2d::prelude::RapierContext;
 
 use crate::{
     GAME_SIZE, AppState,
     assets::SfxAssets,
+    cats::{Cat, CatState},
     input::PlayerInput,
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
+    utils::Blink,
 };
 
 // TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
@@ -20,6 +23,7 @@ impl Plugin for DogPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (
+                (tick_recovery, check_dog_hit).before(dog_movement).chain(),
                 dog_movement.before(physics::update_movement),
                 dog_animation.after(dog_movement),
                 dog_bark,
@@ -30,6 +34,18 @@ impl Plugin for DogPlugin {
 #[derive(Component)]
 pub struct Dog {
     speed: f32,
+    recovery_timer: Timer,
+}
+
+impl Dog {
+    fn start_recovery(&mut self) {
+        self.recovery_timer.reset();
+        self.recovery_timer.unpause();
+    }
+
+    pub fn is_recovering(&self) -> bool {
+        !self.recovery_timer.paused() && !self.recovery_timer.finished()
+    }
 }
 
 #[derive(Bundle)]
@@ -41,14 +57,18 @@ pub struct DogBundle {
     collider: ColliderBundle,
     input: PlayerInput,
     bounds: MovementBounds,
+    blink: Blink,
 }
 
 impl DogBundle {
     pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+        let mut recovery_timer = Timer::from_seconds(0.5, TimerMode::Once);
+        recovery_timer.pause();
         Self {
             name: Name::new("Dog"),
             dog: Dog {
                 speed: 150.0,
+                recovery_timer,
             },
             sprite: AnimatedSpriteBundle {
                 animator: SpriteAnimator::from_anim(IDLE_ANIM),
@@ -70,6 +90,7 @@ impl DogBundle {
                 min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
                 max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
             },
+            blink: Blink::from_seconds(0.05, false),
         }
     }
 }
@@ -79,6 +100,57 @@ fn dog_movement(
 ) {
     for (dog, input, mut velocity) in dog_q.iter_mut() {
         velocity.inner = input.movement * dog.speed;
+    }
+}
+
+fn check_dog_hit(
+    audio: Res<Audio>,
+    sounds: Res<SfxAssets>,
+    mut dog_q: Query<(Entity, &mut Dog, &mut Blink)>,
+    cat_q: Query<&Cat, Without<Dog>>,
+    rapier_ctx: Res<RapierContext>,
+) {
+    for (entity, mut dog, mut blink) in dog_q.iter_mut() {
+        if dog.is_recovering() {
+            continue;
+        }
+
+        for (collider1, collider2, intersecting) in rapier_ctx.intersection_pairs_with(entity) {
+            if !intersecting {
+                // TODO: Is this right? Confusing API.
+                continue;
+            }
+
+            if let Ok(cat) = cat_q.get(collider1) {
+                if matches!(cat.state, CatState::Cannonballing { .. }) {
+                    dog.start_recovery();
+                    blink.enable();
+                    audio.play(sounds.dog_yip.clone());
+                    break;
+                }
+            }
+            if let Ok(cat) = cat_q.get(collider2) {
+                if matches!(cat.state, CatState::Cannonballing { .. }) {
+                    dog.start_recovery();
+                    blink.enable();
+                    audio.play(sounds.dog_yip.clone());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+fn tick_recovery(
+    time: Res<Time>,
+    mut dog_q: Query<(&mut Dog, &mut Blink)>,
+) {
+    let dt = time.delta();
+    for (mut dog, mut blink) in dog_q.iter_mut() {
+        if dog.recovery_timer.tick(dt).just_finished() {
+            dog.recovery_timer.pause();
+            blink.disable();
+        }
     }
 }
 

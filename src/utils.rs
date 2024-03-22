@@ -15,10 +15,35 @@ pub struct Blink {
 }
 
 impl Blink {
-    pub fn from_seconds(blink_time: f32) -> Self {
-        Self {
-            timer: Timer::from_seconds(blink_time, TimerMode::Repeating),
+    pub fn from_seconds(blink_time: f32, start_enabled: bool) -> Self {
+        let mut timer = Timer::from_seconds(blink_time, TimerMode::Repeating);
+        if !start_enabled {
+            timer.pause();
         }
+        Self {
+            timer,
+        }
+    }
+
+    pub fn set_enabled(&mut self, enabled: bool) {
+        if enabled {
+            self.timer.reset();
+            self.timer.unpause();
+        } else {
+            self.timer.pause();
+        }
+    }
+
+    pub fn enable(&mut self) {
+        self.set_enabled(true);
+    }
+
+    pub fn disable(&mut self) {
+        self.set_enabled(false);
+    }
+
+    pub fn is_enabled(&self) -> bool {
+        !self.timer.paused()
     }
 }
 
@@ -28,6 +53,11 @@ fn update_blink_visibility(
 ) {
     let dt = time.delta();
     for (mut blink, mut vis) in blink_q.iter_mut() {
+        if !blink.is_enabled() {
+            *vis = Visibility::Inherited;
+            continue;
+        }
+
         if blink.timer.tick(dt).just_finished() {
             *vis = match *vis {
                 Visibility::Inherited | Visibility::Visible => Visibility::Hidden,
