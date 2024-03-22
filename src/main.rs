@@ -68,6 +68,12 @@ fn main() {
         });
 
     let mut app = App::new();
+
+    // Needed to prevent failing to load assets on web builds, see:
+    // https://github.com/bevyengine/bevy/issues/10157#issuecomment-1849092112
+    #[cfg(target_arch = "wasm32")]
+    app.insert_resource(bevy::asset::AssetMetaCheck::Never);
+
     app
         .insert_resource(ClearColor(Color::BLACK))
 

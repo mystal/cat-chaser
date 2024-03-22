@@ -13,4 +13,4 @@ dist:
   cargo build --profile dist
 
 itch-build:
-  trunk build --public-url ./ --release
+  trunk build --public-url ./ --release --no-default-features
