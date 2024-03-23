@@ -7,7 +7,7 @@ use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::RapierContext;
 
 use crate::{
-    GAME_SIZE, AppState,
+    WORLD_SIZE, AppState,
     assets::SfxAssets,
     dog::Dog,
     game::CatBox,
@@ -186,8 +186,8 @@ impl CatBundle {
             velocity: Velocity::default(),
             collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
             bounds: MovementBounds {
-                min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(15.0, 15.0),
-                max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(15.0, 15.0),
+                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(15.0, 15.0),
+                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::new(15.0, 15.0),
             },
         }
     }

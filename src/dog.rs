@@ -4,7 +4,7 @@ use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::RapierContext;
 
 use crate::{
-    GAME_SIZE, AppState,
+    WORLD_SIZE, AppState,
     assets::SfxAssets,
     cats::{Cat, CatState},
     input::PlayerInput,
@@ -87,8 +87,8 @@ impl DogBundle {
             collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::DOG, groups::CAT),
             input: PlayerInput::default(),
             bounds: MovementBounds {
-                min: -(GAME_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
-                max: (GAME_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
+                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
+                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
             },
             blink: Blink::from_seconds(0.05, false),
         }

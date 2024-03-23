@@ -1,5 +1,5 @@
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_egui::{egui, EguiContexts};
+use bevy_egui::{egui, EguiContexts, EguiSettings};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::render::{DebugRenderContext, RapierDebugRenderPlugin};
 
@@ -8,6 +8,12 @@ pub struct DebugPlugin;
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         app
+            .insert_resource(EguiSettings {
+                // TODO: Make this configurable, since it'll depend on the screen.
+                // TODO: Default to guessed scale factor?
+                scale_factor: 1.5,
+                ..default()
+            })
             .add_plugins((
                 WorldInspectorPlugin::default().run_if(show_world_inspector),
                 RapierDebugRenderPlugin::default().disabled(),

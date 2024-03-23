@@ -4,6 +4,8 @@ mod classes;
 mod hud;
 mod menus;
 
+use crate::window::WindowState;
+
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
@@ -17,6 +19,7 @@ impl Plugin for UiPlugin {
 
 fn setup_ui(
     mut ui_scale: ResMut<UiScale>,
+    window_state: Res<WindowState>,
 ) {
-    ui_scale.0 = 4.0;
+    ui_scale.0 = 3.0 * window_state.scale as f32;
 }

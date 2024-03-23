@@ -19,8 +19,9 @@ mod physics;
 mod ui;
 mod window;
 
-const GAME_SIZE: UVec2 = UVec2::new(400, 300);
-const DEFAULT_SCALE: u8 = 2;
+const SCREEN_SIZE: UVec2 = UVec2::new(800, 600);
+const WORLD_SIZE: UVec2 = UVec2::new(400, 300);
+const DEFAULT_SCALE: u8 = 1;
 const ALLOW_EXIT: bool = cfg!(not(target_arch = "wasm32"));
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
@@ -56,8 +57,8 @@ fn main() {
                 title: window::WINDOW_TITLE.into(),
                 position: saved_window_state.position,
                 resolution: WindowResolution::new(
-                    GAME_SIZE[0] as f32 * saved_window_state.scale as f32,
-                    GAME_SIZE[1] as f32 * saved_window_state.scale as f32,
+                    SCREEN_SIZE[0] as f32 * saved_window_state.scale as f32,
+                    SCREEN_SIZE[1] as f32 * saved_window_state.scale as f32,
                 )
                 .with_scale_factor_override(1.0),
                 resizable: false,

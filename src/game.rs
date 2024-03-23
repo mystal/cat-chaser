@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    AppState, GAME_SIZE,
+    AppState, WORLD_SIZE,
     assets::GameAssets,
     dog::DogPlugin,
     level::NextLevelEvent,
@@ -31,7 +31,7 @@ fn setup_game(
     // Spawn floor.
     let floor_bundle = SpriteBundle {
         sprite: Sprite {
-            custom_size: Some(GAME_SIZE.as_vec2() / 2.0),
+            custom_size: Some(WORLD_SIZE.as_vec2() / 2.0),
             ..default()
         },
         texture: assets.floor.clone(),

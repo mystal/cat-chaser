@@ -12,9 +12,6 @@ use crate::DEFAULT_SCALE;
 pub const WINDOW_TITLE: &str = "Cat Chaser";
 const WINDOW_STATE_FILENAME: &str = "window_state.ron";
 
-// pub fn window_plugin() -> WindowPlugin {
-// }
-
 #[derive(Clone, Debug, Deserialize, Serialize, Resource)]
 pub struct WindowState {
     #[serde(default)]

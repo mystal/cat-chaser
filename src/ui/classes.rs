@@ -18,13 +18,13 @@ pub fn c_start_text(_a: &AssetServer, b: &mut TextBundle) {
 
 pub fn c_font_start(assets: &AssetServer, s: &mut TextStyle) {
     s.font = assets.load("fonts/Kenney Pixel.ttf");
-    s.font_size = 10.0;
+    s.font_size = 13.0;
     s.color = Color::WHITE;
 }
 
 pub fn c_font_how_to_play(assets: &AssetServer, s: &mut TextStyle) {
     s.font = assets.load("fonts/Kenney Pixel.ttf");
-    s.font_size = 10.0;
+    s.font_size = 13.0;
     s.color = Color::BLACK;
 }
 

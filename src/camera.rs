@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
 
 use crate::{
-    AppState, GAME_SIZE,
+    AppState, SCREEN_SIZE, WORLD_SIZE,
 };
 
 pub struct CameraPlugin;
@@ -19,7 +19,12 @@ fn spawn_camera(
     mut commands: Commands,
 ) {
     // Spawn camera.
-    commands.spawn(Camera2dBundle::default());
+    let mut camera = Camera2dBundle::default();
+    camera.projection.scaling_mode = ScalingMode::Fixed {
+        width: SCREEN_SIZE.x as f32,
+        height: SCREEN_SIZE.y as f32,
+    };
+    commands.spawn(camera);
 }
 
 fn scale_camera(
@@ -27,8 +32,8 @@ fn scale_camera(
 ) {
     for mut projection in camera_q.iter_mut() {
         projection.scaling_mode = ScalingMode::Fixed {
-            width: GAME_SIZE.x as f32,
-            height: GAME_SIZE.y as f32,
+            width: WORLD_SIZE.x as f32,
+            height: WORLD_SIZE.y as f32,
         };
     }
 }
