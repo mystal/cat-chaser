@@ -241,7 +241,7 @@ fn update_cats(
                 } else if !dog_recovering && dog_in_range {
                     cat.state = CatState::Flee;
                 }
-            },
+            }
             CatState::Flee => {
                 if in_pen {
                     cat.state = CatState::InPen;
@@ -256,7 +256,7 @@ fn update_cats(
                 } else if !dog_recovering && dog_out_of_range {
                     cat.state = CatState::Wander;
                 }
-            },
+            }
             CatState::Jittering { timer } => {
                 if timer.finished() {
                     cat.state = CatState::Cannonballing {
@@ -270,13 +270,13 @@ fn update_cats(
                         Vec2::ZERO
                     };
                 }
-            },
+            }
             CatState::Cannonballing { timer } => {
                 if timer.finished() {
                     cat.state = CatState::Wander;
                     annoyance.reset();
                 }
-            },
+            }
             CatState::InPen => {},
         }
 
@@ -294,22 +294,22 @@ fn update_cats(
             CatState::Wander => {
                 // TODO: Wander logic.
                 **velocity = Vec2::ZERO;
-            },
+            }
             CatState::Flee => {
                 if let Some(dog_pos) = dog_pos {
                     let flee_dir = (pos - dog_pos).normalize_or_zero();
                     **velocity = flee_dir * cat.kind.flee_speed();
                 }
-            },
+            }
             CatState::Jittering { timer } => {
                 timer.tick(dt);
-            },
+            }
             CatState::Cannonballing { timer } => {
                 timer.tick(dt);
-            },
+            }
             CatState::InPen => {
                 **velocity = Vec2::ZERO;
-            },
+            }
         }
     }
 }
@@ -333,7 +333,7 @@ fn cat_animation(
                         sprite.flip_x = velocity.x > 0.0;
                     }
                 }
-            },
+            }
             CatState::Flee => {
                 if !animator.is_cur_anim(WALK_ANIM) {
                     animator.set_anim(WALK_ANIM);
@@ -341,12 +341,12 @@ fn cat_animation(
                 if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
-            },
+            }
             CatState::Jittering { .. } => {
                 if !animator.is_cur_anim(IDLE_ANIM) {
                     animator.set_anim(IDLE_ANIM);
                 }
-            },
+            }
             CatState::Cannonballing { .. } => {
                 if !animator.is_cur_anim(ATTACK_ANIM) {
                     animator.set_anim(ATTACK_ANIM);
@@ -356,7 +356,7 @@ fn cat_animation(
                 if !animator.is_cur_anim(IDLE_ANIM) {
                     animator.set_anim(IDLE_ANIM);
                 }
-            },
+            }
         }
 
         // TODO: Jitter sprite!

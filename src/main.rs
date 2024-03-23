@@ -81,7 +81,7 @@ fn main() {
         // External plugins
         .add_plugins((
             default_plugins,
-            FrameTimeDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
             bevy_egui::EguiPlugin,
             AudioPlugin,
         ))

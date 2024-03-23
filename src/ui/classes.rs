@@ -17,15 +17,15 @@ pub fn c_start_text(_a: &AssetServer, b: &mut TextBundle) {
 }
 
 pub fn c_font_start(assets: &AssetServer, s: &mut TextStyle) {
-    s.font = assets.load("fonts/Kenney Pixel.ttf").into();
+    s.font = assets.load("fonts/Kenney Pixel.ttf");
     s.font_size = 10.0;
-    s.color = Color::WHITE.into();
+    s.color = Color::WHITE;
 }
 
 pub fn c_font_how_to_play(assets: &AssetServer, s: &mut TextStyle) {
-    s.font = assets.load("fonts/Kenney Pixel.ttf").into();
+    s.font = assets.load("fonts/Kenney Pixel.ttf");
     s.font_size = 10.0;
-    s.color = Color::BLACK.into();
+    s.color = Color::BLACK;
 }
 
 pub fn c_cat_tracker(b: &mut NodeBundle) {
@@ -48,7 +48,7 @@ pub fn c_tracker_text(_a: &AssetServer, b: &mut TextBundle) {
 }
 
 pub fn c_font_tracker(assets: &AssetServer, s: &mut TextStyle) {
-    s.font = assets.load("fonts/Kenney Pixel.ttf").into();
+    s.font = assets.load("fonts/Kenney Pixel.ttf");
     s.font_size = 14.0;
-    s.color = Color::WHITE.into();
+    s.color = Color::WHITE;
 }
