@@ -52,8 +52,14 @@ pub fn read_player_input(
     // Read input from mouse/keyboard.
     // Movement
     if movement == Vec2::ZERO && !egui_ctx.ctx_mut().wants_keyboard_input() {
-        let x = (keys.pressed(KeyCode::KeyD) as i8 - keys.pressed(KeyCode::KeyA) as i8) as f32;
-        let y = (keys.pressed(KeyCode::KeyW) as i8 - keys.pressed(KeyCode::KeyS) as i8) as f32;
+        let right = keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]);
+        let left = keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]);
+        let x = (right as i8 - left as i8) as f32;
+
+        let up = keys.any_pressed([KeyCode::KeyW, KeyCode::ArrowUp]);
+        let down = keys.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown]);
+        let y = (up as i8 - down as i8) as f32;
+
         movement = Vec2::new(x, y).normalize_or_zero();
     }
 
