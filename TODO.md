@@ -41,6 +41,12 @@
 
 ## Tech
 * [x] Update to bevy 0.13
+* [ ] Remove input events when egui should consume them:
+https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
+* Pixel-perfect rendering
+  * [x] Remove OS window scaling.
+  * [x] Allow scaling window by integer values. Default to 2x
+  * [ ] Enable keyboard shortcuts to re-scale at runtime.
 * [ ] Try out bevy_xpbd
 * [x] Either fix bevy_aseprite or find a different aseprite plugin
   * Switched to bevy_asepritesheet

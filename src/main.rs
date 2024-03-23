@@ -58,7 +58,8 @@ fn main() {
                 resolution: WindowResolution::new(
                     GAME_SIZE[0] as f32 * saved_window_state.scale as f32,
                     GAME_SIZE[1] as f32 * saved_window_state.scale as f32,
-                ),
+                )
+                .with_scale_factor_override(1.0),
                 resizable: false,
                 mode: WindowMode::Windowed,
                 cursor,
