@@ -12,5 +12,5 @@ run:
 dist:
   cargo build --profile dist
 
-itch-build:
+dist-itch:
   trunk build --public-url ./ --release --no-default-features
