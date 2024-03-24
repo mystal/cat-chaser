@@ -113,12 +113,12 @@ impl Annoyance {
     fn from_cat_kind(kind: CatKind) -> Self {
         let time_to_annoy = match kind {
             CatKind::Basic => 1.0,
-            CatKind::Kitten => 0.0,
+            CatKind::Kitten => -1.0,
             CatKind::Chonk => 0.67,
         };
         let time_to_calm = match kind {
             CatKind::Basic => 1.3,
-            CatKind::Kitten => 0.0,
+            CatKind::Kitten => 0.1,
             CatKind::Chonk => 2.0,
         };
         Self::new(time_to_annoy, time_to_calm)
