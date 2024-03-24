@@ -8,7 +8,7 @@ use crate::{
     assets::GameAssets,
     cats::{Cat, CatBundle},
     dog::{Dog, DogBundle},
-    game::CatBox,
+    game::{self, CatBox},
 };
 
 pub struct LevelPlugin;
@@ -19,8 +19,10 @@ impl Plugin for LevelPlugin {
             .init_resource::<CurrentLevel>()
             .init_resource::<Levels>()
             .add_event::<NextLevelEvent>()
-            .add_systems(Update, spawn_next_level.run_if(in_state(AppState::Playing)))
-            .add_systems(Update, debug_next_level.run_if(in_state(AppState::Playing)));
+            .add_systems(Update, (
+                spawn_next_level.after(game::check_start_next_level),
+                debug_next_level,
+            ).run_if(in_state(AppState::Playing)));
     }
 }
 

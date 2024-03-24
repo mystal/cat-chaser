@@ -204,7 +204,7 @@ impl CatBundle {
     }
 }
 
-fn update_cats(
+pub fn update_cats(
     time: Res<Time>,
     audio: Res<Audio>,
     rapier_ctx: Res<RapierContext>,

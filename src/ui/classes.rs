@@ -52,3 +52,20 @@ pub fn c_font_tracker(assets: &AssetServer, s: &mut TextStyle) {
     s.font_size = 14.0;
     s.color = Color::WHITE;
 }
+
+pub fn c_next_level(b: &mut NodeBundle) {
+    let s = &mut b.style;
+    s.position_type = PositionType::Absolute;
+    s.right = Val::Px(6.0);
+    s.bottom = Val::Px(6.0);
+}
+
+pub fn c_next_level_text(_a: &AssetServer, b: &mut TextBundle) {
+    b.visibility = Visibility::Hidden;
+}
+
+pub fn c_font_next_level(assets: &AssetServer, s: &mut TextStyle) {
+    s.font = assets.load("fonts/Kenney Pixel.ttf");
+    s.font_size = 12.0;
+    s.color = Color::WHITE;
+}
