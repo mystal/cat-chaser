@@ -78,7 +78,7 @@ impl DogBundle {
                         flip_x: true,
                         ..default()
                     },
-                    transform: Transform::from_translation(pos.extend(2.0)),
+                    transform: Transform::from_translation(pos.extend(3.0)),
                     ..default()
                 },
                 ..default()

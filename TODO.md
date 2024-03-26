@@ -8,7 +8,7 @@
   * On Linux
   * On Windows: https://bevy-cheatbook.github.io/platforms/windows.html#creating-an-icon-for-your-app
   * On macOS
-* [ ] Dog
+* [x] Dog
   * [x] Movement
   * [x] Bark
   * [x] Get hit and play sound and blink
