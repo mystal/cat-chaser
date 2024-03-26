@@ -4,9 +4,9 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::{
-    AppState,
+    WORLD_SIZE, AppState,
     assets::GameAssets,
-    cats::{Cat, CatBundle},
+    cats::{CAT_BOUNDS, Cat, CatBundle},
     dog::{Dog, DogBundle},
     game::{self, CatBox},
 };
@@ -62,7 +62,7 @@ fn spawn_next_level(
     mut current_level: ResMut<CurrentLevel>,
     cats_q: Query<Entity, With<Cat>>,
     dog_q: Query<Entity, With<Dog>>,
-    catbox_q: Query<&GlobalTransform, With<CatBox>>,
+    catbox_q: Query<&Transform, With<CatBox>>,
 ) {
     if next_level.is_empty() {
         return;
@@ -80,12 +80,10 @@ fn spawn_next_level(
     }
 
     // Spawn a new dog.
-    // TODO: Figure out why dog doesn't spawn in CatBox in first level?
-    // Probably an ordering issue. CatBox probably doesn't exist yet.
-    let dog_pos = catbox_q.get_single()
-        .map(|t| t.translation().truncate())
+    let catbox_pos = catbox_q.get_single()
+        .map(|t| t.translation.truncate())
         .unwrap_or_default();
-    commands.spawn(DogBundle::new(dog_pos, assets.wizard_dog.clone()));
+    commands.spawn(DogBundle::new(catbox_pos, assets.wizard_dog.clone()));
 
     // Then spawn new cats.
     let level_index = if current_level.index + 1 < levels.len() {
@@ -99,15 +97,25 @@ fn spawn_next_level(
         return;
     };
 
-    // TODO: Spawn in random locations.
+    // Spawn cats in random locations.
+    let random_location = || {
+        loop {
+            let x = (fastrand::f32() - 0.5) * (WORLD_SIZE.x as f32 - (CAT_BOUNDS * 2.0));
+            let y = (fastrand::f32() - 0.5) * (WORLD_SIZE.y as f32 - (CAT_BOUNDS * 2.0));
+            let pos = Vec2::new(x, y);
+            if pos.distance_squared(catbox_pos) > 80.0 * 80.0 {
+                break pos;
+            }
+        }
+    };
     for _ in 0..level_cats.basic {
-        commands.spawn(CatBundle::basic(Vec2::new(-100.0, -30.0), assets.basic_cat.clone()));
+        commands.spawn(CatBundle::basic(random_location(), assets.basic_cat.clone()));
     }
     for _ in 0..level_cats.kitten {
-        commands.spawn(CatBundle::kitten(Vec2::new(0.0, -30.0), assets.kitten.clone()));
+        commands.spawn(CatBundle::kitten(random_location(), assets.kitten.clone()));
     }
     for _ in 0..level_cats.chonk {
-        commands.spawn(CatBundle::chonk(Vec2::new(100.0, -30.0), assets.fat_cat.clone()));
+        commands.spawn(CatBundle::chonk(random_location(), assets.fat_cat.clone()));
     }
 
     // Set CurrentLevel info.

@@ -85,7 +85,7 @@ fn setup_game(
         CatBox,
         Name::new("CatBox"),
         SpriteBundle {
-            transform: Transform::from_translation(Vec3::new(-100.0, 50.0, -0.5)),
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, -0.5)),
             texture: assets.cat_box.clone(),
             ..default()
         },

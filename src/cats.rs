@@ -19,6 +19,8 @@ pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
 pub const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
 pub const ATTACK_ANIM: AnimHandle = AnimHandle::from_index(2);
 
+pub const CAT_BOUNDS: f32 = 15.0;
+
 const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 10.0;
 
@@ -185,8 +187,8 @@ impl CatBundle {
             velocity: Velocity::default(),
             collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
             bounds: MovementBounds {
-                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(15.0, 15.0),
-                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::new(15.0, 15.0),
+                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
+                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),
             },
         }
     }
