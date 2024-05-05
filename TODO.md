@@ -19,7 +19,7 @@
     * [x] Kitten
   * [x] Cat colors
   * Behaviors
-    * [ ] Wandering
+    * [x] Wandering
     * [x] Flee
     * [x] In Pen
     * [x] Angry!
@@ -45,9 +45,9 @@ https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
 * Pixel-perfect rendering
   * [x] Remove OS window scaling.
   * [x] Allow scaling window by integer values. Default to 2x
-  * [ ] Allow stretching game to full window size (respecting aspect ratio).
   * [ ] Enable keyboard shortcuts to re-scale at runtime.
-  * [ ] Adjust viewport and use black borders to make sure we render to a multiple of GAME_SIZE
+  * [x] Adjust viewport and use black borders to make sure we render to a multiple of GAME_SIZE
+  * [ ] Fix UI size at different window sizes.
 * [ ] Faster web builds for iterating.
 * [ ] Try out bevy_xpbd
 * [x] Either fix bevy_aseprite or find a different aseprite plugin
