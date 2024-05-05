@@ -21,5 +21,6 @@ fn setup_ui(
     mut ui_scale: ResMut<UiScale>,
     window_state: Res<WindowState>,
 ) {
+    // TODO: Make this match current viewport scaling!
     ui_scale.0 = 3.0 * window_state.scale as f32;
 }
