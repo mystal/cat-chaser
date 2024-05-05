@@ -25,10 +25,10 @@ pub struct PhysicsPlugin;
 impl Plugin for PhysicsPlugin {
     fn build(&self, app: &mut App) {
         app
-            .insert_resource(RapierConfiguration {
-                gravity: Vec2::ZERO,
-                ..default()
-            })
+            // .insert_resource(RapierConfiguration {
+            //     gravity: Vec2::ZERO,
+            //     ..default()
+            // })
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(32.0))
             .add_systems(Update, update_movement);
     }
@@ -114,4 +114,3 @@ impl ColliderBundle {
         }
     }
 }
-
