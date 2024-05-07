@@ -7,7 +7,7 @@ use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin};
 use bevy::window::PrimaryWindow;
 use serde::{Deserialize, Serialize};
 
-use crate::DEFAULT_SCALE;
+use crate::{DEFAULT_SCALE, SCREEN_SIZE};
 
 pub const WINDOW_TITLE: &str = "Cat Chaser";
 const WINDOW_STATE_FILENAME: &str = "window_state.ron";
@@ -78,12 +78,15 @@ impl Plugin for WindowPlugin {
     }
 }
 
-fn update_window_state(
+pub fn update_window_state(
     mut window_state: ResMut<WindowState>,
     window_q: Query<&Window, (With<PrimaryWindow>, Changed<Window>)>,
 ) {
     if let Ok(window) = window_q.get_single() {
         window_state.position = window.position;
+        let scale_x = window.physical_width() / SCREEN_SIZE.x;
+        let scale_y = window.physical_height() / SCREEN_SIZE.y;
+        window_state.scale = scale_x.min(scale_y).max(1) as u8;
     }
 }
 

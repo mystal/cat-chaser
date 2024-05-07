@@ -4,23 +4,27 @@ mod classes;
 mod hud;
 mod menus;
 
-use crate::window::WindowState;
+use crate::window::{WindowState, update_window_state};
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_plugins(hud::HudPlugin)
-            .add_plugins(menus::MenusPlugin)
-            .add_systems(Startup, setup_ui);
+            .add_plugins((
+                hud::HudPlugin,
+                menus::MenusPlugin,
+            ))
+            .add_systems(PostUpdate, update_ui_scale.after(update_window_state));
     }
 }
 
-fn setup_ui(
+fn update_ui_scale(
     mut ui_scale: ResMut<UiScale>,
     window_state: Res<WindowState>,
 ) {
-    // TODO: Make this match current viewport scaling!
-    ui_scale.0 = 3.0 * window_state.scale as f32;
+    if 3.0 * window_state.scale as f32 != ui_scale.0 {
+        // Make the UI match current viewport scaling.
+        ui_scale.0 = 3.0 * window_state.scale as f32;
+    }
 }

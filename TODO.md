@@ -47,7 +47,7 @@ https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
   * [x] Allow scaling window by integer values. Default to 2x
   * [ ] Enable keyboard shortcuts to re-scale at runtime.
   * [x] Adjust viewport and use black borders to make sure we render to a multiple of GAME_SIZE
-  * [ ] Fix UI size at different window sizes.
+  * [x] Fix UI size at different window sizes.
 * [ ] Faster web builds for iterating.
 * [ ] Try out bevy_xpbd
 * [x] Either fix bevy_aseprite or find a different aseprite plugin
