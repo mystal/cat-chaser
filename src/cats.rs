@@ -53,6 +53,16 @@ pub enum CatKind {
 }
 
 impl CatKind {
+    pub fn random() -> Self {
+        static ALL_KINDS: &[CatKind] = &[
+            CatKind::Basic,
+            CatKind::Kitten,
+            CatKind::Chonk,
+        ];
+
+        *fastrand::choice(ALL_KINDS).unwrap()
+    }
+
     fn walk_speed(&self) -> f32 {
         match self {
             CatKind::Basic => 50.0,
@@ -450,12 +460,17 @@ pub const CAT_COLORS: &[[f32; 3]] = &[
     [255.0 / 255.0, 193.0 / 255.0, 229.0 / 255.0], // Not quite but sort of pink.
 ];
 
+pub fn random_cat_color() -> Color {
+    let color = fastrand::choice(CAT_COLORS).unwrap();
+    Color::rgb_from_array(*color)
+}
+
 fn init_cat_color(
     mut cat_q: Query<(&mut Sprite, &mut Cat), Added<Sprite>>,
 ) {
     for (mut sprite, mut cat) in cat_q.iter_mut() {
-        let color = fastrand::choice(CAT_COLORS).unwrap();
-        sprite.color = Color::rgb_from_array(*color);
-        cat.color = Color::rgb_from_array(*color);
+        let color = random_cat_color();
+        sprite.color = color;
+        cat.color = color;
     }
 }

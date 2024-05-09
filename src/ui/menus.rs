@@ -122,14 +122,14 @@ fn show_how_to_play(
 
     // ... and cats.
     // TODO: Scaling them 3x doesn't look good at this resolution. Get artifacts :/
-    let color = cats::CAT_COLORS[0];
+    let color = Color::rgb_from_array(cats::CAT_COLORS[0]);
     commands.spawn((
         Name::new("BasicCat"),
         AnimatedSpriteBundle {
             animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
             sprite_bundle: SpriteSheetBundle {
                 sprite: Sprite {
-                    color: Color::rgb(color[0], color[1], color[2]),
+                    color,
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(-30.0, -25.0, 0.0))
@@ -140,14 +140,14 @@ fn show_how_to_play(
             ..default()
         },
     ));
-    let color = cats::CAT_COLORS[3];
+    let color = Color::rgb_from_array(cats::CAT_COLORS[3]);
     commands.spawn((
         Name::new("FatCat"),
         AnimatedSpriteBundle {
             animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
             sprite_bundle: SpriteSheetBundle {
                 sprite: Sprite {
-                    color: Color::rgb(color[0], color[1], color[2]),
+                    color,
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(70.0, -25.0, 0.0))
@@ -158,14 +158,14 @@ fn show_how_to_play(
             ..default()
         },
     ));
-    let color = cats::CAT_COLORS[2];
+    let color = Color::rgb_from_array(cats::CAT_COLORS[2]);
     commands.spawn((
         Name::new("Kitten"),
         AnimatedSpriteBundle {
             animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
             sprite_bundle: SpriteSheetBundle {
                 sprite: Sprite {
-                    color: Color::rgb(color[0], color[1], color[2]),
+                    color,
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(165.0, -25.0, 0.0))

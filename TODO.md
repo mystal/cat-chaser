@@ -23,8 +23,10 @@
     * [x] Flee
     * [x] In Pen
     * [x] Angry!
+  * [ ] Disable cats wandering when not in GameState::Playing
 * [x] Level win condition
 * [x] Levels!
+* [x] Victory screen party!
 * [ ] Menus
   * [x] Start menu
   * [x] How to play
