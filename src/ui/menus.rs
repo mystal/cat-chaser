@@ -67,8 +67,6 @@ fn handle_menu_input(
             }
         }
         AppState::Playing => {}
-        AppState::Won => todo!(),
-        AppState::GameOver => todo!(),
     }
 }
 

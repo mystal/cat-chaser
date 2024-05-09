@@ -3,6 +3,7 @@ use bevy::prelude::*;
 mod classes;
 mod hud;
 mod menus;
+mod party;
 
 use crate::window::{WindowState, update_window_state};
 
@@ -14,6 +15,7 @@ impl Plugin for UiPlugin {
             .add_plugins((
                 hud::HudPlugin,
                 menus::MenusPlugin,
+                party::PartyPlugin,
             ))
             .add_systems(PostUpdate, update_ui_scale.after(update_window_state));
     }

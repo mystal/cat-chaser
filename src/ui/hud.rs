@@ -3,8 +3,7 @@ use bevy_ui_dsl::*;
 
 use crate::{
     AppState,
-    game::{self, CatStats},
-    level::NextLevelEvent,
+    game::{self, CatStats, GameState},
     ui::classes::*,
 };
 
@@ -16,9 +15,9 @@ impl Plugin for HudPlugin {
             .add_systems(OnEnter(AppState::Playing), setup_hud)
             .add_systems(OnExit(AppState::Playing), destroy_hud)
             .add_systems(Update, (
-                update_cat_tracker,
+                update_cat_tracker.after(game::update_cat_stats),
                 update_next_level_prompt,
-            ).run_if(in_state(AppState::Playing)).after(game::check_start_next_level));
+            ).run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -31,19 +30,26 @@ struct CatTracker;
 #[derive(Component)]
 struct NextLevelText;
 
+#[derive(Component)]
+struct VictoryText;
+
 fn setup_hud(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    rooti(c_root, &asset_server, &mut commands, HudRoot, |p| {
-        node(c_cat_tracker, p, |p| {
+    rooti(c_root, &asset_server, &mut commands, (HudRoot, Name::new("HudRoot")), |p| {
+        nodei(c_cat_tracker, Name::new("CatTracker"), p, |p| {
             image(c_cat_face, p);
             // TODO: Add a drop shadow to the text.
             texti("00/00", c_tracker_text, c_font_tracker, CatTracker, p);
         });
-        node(c_next_level, p, |p| {
+        nodei(c_next_level, Name::new("NextLevel"), p, |p| {
             // TODO: Add a drop shadow to the text.
             texti("Cats Corralled!\nPress Enter to start the next level", c_next_level_text, c_font_next_level, NextLevelText, p);
+        });
+        nodei(c_victory, Name::new("Victory"), p, |p| {
+            // TODO: Add a drop shadow to the text.
+            texti("You are the most magical corgi in all the land!\nPress Enter to start anew!", c_next_level_text, c_font_next_level, VictoryText, p);
         });
     });
 }
@@ -71,24 +77,38 @@ fn update_cat_tracker(
 }
 
 fn update_next_level_prompt(
-    mut next_level: EventReader<NextLevelEvent>,
-    cat_stats: Res<CatStats>,
-    mut next_level_q: Query<&mut Visibility, With<NextLevelText>>,
+    game_state: Res<State<GameState>>,
+    mut next_level_q: Query<&mut Visibility, (With<NextLevelText>, Without<VictoryText>)>,
+    mut victory_q: Query<&mut Visibility, With<VictoryText>>,
 ) {
-    if !cat_stats.is_changed() {
+    if !game_state.is_changed() {
         return;
     }
 
-    if !next_level.is_empty() {
-        // Toggle visibility for next level prompt.
-        for mut vis in next_level_q.iter_mut()  {
-            *vis = Visibility::Hidden;
-        }
-    } else if cat_stats.all_penned() {
-        // Toggle visibility for next level prompt.
-        for mut vis in next_level_q.iter_mut()  {
-            *vis = Visibility::Inherited;
-        }
+    match game_state.get() {
+        GameState::LevelClear => {
+            for mut vis in next_level_q.iter_mut()  {
+                *vis = Visibility::Inherited;
+            }
+            for mut vis in victory_q.iter_mut()  {
+                *vis = Visibility::Hidden;
+            }
+        },
+        GameState::Victory => {
+            for mut vis in next_level_q.iter_mut()  {
+                *vis = Visibility::Hidden;
+            }
+            for mut vis in victory_q.iter_mut()  {
+                *vis = Visibility::Inherited;
+            }
+        },
+        GameState::None | GameState::Playing => {
+            for mut vis in next_level_q.iter_mut()  {
+                *vis = Visibility::Hidden;
+            }
+            for mut vis in victory_q.iter_mut()  {
+                *vis = Visibility::Hidden;
+            }
+        },
     }
-    next_level.clear();
 }

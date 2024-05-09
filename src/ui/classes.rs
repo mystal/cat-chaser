@@ -69,3 +69,12 @@ pub fn c_font_next_level(assets: &AssetServer, s: &mut TextStyle) {
     s.font_size = 12.0;
     s.color = Color::WHITE;
 }
+
+pub fn c_victory(b: &mut NodeBundle) {
+    let s = &mut b.style;
+    s.position_type = PositionType::Absolute;
+    s.width = Val::Percent(100.0);
+    s.justify_content = JustifyContent::Center;
+    // s.right = Val::Px(6.0);
+    s.bottom = Val::Px(6.0);
+}

@@ -25,15 +25,13 @@ const DEFAULT_SCALE: u8 = 1;
 const ALLOW_EXIT: bool = cfg!(not(target_arch = "wasm32"));
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
-enum AppState {
+pub enum AppState {
     #[default]
     Loading,
     StartMenu,
     Credits,
     HowToPlay,
     Playing,
-    Won,
-    GameOver,
 }
 
 fn main() {

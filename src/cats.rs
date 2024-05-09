@@ -215,7 +215,6 @@ impl CatBundle {
 }
 
 pub fn update_cats(
-    mut gizmos: Gizmos,
     time: Res<Time>,
     audio: Res<Audio>,
     sounds: Res<SfxAssets>,

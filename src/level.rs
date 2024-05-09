@@ -8,7 +8,7 @@ use crate::{
     assets::GameAssets,
     cats::{CAT_BOUNDS, Cat, CatBundle},
     dog::{Dog, DogBundle},
-    game::{self, CatBox},
+    game::CatBox,
 };
 
 pub struct LevelPlugin;
@@ -20,8 +20,8 @@ impl Plugin for LevelPlugin {
             .init_resource::<Levels>()
             .add_event::<NextLevelEvent>()
             .add_systems(Update, (
-                spawn_next_level.after(game::check_start_next_level),
-                debug_next_level,
+                spawn_next_level,
+                // debug_next_level,
             ).run_if(in_state(AppState::Playing)));
     }
 }
@@ -122,13 +122,4 @@ fn spawn_next_level(
     current_level.index = level_index;
     current_level.cats = level_cats.clone();
     current_level.cats_herded = 0;
-}
-
-fn debug_next_level(
-    mut next_level: EventWriter<NextLevelEvent>,
-    keys: Res<ButtonInput<KeyCode>>,
-) {
-    if keys.just_pressed(KeyCode::Tab) {
-        next_level.send_default();
-    }
 }
