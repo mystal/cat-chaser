@@ -23,7 +23,7 @@ pub const CAT_BOUNDS: f32 = 15.0;
 pub const CATBOX_BUFFER: f32 = 70.0;
 
 const FLEE_RANGE: f32 = 70.0;
-const FLEE_BUFFER: f32 = 20.0;
+const FLEE_BUFFER: f32 = 0.0;
 
 const JITTER_TIME: f32 = 1.0;
 const CANNONBALL_TIME: f32 = 1.25;
@@ -318,7 +318,7 @@ pub fn update_cats(
         let cat_kind = cat.kind;
         match &mut cat.state {
             CatState::Wander { accel_angle }=> {
-                // TODO: Wander logic.
+                // Wander logic.
 
                 // Update the desired wander acceleration by a random amount.
                 let accel_angle_delta = ((fastrand::f32() * 2.0) - 1.0) * 18.0;

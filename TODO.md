@@ -12,7 +12,7 @@
   * [x] Movement
   * [x] Bark
   * [x] Get hit and play sound and blink
-* [ ] Cats
+* [x] Cats
   * Different Cat types
     * [x] Basic
     * [x] Chonk
