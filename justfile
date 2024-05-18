@@ -13,4 +13,5 @@ dist:
   cargo build --profile dist --no-default-features
 
 dist-itch:
-  trunk build --public-url ./ --release --no-default-features -d builds/html5 index.html
+  RUSTFLAGS=--cfg=web_sys_unstable_apis \
+    trunk build --public-url ./ --release --no-default-features -d builds/html5 index.html
