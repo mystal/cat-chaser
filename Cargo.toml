@@ -27,7 +27,6 @@ bevy-inspector-egui = { version = "0.24", default-features = false, features = [
 # Audio support
 bevy_kira_audio = { version = "0.19", default-features = false, features = ["ogg", "wav"] }
 # 2D physics. Mostly used for collision detection.
-# TODO: Try out bevy_xpbd
 bevy_rapier2d = "0.26"
 # For in-game UI.
 bevy-ui-dsl = "0.8"
