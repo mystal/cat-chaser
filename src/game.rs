@@ -5,7 +5,7 @@ use crate::{
     assets::GameAssets,
     cats::{self, Cat, CatState},
     dog::DogPlugin,
-    level::{CurrentLevel, Levels, NextLevelEvent},
+    level::{CurrentLevel, Levels},
     physics::{groups, ColliderBundle},
 };
 
@@ -27,7 +27,6 @@ impl Plugin for GamePlugin {
             .add_plugins(DogPlugin)
             .init_resource::<CatStats>()
             .add_systems(OnEnter(AppState::Playing), setup_game)
-            .add_systems(OnEnter(GameState::Playing), queue_next_level)
             .add_systems(Update, (
                 (
                     update_cat_stats,
@@ -106,12 +105,6 @@ fn setup_game(
     next_game_state.set(GameState::Playing);
 }
 
-fn queue_next_level(
-    mut next_level: EventWriter<NextLevelEvent>,
-) {
-    next_level.send_default();
-}
-
 pub fn update_cat_stats(
     mut cat_stats: ResMut<CatStats>,
     cats_q: Query<&Cat>,
@@ -134,9 +127,11 @@ pub fn check_state_change(
 ) {
     match game_state.get() {
         GameState::Playing => {
-            if !cat_stats.all_penned() && !keys.just_pressed(KeyCode::Tab) {
+            let level_clear = cat_stats.all_penned() || keys.just_pressed(KeyCode::Tab);
+            if !level_clear {
                 return;
             }
+            debug!("Level clear!");
             if current_level.index + 1 >= levels.len() {
                 next_game_state.set(GameState::Victory);
             } else {

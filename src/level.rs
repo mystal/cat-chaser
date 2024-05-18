@@ -4,11 +4,11 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::{
-    WORLD_SIZE, AppState,
+    WORLD_SIZE,
     assets::GameAssets,
     cats::{CAT_BOUNDS, Cat, CatBundle},
     dog::{Dog, DogBundle},
-    game::CatBox,
+    game::{CatBox, GameState},
 };
 
 pub struct LevelPlugin;
@@ -18,16 +18,9 @@ impl Plugin for LevelPlugin {
         app
             .init_resource::<CurrentLevel>()
             .init_resource::<Levels>()
-            .add_event::<NextLevelEvent>()
-            .add_systems(Update, (
-                spawn_next_level,
-                // debug_next_level,
-            ).run_if(in_state(AppState::Playing)));
+            .add_systems(OnEnter(GameState::Playing), spawn_next_level);
     }
 }
-
-#[derive(Default, Event)]
-pub struct NextLevelEvent;
 
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct LevelCats {
@@ -56,7 +49,6 @@ pub struct CurrentLevel {
 
 fn spawn_next_level(
     mut commands: Commands,
-    mut next_level: EventReader<NextLevelEvent>,
     assets: Res<GameAssets>,
     levels: Res<Levels>,
     mut current_level: ResMut<CurrentLevel>,
@@ -64,11 +56,6 @@ fn spawn_next_level(
     dog_q: Query<Entity, With<Dog>>,
     catbox_q: Query<&Transform, With<CatBox>>,
 ) {
-    if next_level.is_empty() {
-        return;
-    }
-    next_level.clear();
-
     // Despawn all cats.
     for entity in cats_q.iter() {
         commands.entity(entity).despawn_recursive();
