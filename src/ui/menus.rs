@@ -80,7 +80,19 @@ fn clear_start(
 }
 
 fn show_credits(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    // assets: Res<GameAssets>,
 ) {
+    // TODO: Spawn animated sprites in world.
+
+    // TODO: Spawn credits text in UI.
+
+    rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
+        let blink = Blink::from_seconds(0.5, true);
+        // TODO: Add a drop shadow to the text.
+        texti("Press Tab to return!", c_start_text, c_font_how_to_play, blink, p);
+    });
 }
 
 fn clear_credits(
