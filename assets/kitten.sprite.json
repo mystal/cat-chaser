@@ -36,7 +36,7 @@
     "duration": 200
    },
    {
-    "filename": "_4",
+    "filename": "scarf_0",
     "frame": { "x": 0, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -45,7 +45,7 @@
     "duration": 100
    },
    {
-    "filename": "_5",
+    "filename": "scarf_1",
     "frame": { "x": 32, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -56,14 +56,15 @@
  ],
  "meta": {
   "app": "http://www.aseprite.org/",
-  "version": "1.3.5-x64",
+  "version": "1.3.6-x64",
   "image": "kitten.png",
   "format": "RGBA8888",
   "size": { "w": 96, "h": 64 },
   "scale": "1",
   "frameTags": [
    { "name": "walk", "from": 0, "to": 1, "direction": "forward", "color": "#000000ff" },
-   { "name": "idle", "from": 2, "to": 3, "direction": "forward", "color": "#000000ff" }
+   { "name": "idle", "from": 2, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "scarf", "from": 4, "to": 5, "direction": "forward", "color": "#000000ff" }
   ]
  }
 }
