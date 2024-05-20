@@ -29,7 +29,7 @@ const JITTER_TIME: f32 = 1.0;
 const CANNONBALL_TIME: f32 = 1.25;
 const CANNONBALL_SPEED: f32 = 240.0;
 
-const MEOW_RANGE: Range<f32> = 4.0..8.0;
+const MEOW_RANGE: Range<f32> = 3.0..10.0;
 
 pub struct CatsPlugin;
 
