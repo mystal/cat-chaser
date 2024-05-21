@@ -62,6 +62,9 @@ pub struct GameAssets {
     // #[asset(path = "kitten.aseprite")]
     pub kitten: Handle<Spritesheet>,
 
+    // #[asset(path = "cat_face.aseprite")]
+    pub fox: Handle<Spritesheet>,
+
     // Level data.
     #[asset(path = "all_levels.level.ron")]
     pub levels: Handle<Levels>,
@@ -118,6 +121,7 @@ fn assets_loaded(
     assets.basic_cat = load_spritesheet(&mut commands, &asset_server, "basic_cat.sprite.json", Anchor::Center);
     assets.kitten = load_spritesheet(&mut commands, &asset_server, "kitten.sprite.json", Anchor::Center);
     assets.fat_cat = load_spritesheet(&mut commands, &asset_server, "fat_cat.sprite.json", Anchor::Center);
+    assets.fox = load_spritesheet(&mut commands, &asset_server, "fox.sprite.json", Anchor::Center);
 
     audio.play(sfx.bgm.clone())
         .loop_from(24.0)

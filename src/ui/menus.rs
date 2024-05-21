@@ -11,6 +11,12 @@ use crate::{
     utils::Blink,
 };
 
+const CAT_JAM_ANIM: AnimHandle = AnimHandle::from_index(3);
+const KITTEN_SCARF_ANIM: AnimHandle = AnimHandle::from_index(2);
+const CAT_SPIN_ANIM: AnimHandle = AnimHandle::from_index(4);
+const DOG_RUN_BACK_ANIM: AnimHandle = AnimHandle::from_index(2);
+const FOX_ANIM: AnimHandle = AnimHandle::from_index(0);
+
 pub struct MenusPlugin;
 
 impl Plugin for MenusPlugin {
@@ -82,24 +88,120 @@ fn clear_start(
 fn show_credits(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    // assets: Res<GameAssets>,
+    assets: Res<GameAssets>,
 ) {
-    // TODO: Spawn animated sprites in world.
+    // Spawn animated sprites in world.
+    commands.spawn((
+        Name::new("LindaSprite"),
+        AnimatedSpriteBundle {
+            animator: SpriteAnimator::from_anim(CAT_JAM_ANIM),
+            sprite_bundle: SpriteSheetBundle {
+                sprite: Sprite {
+                    flip_x: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(-170.0, 200.0, 0.0))
+                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+                ..default()
+            },
+            spritesheet: assets.basic_cat.clone(),
+            ..default()
+        },
+    ));
+    commands.spawn((
+        Name::new("MorganSprite"),
+        AnimatedSpriteBundle {
+            animator: SpriteAnimator::from_anim(KITTEN_SCARF_ANIM),
+            sprite_bundle: SpriteSheetBundle {
+                sprite: Sprite {
+                    flip_x: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(-170.0, 100.0, 0.0))
+                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+                ..default()
+            },
+            spritesheet: assets.kitten.clone(),
+            ..default()
+        },
+    ));
+    commands.spawn((
+        Name::new("JustinSprite"),
+        AnimatedSpriteBundle {
+            animator: SpriteAnimator::from_anim(CAT_SPIN_ANIM),
+            sprite_bundle: SpriteSheetBundle {
+                sprite: Sprite {
+                    flip_x: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(-170.0, 0.0, 0.0))
+                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+                ..default()
+            },
+            spritesheet: assets.basic_cat.clone(),
+            ..default()
+        },
+    ));
+    commands.spawn((
+        Name::new("GabeSprite"),
+        AnimatedSpriteBundle {
+            animator: SpriteAnimator::from_anim(DOG_RUN_BACK_ANIM),
+            sprite_bundle: SpriteSheetBundle {
+                sprite: Sprite {
+                    flip_x: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(-170.0, -100.0, 0.0))
+                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+                ..default()
+            },
+            spritesheet: assets.wizard_dog.clone(),
+            ..default()
+        },
+    ));
+    commands.spawn((
+        Name::new("ThamindaSprite"),
+        AnimatedSpriteBundle {
+            animator: SpriteAnimator::from_anim(FOX_ANIM),
+            sprite_bundle: SpriteSheetBundle {
+                sprite: Sprite {
+                    flip_x: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(-170.0, -200.0, 0.0))
+                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+                ..default()
+            },
+            spritesheet: assets.fox.clone(),
+            ..default()
+        },
+    ));
 
-    // TODO: Spawn credits text in UI.
+    let name = Name::new("UiRoot");
+    rooti(c_root, &asset_server, &mut commands, (name, MenuRoot), |p| {
+        // Spawn credits text in UI.
+        text("Linda Cai", c_credits_text_linda, c_font_credits, p);
+        text("Morgan Tenney", c_credits_text_morgan, c_font_credits, p);
+        text("Justin Hamilton", c_credits_text_justin, c_font_credits, p);
+        text("Gabriel Martinez", c_credits_text_gabe, c_font_credits, p);
+        text("Music by Thaminda Edirisooriya", c_credits_text_thaminda, c_font_credits, p);
 
-    rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
+        let name = Name::new("ReturnText");
         let blink = Blink::from_seconds(0.5, true);
         // TODO: Add a drop shadow to the text.
-        texti("Press Tab to return!", c_start_text, c_font_how_to_play, blink, p);
+        texti("Press Tab to return!", c_start_text, c_font_how_to_play, (name, blink), p);
     });
 }
 
 fn clear_credits(
     mut commands: Commands,
     root_q: Query<Entity, With<MenuRoot>>,
+    sprite_q: Query<Entity, With<Sprite>>,
 ) {
     for entity in root_q.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    for entity in sprite_q.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }

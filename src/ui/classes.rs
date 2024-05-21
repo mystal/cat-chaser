@@ -16,6 +16,47 @@ pub fn c_start_text(_a: &AssetServer, b: &mut TextBundle) {
     s.bottom = Val::Px(6.0);
 }
 
+pub fn c_credits_text_linda(_a: &AssetServer, b: &mut TextBundle) {
+    b.style.position_type = PositionType::Absolute;
+    b.style.align_self = AlignSelf::Center;
+    b.style.left = Val::Px(105.0);
+    b.style.top = Val::Px(34.0);
+}
+
+pub fn c_credits_text_morgan(_a: &AssetServer, b: &mut TextBundle) {
+    b.style.position_type = PositionType::Absolute;
+    b.style.align_self = AlignSelf::Center;
+    b.style.left = Val::Px(105.0);
+    b.style.top = Val::Px(68.0);
+}
+
+pub fn c_credits_text_justin(_a: &AssetServer, b: &mut TextBundle) {
+    b.style.position_type = PositionType::Absolute;
+    b.style.align_self = AlignSelf::Center;
+    b.style.left = Val::Px(105.0);
+    b.style.top = Val::Px(98.0);
+}
+
+pub fn c_credits_text_gabe(_a: &AssetServer, b: &mut TextBundle) {
+    b.style.position_type = PositionType::Absolute;
+    b.style.align_self = AlignSelf::Center;
+    b.style.left = Val::Px(105.0);
+    b.style.top = Val::Px(132.0);
+}
+
+pub fn c_credits_text_thaminda(_a: &AssetServer, b: &mut TextBundle) {
+    b.style.position_type = PositionType::Absolute;
+    b.style.align_self = AlignSelf::Center;
+    b.style.left = Val::Px(105.0);
+    b.style.top = Val::Px(163.0);
+}
+
+pub fn c_font_credits(assets: &AssetServer, s: &mut TextStyle) {
+    s.font = assets.load("fonts/Kenney Pixel.ttf");
+    s.font_size = 11.0;
+    s.color = Color::BLACK;
+}
+
 pub fn c_font_start(assets: &AssetServer, s: &mut TextStyle) {
     s.font = assets.load("fonts/Kenney Pixel.ttf");
     s.font_size = 13.0;
