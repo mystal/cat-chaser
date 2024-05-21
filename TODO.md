@@ -25,6 +25,7 @@
     * [x] Angry!
   * [ ] Disable cats wandering when not in GameState::Playing
   * [ ] Fix cat rotation when attacking!
+  * [ ] Jitter cats when annoyed.
 * [x] Level win condition
 * [x] Levels!
 * [x] Victory screen party!

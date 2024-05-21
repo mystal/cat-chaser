@@ -23,8 +23,6 @@ impl Plugin for PartyPlugin {
     }
 }
 
-// TODO: Cat
-
 #[derive(Component)]
 struct PartyCat {
     kind: CatKind,
