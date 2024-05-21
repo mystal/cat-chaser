@@ -3,7 +3,7 @@ use bevy_asepritesheet::prelude::*;
 use bevy_ui_dsl::*;
 
 use crate::{
-    AppState,
+    SCREEN_SIZE, AppState,
     assets::GameAssets,
     cats,
     dog,
@@ -90,6 +90,20 @@ fn show_credits(
     asset_server: Res<AssetServer>,
     assets: Res<GameAssets>,
 ) {
+    // Spawn background for the menu.
+    commands.spawn((
+        Name::new("BackgroundSprite"),
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::WHITE,
+                custom_size: Some(SCREEN_SIZE.as_vec2()),
+                ..default()
+            },
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
+            ..default()
+        },
+    ));
+
     // Spawn animated sprites in world.
     commands.spawn((
         Name::new("LindaSprite"),

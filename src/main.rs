@@ -75,7 +75,7 @@ fn main() {
     app.insert_resource(bevy::asset::AssetMetaCheck::Never);
 
     app
-        .insert_resource(ClearColor(Color::WHITE))
+        .insert_resource(ClearColor(Color::BLACK))
 
         // External plugins
         .add_plugins((
