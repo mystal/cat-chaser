@@ -1344,7 +1344,7 @@ dependencies = [
 
 [[package]]
 name = "cat-chaser"
-version = "0.2.0"
+version = "0.2.0-dev"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
