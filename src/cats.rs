@@ -396,6 +396,9 @@ fn cat_animation(
                 if !animator.is_cur_anim(ATTACK_ANIM) {
                     animator.set_anim(ATTACK_ANIM);
                 }
+                if **velocity != Vec2::ZERO {
+                    sprite.flip_x = velocity.x > 0.0;
+                }
             }
             CatState::InPen => {
                 if !animator.is_cur_anim(IDLE_ANIM) {
