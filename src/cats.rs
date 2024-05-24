@@ -1,4 +1,8 @@
-use std::{f32::consts::PI, ops::Range, time::Duration};
+use std::{
+    f32::consts::PI,
+    ops::Range,
+    time::Duration,
+};
 
 use bevy::prelude::*;
 use bevy_asepritesheet::prelude::*;
@@ -26,6 +30,7 @@ const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 0.0;
 
 const JITTER_TIME: f32 = 1.0;
+const _JITTER_AMOUNT: f32 = 2.0;
 const CANNONBALL_TIME: f32 = 1.25;
 const CANNONBALL_SPEED: f32 = 240.0;
 
@@ -407,12 +412,17 @@ fn cat_animation(
             }
         }
 
-        // TODO: Jitter sprite!
+        // TODO: This should work, buuuut, bevy_asepritesheet overwrites sprite.anchor every frame.
+        // Jitter sprite!
         // match &cat.state {
         //     CatState::Jittering { .. } => {
-        //         let dir = Vec2::from_angle(fastrand::f32() * TAU);
-        //         let anchor = dir * ((3.0 / 16.0) * 0.5);
+        //         let offset = Vec2::new(
+        //             (fastrand::f32() * 2.0) - 1.0,
+        //             (fastrand::f32() * 2.0) - 1.0,
+        //         ) * JITTER_AMOUNT;
+        //         let anchor = offset / 32.0;
         //         sprite.anchor = Anchor::Custom(anchor);
+        //         dbg!(sprite.anchor);
         //     }
         //     _ => {
         //         sprite.anchor = Anchor::Center;
