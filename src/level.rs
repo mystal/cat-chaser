@@ -1,98 +1,112 @@
-use cgmath::{self, InnerSpace, MetricSpace, Vector2};
-use rand::{self, Rng};
-use rand::distributions::{Distribution, Uniform};
-use crate::config;
+use std::ops::Deref;
 
-use crate::entities::*;
+use bevy::prelude::*;
+use serde::Deserialize;
 
-pub const MAX_LEVEL: u32 = 5;
+use crate::{
+    WORLD_SIZE,
+    assets::GameAssets,
+    cats::{CAT_BOUNDS, Cat, CatBundle},
+    dog::{Dog, DogBundle},
+    game::{CatBox, GameState},
+};
 
-pub struct Level {
-    pub cat_box: CatBox,
-    pub num_cats: u32,
-    pub bounds: Vector2<u32>,
-    pub level_num: u32,
-    pub cats: (u32, u32, u32),
+pub struct LevelPlugin;
+
+impl Plugin for LevelPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .init_resource::<CurrentLevel>()
+            .init_resource::<Levels>()
+            .add_systems(OnEnter(GameState::Playing), spawn_next_level);
+    }
 }
 
-impl Level {
-    pub fn new(level_num: u32) -> Self {
-        let num_cats = Level::num_cats_for_level(level_num);
-        let cats = Level::cats_for_level(level_num);
+#[derive(Clone, Debug, Default, Deserialize)]
+pub struct LevelCats {
+    pub basic: u8,
+    pub kitten: u8,
+    pub chonk: u8,
+}
 
-        Level {
-            level_num: level_num,
-            cat_box: CatBox {
-                pos: cgmath::vec2(100.0, 100.0),
-                size: cgmath::vec2(60.0, 60.0),
-            },
-            num_cats: num_cats,
-            bounds: cgmath::vec2(config::GAME_SIZE.x, config::GAME_SIZE.y),
-            cats: cats,
-            
-        }
+#[derive(Debug, Default, Deserialize, Resource, Asset, TypePath)]
+pub struct Levels(Vec<LevelCats>);
+
+impl Deref for Levels {
+    type Target = Vec<LevelCats>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Default, Resource)]
+pub struct CurrentLevel {
+    pub index: usize,
+    pub cats: LevelCats,
+    pub cats_herded: u8,
+}
+
+fn spawn_next_level(
+    mut commands: Commands,
+    assets: Res<GameAssets>,
+    levels: Res<Levels>,
+    mut current_level: ResMut<CurrentLevel>,
+    cats_q: Query<Entity, With<Cat>>,
+    dog_q: Query<Entity, With<Dog>>,
+    catbox_q: Query<&Transform, With<CatBox>>,
+) {
+    // Despawn all cats.
+    for entity in cats_q.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 
-    pub fn next_level(&mut self) {
-        let next_level_num = self.level_num + 1;
-        self.level_num = next_level_num;
-        self.num_cats = Level::num_cats_for_level(next_level_num);
-        self.cats = Level::cats_for_level(next_level_num);
+    // Despawn dog.
+    for entity in dog_q.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 
-    pub fn cats_for_level(level_num: u32) -> (u32, u32, u32) {
-        match level_num {
-            1 => (1, 0, 0),
-            2 => (2, 1, 0),
-            3 => (3, 2, 0),
-            4 => (5, 3, 2),
-            5 => (10, 6, 4),
-            _ => (1, 0, 0)
-        }
-    }
+    // Spawn a new dog.
+    let catbox_pos = catbox_q.get_single()
+        .map(|t| t.translation.truncate())
+        .unwrap_or_default();
+    commands.spawn(DogBundle::new(catbox_pos, assets.wizard_dog.clone()));
 
-    pub fn num_cats_for_level(level_num: u32) -> u32 {
-        let (x, y, z) = Level::cats_for_level(level_num);
-        return x + y + z;
-    }
+    // Then spawn new cats.
+    let level_index = if current_level.index + 1 < levels.len() {
+        current_level.index + 1
+    } else {
+        1
+    };
+    let Some(level_cats) = levels.get(level_index) else {
+        *current_level = CurrentLevel::default();
+        error!("Could not load level {}. Levels list length: {}", level_index, levels.len());
+        return;
+    };
 
-    pub fn generate_cats(&self) -> Vec<Cat> {
-        // Spawn cats a bit away from walls and away from the cat box.
-        let cat_box_radius = 80.0;
-        let dist_x = Uniform::new(20.0, self.bounds.x as f32 - 20.0);
-        let dist_y = Uniform::new(20.0, self.bounds.y as f32 - 20.0);
-        let mut rng = rand::thread_rng();
-
-        let meow_range = Uniform::new(-3.0, 2.0);
-
-        let mut cats = Vec::new();
-        let mut basic_cats: u32 = 0;
-        let mut kittens: u32 = 0;
-        let mut fat_cats: u32 = 0;
-
-        let (total_basic, total_kittens, _total_fat) = self.cats;
-
-        for _ in 0..self.num_cats {
-            let mut cat_pos = cgmath::vec2(dist_x.sample(&mut rng), dist_y.sample(&mut rng));
-            // TODO: We should probably try to space out the cats from each other.
-            while cat_pos.distance(self.cat_box.pos) < cat_box_radius {
-                cat_pos = cgmath::vec2(dist_x.sample(&mut rng), dist_y.sample(&mut rng));
+    // Spawn cats in random locations.
+    let random_location = || {
+        loop {
+            let x = (fastrand::f32() - 0.5) * (WORLD_SIZE.x as f32 - (CAT_BOUNDS * 2.0));
+            let y = (fastrand::f32() - 0.5) * (WORLD_SIZE.y as f32 - (CAT_BOUNDS * 2.0));
+            let pos = Vec2::new(x, y);
+            if pos.distance_squared(catbox_pos) > 80.0 * 80.0 {
+                break pos;
             }
-            let vel = cgmath::vec2(rng.gen::<f32>() * 2.0 - 1.0,
-                                   rng.gen::<f32>() * 2.0 - 1.0).normalize();
-
-            let cat = if basic_cats < total_basic {
-                basic_cats += 1;
-                Cat::new_basic_cat(cat_pos, vel)
-            } else if kittens < total_kittens {
-                kittens += 1;
-                Cat::new_kitten(cat_pos, vel)
-            } else {
-                fat_cats += 1;
-                Cat::new_fat_cat(cat_pos, vel)
-            };
-            cats.push(cat);
         }
-        cats
+    };
+    for _ in 0..level_cats.basic {
+        commands.spawn(CatBundle::basic(random_location(), assets.basic_cat.clone()));
     }
+    for _ in 0..level_cats.kitten {
+        commands.spawn(CatBundle::kitten(random_location(), assets.kitten.clone()));
+    }
+    for _ in 0..level_cats.chonk {
+        commands.spawn(CatBundle::chonk(random_location(), assets.fat_cat.clone()));
+    }
+
+    // Set CurrentLevel info.
+    current_level.index = level_index;
+    current_level.cats = level_cats.clone();
+    current_level.cats_herded = 0;
 }

@@ -1,0 +1,8 @@
+([
+    ( basic: 1, kitten: 1, chonk: 1 ),
+    ( basic: 1, kitten: 0, chonk: 0 ),
+    ( basic: 2, kitten: 1, chonk: 0 ),
+    ( basic: 3, kitten: 2, chonk: 0 ),
+    ( basic: 5, kitten: 3, chonk: 2 ),
+    ( basic: 10, kitten: 6, chonk: 4 ),
+])
