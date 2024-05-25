@@ -1,6 +1,6 @@
 [package]
 name = "cat-chaser"
-version = "0.2.0-dev"
+version = "0.2.0-rc.0"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 repository = "https://github.com/mystal/cat-chaser"
 edition = "2021"
