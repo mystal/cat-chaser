@@ -118,7 +118,8 @@ pr-run-mode = "plan"
 default-features = false
 include = ["assets/"]
 
-# Specifiy extra dependencies when running CI on Ubuntu Linux
+# Specifiy extra dependencies when running CI on Ubuntu Linux. As per:
+# https://github.com/bevyengine/bevy/blob/release-0.13.2/docs/linux_dependencies.md
 # These packages are installed by default on our current GitHub runner, ubuntu-20.04:
 # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2004-Readme.md#installed-apt-packages
 [workspace.metadata.dist.dependencies.apt]
