@@ -44,7 +44,7 @@
 
 ## Tech
 * [x] Update to bevy 0.13
-* [ ] Remove input events when egui should consume them:
+* [x] Remove input events when egui should consume them:
 https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
 * Pixel-perfect rendering
   * [x] Remove OS window scaling.
@@ -52,7 +52,7 @@ https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
   * [ ] Enable keyboard shortcuts to re-scale at runtime.
   * [x] Adjust viewport and use black borders to make sure we render to a multiple of GAME_SIZE
   * [x] Fix UI size at different window sizes.
-* [ ] Faster web builds for iterating.
+* [x] Faster web builds for iterating.
   * For quick debug builds.
 * [ ] Try out bevy_xpbd
 * [x] Either fix bevy_aseprite or find a different aseprite plugin
