@@ -41,10 +41,6 @@ fn main() {
 
     // TODO: Try to initialize logging before this. Maybe we can also make this code run in a plugin.
     let saved_window_state = window::load_window_state();
-    let cursor = Cursor {
-        visible: true,
-        ..default()
-    };
 
     // Configure DefaultPlugins.
     let default_plugins = DefaultPlugins
@@ -61,7 +57,6 @@ fn main() {
                 .with_scale_factor_override(1.0),
                 resizable: true,
                 mode: WindowMode::Windowed,
-                cursor,
                 ..default()
             }),
             ..default()

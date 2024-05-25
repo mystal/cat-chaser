@@ -26,8 +26,7 @@ impl Plugin for DebugPlugin {
                 debug_menu_bar.run_if(debug_ui_enabled),
                 toggle_debug_ui,
                 toggle_physics_debug_render,
-            )/*.before(input::read_player_input)*/)
-            .add_systems(Last, update_mouse_cursor);
+            )/*.before(input::read_player_input)*/);
     }
 }
 
@@ -78,17 +77,6 @@ fn debug_menu_bar(
                 });
             });
         });
-}
-
-fn update_mouse_cursor(
-    debug_state: Res<DebugState>,
-    mut window_q: Query<&mut Window, With<PrimaryWindow>>,
-) {
-    if let Ok(mut window) = window_q.get_single_mut() {
-        // TODO: Make UI egui windows non-interactable and remove the debug_state.enabled check.
-        let show_cursor = debug_state.enabled; //&& egui_ctx.ctx_mut().wants_pointer_input();
-        window.cursor.visible = show_cursor;
-    }
 }
 
 fn toggle_debug_ui(
