@@ -60,11 +60,12 @@ fn handle_window_resize(
         if e.window != window_entity {
             continue;
         }
+
         camera.viewport = compute_viewport(window.physical_width(), window.physical_height());
     }
 }
 
-fn compute_viewport(physical_width: u32, physical_height: u32) -> Option<Viewport> {
+fn compute_viewport_integer(physical_width: u32, physical_height: u32) -> Option<Viewport> {
     let scale_x = physical_width / SCREEN_SIZE.x;
     let scale_y = physical_height / SCREEN_SIZE.y;
     let scale = scale_x.min(scale_y);
@@ -72,6 +73,24 @@ fn compute_viewport(physical_width: u32, physical_height: u32) -> Option<Viewpor
         return None;
     }
     let physical_size = SCREEN_SIZE * scale;
+    let physical_position = UVec2::new(
+        (physical_width - physical_size.x) / 2,
+        (physical_height - physical_size.y) / 2,
+    );
+
+    Some(Viewport {
+        physical_position,
+        physical_size,
+        ..default()
+    })
+}
+
+fn compute_viewport(physical_width: u32, physical_height: u32) -> Option<Viewport> {
+    let scale_x = physical_width as f32 / SCREEN_SIZE.x as f32;
+    let scale_y = physical_height as f32 / SCREEN_SIZE.y as f32;
+    let scale = scale_x.min(scale_y);
+
+    let physical_size = (SCREEN_SIZE.as_vec2() * scale).as_uvec2();
     let physical_position = UVec2::new(
         (physical_width - physical_size.x) / 2,
         (physical_height - physical_size.y) / 2,
