@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_egui::EguiContexts;
 
 pub struct InputPlugin;
 
@@ -21,7 +20,6 @@ pub fn read_player_input(
     gamepads: Res<Gamepads>,
     pad_buttons: Res<ButtonInput<GamepadButton>>,
     axes: Res<Axis<GamepadAxis>>,
-    mut egui_ctx: EguiContexts,
     mut player_q: Query<&mut PlayerInput>,
 ) {
     if player_q.is_empty() {
@@ -51,7 +49,7 @@ pub fn read_player_input(
 
     // Read input from mouse/keyboard.
     // Movement
-    if movement == Vec2::ZERO && !egui_ctx.ctx_mut().wants_keyboard_input() {
+    if movement == Vec2::ZERO {
         let right = keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]);
         let left = keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]);
         let x = (right as i8 - left as i8) as f32;
@@ -64,7 +62,7 @@ pub fn read_player_input(
     }
 
     // Bark
-    bark |= keys.just_pressed(KeyCode::Space) && !egui_ctx.ctx_mut().wants_keyboard_input();
+    bark |= keys.just_pressed(KeyCode::Space);
 
     // Store results in player input components.
     for mut input in player_q.iter_mut() {

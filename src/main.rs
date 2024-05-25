@@ -2,7 +2,7 @@
 
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
-use bevy::window::{Cursor, WindowMode, WindowResolution};
+use bevy::window::{WindowMode, WindowResolution};
 use bevy_kira_audio::AudioPlugin;
 
 mod assets;
@@ -76,7 +76,6 @@ fn main() {
         .add_plugins((
             default_plugins,
             FrameTimeDiagnosticsPlugin,
-            bevy_egui::EguiPlugin,
             AudioPlugin,
         ))
 
@@ -84,11 +83,11 @@ fn main() {
         .init_state::<AppState>()
         .add_plugins((
             window::WindowPlugin::new(saved_window_state),
+            debug::DebugPlugin,
             input::InputPlugin,
             physics::PhysicsPlugin,
             utils::UtilsPlugin,
             assets::AssetsPlugin,
-            debug::DebugPlugin,
             camera::CameraPlugin,
             ui::UiPlugin,
             game::GamePlugin,
