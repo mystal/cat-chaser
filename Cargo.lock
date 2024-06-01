@@ -1359,8 +1359,10 @@ dependencies = [
  "bevy_window",
  "console_error_panic_hook",
  "fastrand",
+ "image",
  "ron",
  "serde",
+ "winit",
 ]
 
 [[package]]

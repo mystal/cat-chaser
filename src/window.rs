@@ -69,11 +69,44 @@ impl Plugin for WindowPlugin {
             .add_systems(PostUpdate, update_window_state);
         #[cfg(not(target_arch = "wasm32"))]
         {
-            app.add_systems(Last, save_window_state_on_exit.run_if(on_event::<AppExit>()));
+            app
+                .add_systems(Startup, window_icon::set_window_icon)
+                .add_systems(Last, save_window_state_on_exit.run_if(on_event::<AppExit>()));
 
             app
                 .insert_resource(LogFpsTimer::default())
                 .add_systems(PostUpdate, log_fps_in_window_title.after(update_window_state));
+        }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+mod window_icon {
+    use bevy::prelude::*;
+    use bevy::winit::WinitWindows;
+    use winit::window::Icon;
+
+    pub fn set_window_icon(
+        // Have to use `NonSend` here
+        windows: NonSend<WinitWindows>,
+    ) {
+        // Taken from: https://bevy-cheatbook.github.io/window/icon.html
+        // Use the `image` crate to load our icon data from a png file.
+        // NOTE: This is not a very bevy-native solution, but it will do.
+        let (icon_rgba, icon_width, icon_height) = {
+            let image = image::open("assets/icon.png")
+                .expect("Failed to open icon path")
+                .into_rgba8();
+            let (width, height) = image.dimensions();
+            let rgba = image.into_raw();
+            (rgba, width, height)
+        };
+        let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height)
+            .expect("Could not create Icon from icon data");
+
+        // Do it for all windows.
+        for window in windows.windows.values() {
+            window.set_window_icon(Some(icon.clone()));
         }
     }
 }

@@ -3,7 +3,7 @@
 * [x] Loading infrastructure
 * [x] Animated sprites
   * Mostly working, seems to be a bug with bevy_aseprite
-* [ ] Set window icon: https://bevy-cheatbook.github.io/window/icon.html
+* [x] Set window icon: https://bevy-cheatbook.github.io/window/icon.html
 * [ ] Set exe/app icon
   * On Linux
   * On Windows: https://bevy-cheatbook.github.io/platforms/windows.html#creating-an-icon-for-your-app
@@ -46,6 +46,7 @@
 * [x] Update to bevy 0.13
 * [x] Remove input events when egui should consume them:
 https://github.com/mvlabat/bevy_egui/issues/47#issuecomment-1922695612
+* [ ] Move window_state.ron to a local config/data file.
 * Pixel-perfect rendering
   * [x] Remove OS window scaling.
   * [x] Allow scaling window by integer values. Default to 2x
