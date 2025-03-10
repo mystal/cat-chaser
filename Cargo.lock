@@ -414,7 +414,7 @@ dependencies = [
 [[package]]
 name = "bevy_asepritesheet"
 version = "0.6.0"
-source = "git+https://gitlab.com/mystal/bevy_asepritesheet?branch=dev#0fbcfb83ed964b0a7321805a409443c624f0c255"
+source = "git+https://github.com/mystal/bevy_asepritesheet?branch=dev#0fbcfb83ed964b0a7321805a409443c624f0c255"
 dependencies = [
  "bevy",
  "serde",
