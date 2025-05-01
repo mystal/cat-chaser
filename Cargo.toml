@@ -38,7 +38,7 @@ fastrand = "2"
 
 # For saving window state.
 serde = "1"
-ron = "0.8"
+ron = "0.10"
 
 # Base engine dependency.
 [dependencies.bevy]
