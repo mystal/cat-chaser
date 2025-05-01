@@ -16,22 +16,23 @@ verbose_logs = []
 [dependencies]
 # Load and render Aseprite animations from JSON
 #bevy_asepritesheet = "0.6"
-bevy_asepritesheet = { git = "https://github.com/mystal/bevy_asepritesheet", branch = "dev" }
+# bevy_asepritesheet = { git = "https://github.com/mystal/bevy_asepritesheet", branch = "dev" }
+bevy_aseprite_ultra = "0.2"
 # To help with loading assets.
-bevy_asset_loader = { version = "0.20", features = ["2d", "standard_dynamic_assets"] }
+bevy_asset_loader = { version = "0.21", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.
-bevy_common_assets = { version = "0.10", features = ["ron"]}
+bevy_common_assets = { version = "0.11", features = ["ron"]}
 # For debug UI.
-bevy_egui = { version = "0.27", default-features = false }
+bevy_egui = { version = "0.30", default-features = false }
 # Generic debug UI to inspect entities and components.
 # TODO: Put behind a feature flag?
-bevy-inspector-egui = { version = "0.24", default-features = false, features = ["highlight_changes"] }
+bevy-inspector-egui = { version = "0.27", default-features = false, features = ["highlight_changes", "bevy_render"] }
 # Audio support
-bevy_kira_audio = { version = "0.19", default-features = false, features = ["ogg", "wav"] }
+bevy_kira_audio = { version = "0.20", default-features = false, features = ["ogg", "wav"] }
 # 2D physics. Mostly used for collision detection.
-bevy_rapier2d = "0.26"
+bevy_rapier2d = "0.27"
 # For in-game UI.
-bevy-ui-dsl = "0.8"
+bevy-ui-dsl = "0.9"
 
 # For quick, simple random number generation.
 fastrand = "2"
@@ -42,11 +43,11 @@ ron = "0.10"
 
 # Base engine dependency.
 [dependencies.bevy]
-version = "0.13"
+version = "0.14"
 default-features = false
 features = [
     #Multi-threading
-    "multi-threaded",
+    "multi_threaded",
 
     # Assets
     "bevy_asset",
@@ -73,13 +74,13 @@ features = [
 ]
 # Explicitly specify bevy_window to add serialize feature.
 [dependencies.bevy_window]
-version = "0.13"
+version = "0.14"
 features = ["serialize"]
 
 # Dependencies to set window icon. Versions should match bevy's.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 image = { version = "0.24", default-features = false, features = ["png"] }
-winit = "0.29"
+winit = "0.30"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 # Show panics in the browser console: https://bevy-cheatbook.github.io/platforms/wasm/panic-console.html

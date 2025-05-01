@@ -11,12 +11,6 @@ pub struct DebugPlugin;
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         app
-            .insert_resource(EguiSettings {
-                // TODO: Make this configurable, since it'll depend on the screen.
-                // TODO: Default to guessed scale factor?
-                scale_factor: 1.5,
-                ..default()
-            })
             .add_plugins((
                 bevy_egui::EguiPlugin,
                 WorldInspectorPlugin::default().run_if(show_world_inspector),
@@ -28,12 +22,13 @@ impl Plugin for DebugPlugin {
             // before egui starts a new frame).
             .add_systems(PreUpdate, absorb_egui_inputs
                 .after(bevy_egui::systems::process_input_system)
-                .before(bevy_egui::EguiSet::BeginFrame)
+                .before(bevy_egui::EguiSet::BeginPass)
                 .before(input::read_player_input))
             .add_systems(Update, (
                 debug_menu_bar.run_if(debug_ui_enabled),
                 toggle_debug_ui,
                 toggle_physics_debug_render,
+                set_ui_scale_factor,
             ));
     }
 }
@@ -147,5 +142,13 @@ fn absorb_egui_inputs(
         for key in pressed.into_iter().flatten() {
             keyboard.press(key);
         }
+    }
+}
+
+fn set_ui_scale_factor(mut windows: Query<&mut EguiSettings, (With<Window>, Added<EguiSettings>)>) {
+    for mut egui_settings in windows.iter_mut() {
+        // TODO: Make this configurable, since it'll depend on the screen.
+        // TODO: Default to guessed scale factor?
+        egui_settings.scale_factor = 1.5;
     }
 }

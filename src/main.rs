@@ -96,7 +96,7 @@ fn main() {
         ));
 
     if ALLOW_EXIT {
-        app.add_systems(Update, bevy::window::close_on_esc);
+        // app.add_systems(Update, bevy::window::close_on_esc);
     }
 
     app.run();
