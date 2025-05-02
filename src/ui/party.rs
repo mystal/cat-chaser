@@ -1,11 +1,10 @@
 use bevy::prelude::*;
-use bevy_asepritesheet::prelude::*;
+use bevy_aseprite_ultra::prelude::*;
 
 use crate::{
     WORLD_SIZE,
     assets::GameAssets,
     cats::{self, CatKind},
-    dog,
     game::GameState,
 };
 
@@ -39,14 +38,12 @@ fn spawn_party(
     commands.spawn((
         Name::new("PartyDog"),
         PartyDog,
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(dog::RUN_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                transform: Transform::from_translation(Vec3::new(0.0, 20.0, 200.0))
-                    .with_scale(Vec3::new(7.0, 7.0, 1.0)),
-                ..default()
-            },
-            spritesheet: assets.wizard_dog.clone(),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(0.0, 20.0, 200.0))
+                .with_scale(Vec3::new(7.0, 7.0, 1.0)),
+            aseprite: assets.wizard_dog.clone(),
+            animation: Animation::default()
+                .with_tag("run_front"),
             ..default()
         },
     ));
@@ -58,7 +55,7 @@ fn spawn_party(
         let x = (WORLD_SIZE.x as f32 * fastrand::f32()) - WORLD_SIZE.x as f32 / 2.0;
         let y = ((WORLD_SIZE.y + 80) as f32 * fastrand::f32()) + WORLD_SIZE.y as f32 / 2.0;
         let z = 100.0 + i as f32;
-        let spritesheet = match kind {
+        let aseprite = match kind {
             CatKind::Basic => &assets.basic_cat,
             CatKind::Kitten => &assets.kitten,
             CatKind::Chonk => &assets.fat_cat,
@@ -69,20 +66,18 @@ fn spawn_party(
             PartyCat {
                 kind,
             },
-            AnimatedSpriteBundle {
-                animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
-                sprite_bundle: SpriteSheetBundle {
-                    sprite: Sprite {
-                        color: cats::random_cat_color(),
-                        flip_x: fastrand::bool(),
-                        ..default()
-                    },
-                    transform: Transform::from_translation(Vec3::new(x, y, z))
-                        .with_rotation(Quat::from_rotation_z(angle.to_radians()))
-                        .with_scale(Vec3::new(1.5, 1.5, 1.0)),
+            AsepriteAnimationBundle {
+                transform: Transform::from_translation(Vec3::new(x, y, z))
+                    .with_rotation(Quat::from_rotation_z(angle.to_radians()))
+                    .with_scale(Vec3::new(1.5, 1.5, 1.0)),
+                sprite: Sprite {
+                    color: cats::random_cat_color(),
+                    flip_x: fastrand::bool(),
                     ..default()
                 },
-                spritesheet,
+                aseprite,
+                animation: Animation::default()
+                    .with_tag("idle"),
                 ..default()
             },
         ));

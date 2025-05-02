@@ -1,6 +1,6 @@
 [package]
 name = "cat-chaser"
-version = "0.2.0-rc.0"
+version = "0.2.0-rc.1"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 repository = "https://github.com/mystal/cat-chaser"
 edition = "2021"
@@ -14,9 +14,7 @@ fast-compile = ["bevy/dynamic_linking"]
 verbose_logs = []
 
 [dependencies]
-# Load and render Aseprite animations from JSON
-#bevy_asepritesheet = "0.6"
-# bevy_asepritesheet = { git = "https://github.com/mystal/bevy_asepritesheet", branch = "dev" }
+# Load and render Aseprite animations
 bevy_aseprite_ultra = "0.2"
 # To help with loading assets.
 bevy_asset_loader = { version = "0.21", features = ["2d", "standard_dynamic_assets"] }

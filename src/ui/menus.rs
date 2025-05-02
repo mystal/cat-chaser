@@ -1,21 +1,14 @@
 use bevy::prelude::*;
-use bevy_asepritesheet::prelude::*;
+use bevy_aseprite_ultra::prelude::*;
 use bevy_ui_dsl::*;
 
 use crate::{
     SCREEN_SIZE, AppState,
     assets::GameAssets,
     cats,
-    dog,
     ui::classes::*,
     utils::Blink,
 };
-
-const CAT_JAM_ANIM: AnimHandle = AnimHandle::from_index(3);
-const KITTEN_SCARF_ANIM: AnimHandle = AnimHandle::from_index(2);
-const CAT_SPIN_ANIM: AnimHandle = AnimHandle::from_index(4);
-const DOG_RUN_BACK_ANIM: AnimHandle = AnimHandle::from_index(2);
-const FOX_ANIM: AnimHandle = AnimHandle::from_index(0);
 
 pub struct MenusPlugin;
 
@@ -107,86 +100,76 @@ fn show_credits(
     // Spawn animated sprites in world.
     commands.spawn((
         Name::new("LindaSprite"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(CAT_JAM_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-170.0, 200.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-170.0, 200.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                flip_x: true,
                 ..default()
             },
-            spritesheet: assets.basic_cat.clone(),
+            aseprite: assets.basic_cat.clone(),
+            animation: Animation::default()
+                .with_tag("jam"),
             ..default()
         },
     ));
     commands.spawn((
         Name::new("MorganSprite"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(KITTEN_SCARF_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-170.0, 100.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-170.0, 100.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                flip_x: true,
                 ..default()
             },
-            spritesheet: assets.kitten.clone(),
+            aseprite: assets.kitten.clone(),
+            animation: Animation::default()
+                .with_tag("scarf"),
             ..default()
         },
     ));
     commands.spawn((
         Name::new("JustinSprite"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(CAT_SPIN_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-170.0, 0.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-170.0, 0.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                flip_x: true,
                 ..default()
             },
-            spritesheet: assets.basic_cat.clone(),
+            aseprite: assets.basic_cat.clone(),
+            animation: Animation::default()
+                .with_tag("spin"),
             ..default()
         },
     ));
     commands.spawn((
         Name::new("GabeSprite"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(DOG_RUN_BACK_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-170.0, -100.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-170.0, -100.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                flip_x: true,
                 ..default()
             },
-            spritesheet: assets.wizard_dog.clone(),
+            aseprite: assets.wizard_dog.clone(),
+            animation: Animation::default()
+                .with_tag("run_back"),
             ..default()
         },
     ));
     commands.spawn((
         Name::new("ThamindaSprite"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(FOX_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-170.0, -200.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-170.0, -200.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                flip_x: true,
                 ..default()
             },
-            spritesheet: assets.fox.clone(),
+            aseprite: assets.fox.clone(),
+            animation: Animation::default()
+                .with_tag("fox"),
             ..default()
         },
     ));
@@ -236,71 +219,63 @@ fn show_how_to_play(
     // Spawn sprites for the dog.
     commands.spawn((
         Name::new("Dog"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(dog::IDLE_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                transform: Transform::from_translation(Vec3::new(270.0, 240.0, 0.0))
-                    .with_scale(Vec3::new(4.0, 4.0, 1.0)),
-                ..default()
-            },
-            spritesheet: assets.wizard_dog.clone(),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(270.0, 240.0, 0.0))
+                .with_scale(Vec3::new(4.0, 4.0, 1.0)),
+            aseprite: assets.wizard_dog.clone(),
+            animation: Animation::default()
+                .with_tag("idle_front"),
             ..default()
         },
     ));
 
     // ... and cats.
     // TODO: Scaling them 3x doesn't look good at this resolution. Get artifacts :/
-    let color = Color::rgb_from_array(cats::CAT_COLORS[0]);
+    let color = Color::srgb_from_array(cats::CAT_COLORS[0]);
     commands.spawn((
         Name::new("BasicCat"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    color,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(-30.0, -25.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(-30.0, -25.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                color,
                 ..default()
             },
-            spritesheet: assets.basic_cat.clone(),
+            aseprite: assets.basic_cat.clone(),
+            animation: Animation::default()
+                .with_tag("idle"),
             ..default()
         },
     ));
-    let color = Color::rgb_from_array(cats::CAT_COLORS[3]);
+    let color = Color::srgb_from_array(cats::CAT_COLORS[3]);
     commands.spawn((
         Name::new("FatCat"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    color,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(70.0, -25.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(70.0, -25.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                color,
                 ..default()
             },
-            spritesheet: assets.fat_cat.clone(),
+            aseprite: assets.fat_cat.clone(),
+            animation: Animation::default()
+                .with_tag("idle"),
             ..default()
         },
     ));
-    let color = Color::rgb_from_array(cats::CAT_COLORS[2]);
+    let color = Color::srgb_from_array(cats::CAT_COLORS[2]);
     commands.spawn((
         Name::new("Kitten"),
-        AnimatedSpriteBundle {
-            animator: SpriteAnimator::from_anim(cats::IDLE_ANIM),
-            sprite_bundle: SpriteSheetBundle {
-                sprite: Sprite {
-                    color,
-                    ..default()
-                },
-                transform: Transform::from_translation(Vec3::new(165.0, -25.0, 0.0))
-                    .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        AsepriteAnimationBundle {
+            transform: Transform::from_translation(Vec3::new(165.0, -25.0, 0.0))
+                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+            sprite: Sprite {
+                color,
                 ..default()
             },
-            spritesheet: assets.kitten.clone(),
+            aseprite: assets.kitten.clone(),
+            animation: Animation::default()
+                .with_tag("idle"),
             ..default()
         },
     ));

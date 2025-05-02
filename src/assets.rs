@@ -1,6 +1,5 @@
 use bevy::prelude::*;
-use bevy::sprite::Anchor;
-use bevy_asepritesheet::prelude::*;
+use bevy_aseprite_ultra::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_kira_audio::{Audio, AudioControl, AudioSource};
@@ -16,7 +15,7 @@ impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_plugins((
-                AsepritesheetPlugin::new(&["sprite.json"]),
+                BevySprityPlugin,
                 RonAssetPlugin::<Levels>::new(&["level.ron"]),
             ))
             .add_loading_state(
@@ -32,17 +31,17 @@ impl Plugin for AssetsPlugin {
 #[derive(Resource, AssetCollection)]
 pub struct GameAssets {
     #[asset(path = "fonts/Kenney Pixel.ttf")]
-    pub font: Handle<Font>,
+    pub _font: Handle<Font>,
 
     // Menu assets.
     #[asset(path = "ui/start_menu_background.png")]
-    pub start_menu: Handle<Image>,
+    pub _start_menu: Handle<Image>,
     #[asset(path = "ui/how_to_play.png")]
     pub how_to_play: Handle<Image>,
 
     // HUD assets.
     #[asset(path = "ui/cat_face.png")]
-    pub cat_face: Handle<Image>,
+    pub _cat_face: Handle<Image>,
 
     // Game world assets.
     #[asset(path = "level/hardwood_floor.png")]
@@ -51,19 +50,19 @@ pub struct GameAssets {
     pub cat_box: Handle<Image>,
 
     // Doggo!
-    // #[asset(path = "wizard_dog.sprite.json")]
-    pub wizard_dog: Handle<Spritesheet>,
+    #[asset(path = "sprites/wizard_dog.aseprite")]
+    pub wizard_dog: Handle<Aseprite>,
 
     // Cat assets.
-    // #[asset(path = "basic_cat.aseprite")]
-    pub basic_cat: Handle<Spritesheet>,
-    // #[asset(path = "fat_cat.aseprite")]
-    pub fat_cat: Handle<Spritesheet>,
-    // #[asset(path = "kitten.aseprite")]
-    pub kitten: Handle<Spritesheet>,
+    #[asset(path = "sprites/basic_cat.aseprite")]
+    pub basic_cat: Handle<Aseprite>,
+    #[asset(path = "sprites/fat_cat.aseprite")]
+    pub fat_cat: Handle<Aseprite>,
+    #[asset(path = "sprites/kitten.aseprite")]
+    pub kitten: Handle<Aseprite>,
 
-    // #[asset(path = "cat_face.aseprite")]
-    pub fox: Handle<Spritesheet>,
+    #[asset(path = "ui/cat_face.aseprite")]
+    pub fox: Handle<Aseprite>,
 
     // Level data.
     #[asset(path = "all_levels.level.ron")]
@@ -99,8 +98,6 @@ pub struct SfxAssets {
 }
 
 fn assets_loaded(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
     mut level_assets: ResMut<Assets<Levels>>,
     audio: Res<Audio>,
     mut assets: ResMut<GameAssets>,
@@ -110,18 +107,10 @@ fn assets_loaded(
     debug!("Loaded assets!");
 
     // Move loaded Levels to a resource and remove the asset/clear the handle.
-    if let Some(loaded_levels) = level_assets.remove(assets.levels.clone()) {
+    if let Some(loaded_levels) = level_assets.remove(&assets.levels) {
         *levels = loaded_levels;
         assets.levels = Handle::default();
     }
-
-    // Load Aseprite spritesheets.
-    // TODO: See if we can do this during our standard load phase.
-    assets.wizard_dog = load_spritesheet(&mut commands, &asset_server, "wizard_dog.sprite.json", Anchor::Center);
-    assets.basic_cat = load_spritesheet(&mut commands, &asset_server, "basic_cat.sprite.json", Anchor::Center);
-    assets.kitten = load_spritesheet(&mut commands, &asset_server, "kitten.sprite.json", Anchor::Center);
-    assets.fat_cat = load_spritesheet(&mut commands, &asset_server, "fat_cat.sprite.json", Anchor::Center);
-    assets.fox = load_spritesheet(&mut commands, &asset_server, "fox.sprite.json", Anchor::Center);
 
     audio.play(sfx.bgm.clone())
         .loop_from(24.0)
