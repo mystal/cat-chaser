@@ -5,7 +5,7 @@ use std::{
 };
 
 use bevy::prelude::*;
-use bevy_asepritesheet::prelude::*;
+use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::Collider;
 
@@ -16,12 +16,6 @@ use crate::{
     game::CatBox,
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
 };
-
-// TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
-// now.
-pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
-pub const WALK_ANIM: AnimHandle = AnimHandle::from_index(0);
-pub const ATTACK_ANIM: AnimHandle = AnimHandle::from_index(2);
 
 pub const CAT_BOUNDS: f32 = 15.0;
 pub const CATBOX_BUFFER: f32 = 70.0;
@@ -182,29 +176,27 @@ pub struct CatBundle {
     cat: Cat,
     annoyance: Annoyance,
     name: Name,
-    sprite: AnimatedSpriteBundle,
+    sprite: AsepriteAnimationBundle,
     velocity: Velocity,
     collider: ColliderBundle,
     bounds: MovementBounds,
 }
 
 impl CatBundle {
-    fn new(name: &'static str, pos: Vec2, spritesheet: Handle<Spritesheet>, kind: CatKind) -> Self {
+    fn new(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind) -> Self {
         Self {
             cat: Cat::new(kind),
             annoyance: Annoyance::from_cat_kind(kind),
             name: Name::new(name),
-            sprite: AnimatedSpriteBundle {
-                animator: SpriteAnimator::from_anim(IDLE_ANIM),
-                spritesheet,
-                sprite_bundle: SpriteSheetBundle {
-                    sprite: Sprite {
-                        flip_x: fastrand::bool(),
-                        ..default()
-                    },
-                    transform: Transform::from_translation(pos.extend(2.0)),
+            sprite: AsepriteAnimationBundle {
+                transform: Transform::from_translation(pos.extend(2.0)),
+                sprite: Sprite {
+                    flip_x: fastrand::bool(),
                     ..default()
                 },
+                aseprite,
+                animation: Animation::default()
+                    .with_tag("idle"),
                 ..default()
             },
             velocity: Velocity::default(),
@@ -216,15 +208,15 @@ impl CatBundle {
         }
     }
 
-    pub fn basic(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+    pub fn basic(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
         Self::new("BasicCat", pos, spritesheet, CatKind::Basic)
     }
 
-    pub fn kitten(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+    pub fn kitten(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
         Self::new("KittenCat", pos, spritesheet, CatKind::Kitten)
     }
 
-    pub fn chonk(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+    pub fn chonk(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
         Self::new("ChonkCat", pos, spritesheet, CatKind::Chonk)
     }
 }
@@ -365,19 +357,19 @@ pub fn update_cats(
 }
 
 fn cat_animation(
-    mut cat_q: Query<(&mut SpriteAnimator, &mut Sprite, &Cat, &Velocity)>,
+    mut cat_q: Query<(&mut Animation, &mut Sprite, &Cat, &Velocity)>,
 ) {
     // Update which animation is playing based on state and velocity.
-    for (mut animator, mut sprite, cat, velocity) in cat_q.iter_mut() {
+    for (mut animation, mut sprite, cat, velocity) in cat_q.iter_mut() {
         match &cat.state {
             CatState::Wander { .. }=> {
                 if **velocity == Vec2::ZERO {
-                    if !animator.is_cur_anim(IDLE_ANIM) {
-                        animator.set_anim(IDLE_ANIM);
+                    if animation.tag.as_deref() != Some("idle") {
+                        animation.play("idle", AnimationRepeat::Loop);
                     }
                 } else {
-                    if !animator.is_cur_anim(WALK_ANIM) {
-                        animator.set_anim(WALK_ANIM);
+                    if animation.tag.as_deref() != Some("walk") {
+                        animation.play("walk", AnimationRepeat::Loop);
                     }
                     if velocity.x != 0.0 {
                         sprite.flip_x = velocity.x > 0.0;
@@ -385,29 +377,29 @@ fn cat_animation(
                 }
             }
             CatState::Flee => {
-                if !animator.is_cur_anim(WALK_ANIM) {
-                    animator.set_anim(WALK_ANIM);
+                if animation.tag.as_deref() != Some("walk") {
+                    animation.play("walk", AnimationRepeat::Loop);
                 }
                 if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
             }
             CatState::Jittering { .. } => {
-                if !animator.is_cur_anim(IDLE_ANIM) {
-                    animator.set_anim(IDLE_ANIM);
+                if animation.tag.as_deref() != Some("idle") {
+                    animation.play("idle", AnimationRepeat::Loop);
                 }
             }
             CatState::Cannonballing { .. } => {
-                if !animator.is_cur_anim(ATTACK_ANIM) {
-                    animator.set_anim(ATTACK_ANIM);
+                if animation.tag.as_deref() != Some("attack") {
+                    animation.play("attack", AnimationRepeat::Loop);
                 }
                 if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
             }
             CatState::InPen => {
-                if !animator.is_cur_anim(IDLE_ANIM) {
-                    animator.set_anim(IDLE_ANIM);
+                if animation.tag.as_deref() != Some("idle") {
+                    animation.play("idle", AnimationRepeat::Loop);
                 }
             }
         }
@@ -434,11 +426,13 @@ fn cat_animation(
 fn cat_color(
     mut cat_q: Query<(&Annoyance, &Cat, &mut Sprite), (With<Cat>, Changed<Annoyance>)>,
 ) {
+    use bevy::color::palettes::css;
+
     for (annoyance, cat, mut sprite) in cat_q.iter_mut() {
-        let base_linear = cat.color.rgb_linear_to_vec3();
-        let red_linear = Color::RED.rgb_linear_to_vec3();
+        let base_linear = cat.color.to_linear().to_vec3();
+        let red_linear = css::RED.to_vec3();
         let color_linear = base_linear.lerp(red_linear, annoyance.current);
-        sprite.color = Color::rgb_linear_from_array(color_linear);
+        sprite.color = LinearRgba::from_vec3(color_linear).into();
     }
 }
 
@@ -475,7 +469,7 @@ pub const CAT_COLORS: &[[f32; 3]] = &[
 
 pub fn random_cat_color() -> Color {
     let color = fastrand::choice(CAT_COLORS).unwrap();
-    Color::rgb_from_array(*color)
+    Color::srgb_from_array(*color)
 }
 
 fn init_cat_color(

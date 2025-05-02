@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_asepritesheet::prelude::*;
+use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
 use bevy_rapier2d::prelude::RapierContext;
 
@@ -11,11 +11,6 @@ use crate::{
     physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
     utils::Blink,
 };
-
-// TODO: Kinda sucks to hard-code these, but I'm too lazy to figure out how to pipe in them right
-// now.
-pub const IDLE_ANIM: AnimHandle = AnimHandle::from_index(1);
-pub const RUN_ANIM: AnimHandle = AnimHandle::from_index(0);
 
 pub struct DogPlugin;
 
@@ -52,7 +47,7 @@ impl Dog {
 pub struct DogBundle {
     name: Name,
     dog: Dog,
-    sprite: AnimatedSpriteBundle,
+    sprite: AsepriteAnimationBundle,
     velocity: Velocity,
     collider: ColliderBundle,
     input: PlayerInput,
@@ -61,7 +56,7 @@ pub struct DogBundle {
 }
 
 impl DogBundle {
-    pub fn new(pos: Vec2, spritesheet: Handle<Spritesheet>) -> Self {
+    pub fn new(pos: Vec2, aseprite: Handle<Aseprite>) -> Self {
         let mut recovery_timer = Timer::from_seconds(0.5, TimerMode::Once);
         recovery_timer.pause();
         Self {
@@ -70,17 +65,15 @@ impl DogBundle {
                 speed: 150.0,
                 recovery_timer,
             },
-            sprite: AnimatedSpriteBundle {
-                animator: SpriteAnimator::from_anim(IDLE_ANIM),
-                spritesheet,
-                sprite_bundle: SpriteSheetBundle {
-                    sprite: Sprite {
-                        flip_x: true,
-                        ..default()
-                    },
-                    transform: Transform::from_translation(pos.extend(3.0)),
+            sprite: AsepriteAnimationBundle {
+                transform: Transform::from_translation(pos.extend(3.0)),
+                sprite: Sprite {
+                    flip_x: true,
                     ..default()
                 },
+                aseprite,
+                animation: Animation::default()
+                    .with_tag("idle_front"),
                 ..default()
             },
             velocity: Velocity::default(),
@@ -155,17 +148,17 @@ fn tick_recovery(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut SpriteAnimator, &mut Sprite, &Velocity), With<Dog>>,
+    mut dog_q: Query<(&mut Animation, &mut Sprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
-    for (mut animator, mut sprite, velocity) in dog_q.iter_mut() {
+    for (mut animation, mut sprite, velocity) in dog_q.iter_mut() {
         if **velocity == Vec2::ZERO {
-            if !animator.is_cur_anim(IDLE_ANIM) {
-                animator.set_anim(IDLE_ANIM);
+            if animation.tag.as_deref() != Some("idle_front") {
+                animation.play("idle_front", AnimationRepeat::Loop);
             }
         } else {
-            if !animator.is_cur_anim(RUN_ANIM) {
-                animator.set_anim(RUN_ANIM);
+            if animation.tag.as_deref() != Some("run_front") {
+                animation.play("run_front", AnimationRepeat::Loop);
             }
             if velocity.x != 0.0 {
                 sprite.flip_x = velocity.x > 0.0;
