@@ -24,7 +24,7 @@ const FLEE_RANGE: f32 = 70.0;
 const FLEE_BUFFER: f32 = 0.0;
 
 const JITTER_TIME: f32 = 1.0;
-const _JITTER_AMOUNT: f32 = 2.0;
+const JITTER_AMOUNT: f32 = 2.0;
 const CANNONBALL_TIME: f32 = 1.25;
 const CANNONBALL_SPEED: f32 = 240.0;
 
@@ -359,6 +359,8 @@ pub fn update_cats(
 fn cat_animation(
     mut cat_q: Query<(&mut Animation, &mut Sprite, &Cat, &Velocity)>,
 ) {
+    use bevy::sprite::Anchor;
+
     // Update which animation is playing based on state and velocity.
     for (mut animation, mut sprite, cat, velocity) in cat_q.iter_mut() {
         match &cat.state {
@@ -404,22 +406,20 @@ fn cat_animation(
             }
         }
 
-        // TODO: This should work, buuuut, bevy_asepritesheet overwrites sprite.anchor every frame.
-        // Jitter sprite!
-        // match &cat.state {
-        //     CatState::Jittering { .. } => {
-        //         let offset = Vec2::new(
-        //             (fastrand::f32() * 2.0) - 1.0,
-        //             (fastrand::f32() * 2.0) - 1.0,
-        //         ) * JITTER_AMOUNT;
-        //         let anchor = offset / 32.0;
-        //         sprite.anchor = Anchor::Custom(anchor);
-        //         dbg!(sprite.anchor);
-        //     }
-        //     _ => {
-        //         sprite.anchor = Anchor::Center;
-        //     }
-        // }
+        // When Jittering, offset the sprite by a random amount!
+        match &cat.state {
+            CatState::Jittering { .. } => {
+                let offset = Vec2::new(
+                    (fastrand::f32() * 2.0) - 1.0,
+                    (fastrand::f32() * 2.0) - 1.0,
+                ) * JITTER_AMOUNT;
+                let anchor = offset / 32.0;
+                sprite.anchor = Anchor::Custom(anchor);
+            }
+            _ => {
+                sprite.anchor = Anchor::Center;
+            }
+        }
     }
 }
 
