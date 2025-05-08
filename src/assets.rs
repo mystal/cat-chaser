@@ -15,7 +15,7 @@ impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_plugins((
-                BevySprityPlugin,
+                AsepriteUltraPlugin,
                 RonAssetPlugin::<Levels>::new(&["level.ron"]),
             ))
             .add_loading_state(

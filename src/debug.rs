@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy::input::mouse::MouseWheel;
-use bevy_egui::{egui, EguiContexts, EguiSettings};
+use bevy_egui::{egui, EguiContexts, EguiContextSettings};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::render::{DebugRenderContext, RapierDebugRenderPlugin};
 
@@ -21,8 +21,8 @@ impl Plugin for DebugPlugin {
             // Run absorb_egui_inputs after egui reads input, but before the game reads input (and
             // before egui starts a new frame).
             .add_systems(PreUpdate, absorb_egui_inputs
-                .after(bevy_egui::systems::process_input_system)
-                .before(bevy_egui::EguiSet::BeginPass)
+                .after(bevy_egui::input::write_egui_input_system)
+                .before(bevy_egui::begin_pass_system)
                 .before(input::read_player_input))
             .add_systems(Update, (
                 debug_menu_bar.run_if(debug_ui_enabled),
@@ -110,6 +110,8 @@ fn toggle_physics_debug_render(
     }
 }
 
+// System to absorb egui inputs as per:
+// https://github.com/vladbat00/bevy_egui/issues/47#issuecomment-2368811068
 fn absorb_egui_inputs(
     mut contexts: bevy_egui::EguiContexts,
     mut mouse: ResMut<ButtonInput<MouseButton>>,
@@ -145,7 +147,7 @@ fn absorb_egui_inputs(
     }
 }
 
-fn set_ui_scale_factor(mut windows: Query<&mut EguiSettings, (With<Window>, Added<EguiSettings>)>) {
+fn set_ui_scale_factor(mut windows: Query<&mut EguiContextSettings, (With<Window>, Added<EguiContextSettings>)>) {
     for mut egui_settings in windows.iter_mut() {
         // TODO: Make this configurable, since it'll depend on the screen.
         // TODO: Default to guessed scale factor?

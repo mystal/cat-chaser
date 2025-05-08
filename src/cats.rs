@@ -171,54 +171,40 @@ impl Annoyance {
     }
 }
 
-#[derive(Bundle)]
-pub struct CatBundle {
-    cat: Cat,
-    annoyance: Annoyance,
-    name: Name,
-    sprite: AsepriteAnimationBundle,
-    velocity: Velocity,
-    collider: ColliderBundle,
-    bounds: MovementBounds,
+fn cat(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind) -> impl Bundle {
+    (
+        Cat::new(kind),
+        Annoyance::from_cat_kind(kind),
+        Name::new(name),
+        Transform::from_translation(pos.extend(2.0)),
+        Sprite {
+            flip_x: fastrand::bool(),
+            ..default()
+        },
+        AseSpriteAnimation {
+            aseprite,
+            animation: Animation::default()
+                .with_tag("idle"),
+        },
+        Velocity::default(),
+        ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
+        MovementBounds {
+            min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
+            max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),
+        },
+    )
 }
 
-impl CatBundle {
-    fn new(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind) -> Self {
-        Self {
-            cat: Cat::new(kind),
-            annoyance: Annoyance::from_cat_kind(kind),
-            name: Name::new(name),
-            sprite: AsepriteAnimationBundle {
-                transform: Transform::from_translation(pos.extend(2.0)),
-                sprite: Sprite {
-                    flip_x: fastrand::bool(),
-                    ..default()
-                },
-                aseprite,
-                animation: Animation::default()
-                    .with_tag("idle"),
-                ..default()
-            },
-            velocity: Velocity::default(),
-            collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
-            bounds: MovementBounds {
-                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
-                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),
-            },
-        }
-    }
+pub fn basic_cat(pos: Vec2, spritesheet: Handle<Aseprite>) -> impl Bundle {
+    cat("BasicCat", pos, spritesheet, CatKind::Basic)
+}
 
-    pub fn basic(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
-        Self::new("BasicCat", pos, spritesheet, CatKind::Basic)
-    }
+pub fn kitten_cat(pos: Vec2, spritesheet: Handle<Aseprite>) -> impl Bundle {
+    cat("KittenCat", pos, spritesheet, CatKind::Kitten)
+}
 
-    pub fn kitten(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
-        Self::new("KittenCat", pos, spritesheet, CatKind::Kitten)
-    }
-
-    pub fn chonk(pos: Vec2, spritesheet: Handle<Aseprite>) -> Self {
-        Self::new("ChonkCat", pos, spritesheet, CatKind::Chonk)
-    }
+pub fn chonk_cat(pos: Vec2, spritesheet: Handle<Aseprite>) -> impl Bundle {
+    cat("ChonkCat", pos, spritesheet, CatKind::Chonk)
 }
 
 pub fn update_cats(
@@ -357,21 +343,21 @@ pub fn update_cats(
 }
 
 fn cat_animation(
-    mut cat_q: Query<(&mut Animation, &mut Sprite, &Cat, &Velocity)>,
+    mut cat_q: Query<(&mut AseSpriteAnimation, &mut Sprite, &Cat, &Velocity)>,
 ) {
     use bevy::sprite::Anchor;
 
     // Update which animation is playing based on state and velocity.
-    for (mut animation, mut sprite, cat, velocity) in cat_q.iter_mut() {
+    for (mut aseanim, mut sprite, cat, velocity) in cat_q.iter_mut() {
         match &cat.state {
             CatState::Wander { .. }=> {
                 if **velocity == Vec2::ZERO {
-                    if animation.tag.as_deref() != Some("idle") {
-                        animation.play("idle", AnimationRepeat::Loop);
+                    if aseanim.animation.tag.as_deref() != Some("idle") {
+                        aseanim.animation.play("idle", AnimationRepeat::Loop);
                     }
                 } else {
-                    if animation.tag.as_deref() != Some("walk") {
-                        animation.play("walk", AnimationRepeat::Loop);
+                    if aseanim.animation.tag.as_deref() != Some("walk") {
+                        aseanim.animation.play("walk", AnimationRepeat::Loop);
                     }
                     if velocity.x != 0.0 {
                         sprite.flip_x = velocity.x > 0.0;
@@ -379,29 +365,29 @@ fn cat_animation(
                 }
             }
             CatState::Flee => {
-                if animation.tag.as_deref() != Some("walk") {
-                    animation.play("walk", AnimationRepeat::Loop);
+                if aseanim.animation.tag.as_deref() != Some("walk") {
+                    aseanim.animation.play("walk", AnimationRepeat::Loop);
                 }
                 if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
             }
             CatState::Jittering { .. } => {
-                if animation.tag.as_deref() != Some("idle") {
-                    animation.play("idle", AnimationRepeat::Loop);
+                if aseanim.animation.tag.as_deref() != Some("idle") {
+                    aseanim.animation.play("idle", AnimationRepeat::Loop);
                 }
             }
             CatState::Cannonballing { .. } => {
-                if animation.tag.as_deref() != Some("attack") {
-                    animation.play("attack", AnimationRepeat::Loop);
+                if aseanim.animation.tag.as_deref() != Some("attack") {
+                    aseanim.animation.play("attack", AnimationRepeat::Loop);
                 }
                 if **velocity != Vec2::ZERO {
                     sprite.flip_x = velocity.x > 0.0;
                 }
             }
             CatState::InPen => {
-                if animation.tag.as_deref() != Some("idle") {
-                    animation.play("idle", AnimationRepeat::Loop);
+                if aseanim.animation.tag.as_deref() != Some("idle") {
+                    aseanim.animation.play("idle", AnimationRepeat::Loop);
                 }
             }
         }

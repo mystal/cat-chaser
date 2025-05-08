@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
-use bevy_rapier2d::prelude::RapierContext;
+use bevy_rapier2d::prelude::ReadRapierContext;
 
 use crate::{
     WORLD_SIZE, AppState,
@@ -43,49 +43,34 @@ impl Dog {
     }
 }
 
-#[derive(Bundle)]
-pub struct DogBundle {
-    name: Name,
-    dog: Dog,
-    sprite: AsepriteAnimationBundle,
-    velocity: Velocity,
-    collider: ColliderBundle,
-    input: PlayerInput,
-    bounds: MovementBounds,
-    blink: Blink,
-}
-
-impl DogBundle {
-    pub fn new(pos: Vec2, aseprite: Handle<Aseprite>) -> Self {
-        let mut recovery_timer = Timer::from_seconds(0.5, TimerMode::Once);
-        recovery_timer.pause();
-        Self {
-            name: Name::new("Dog"),
-            dog: Dog {
-                speed: 150.0,
-                recovery_timer,
-            },
-            sprite: AsepriteAnimationBundle {
-                transform: Transform::from_translation(pos.extend(3.0)),
-                sprite: Sprite {
-                    flip_x: true,
-                    ..default()
-                },
-                aseprite,
-                animation: Animation::default()
-                    .with_tag("idle_front"),
-                ..default()
-            },
-            velocity: Velocity::default(),
-            collider: ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::DOG, groups::CAT),
-            input: PlayerInput::default(),
-            bounds: MovementBounds {
-                min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
-                max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
-            },
-            blink: Blink::from_seconds(0.05, false),
-        }
-    }
+pub fn dog(pos: Vec2, aseprite: Handle<Aseprite>) -> impl Bundle {
+    let mut recovery_timer = Timer::from_seconds(0.5, TimerMode::Once);
+    recovery_timer.pause();
+    (
+        Name::new("Dog"),
+        Dog {
+            speed: 150.0,
+            recovery_timer,
+        },
+        Transform::from_translation(pos.extend(3.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
+            aseprite,
+            animation: Animation::default()
+                .with_tag("idle_front"),
+        },
+        Velocity::default(),
+        ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::DOG, groups::CAT),
+        PlayerInput::default(),
+        MovementBounds {
+            min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
+            max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::new(0.0, 0.0),
+        },
+        Blink::from_seconds(0.05, false),
+    )
 }
 
 fn dog_movement(
@@ -101,8 +86,10 @@ fn check_dog_hit(
     sounds: Res<SfxAssets>,
     mut dog_q: Query<(Entity, &mut Dog, &mut Blink)>,
     cat_q: Query<&Cat, Without<Dog>>,
-    rapier_ctx: Res<RapierContext>,
+    rapier_ctx: ReadRapierContext,
 ) {
+    let rapier_ctx = rapier_ctx.single();
+
     for (entity, mut dog, mut blink) in dog_q.iter_mut() {
         if dog.is_recovering() {
             continue;
@@ -148,17 +135,17 @@ fn tick_recovery(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut Animation, &mut Sprite, &Velocity), With<Dog>>,
+    mut dog_q: Query<(&mut AseSpriteAnimation, &mut Sprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
-    for (mut animation, mut sprite, velocity) in dog_q.iter_mut() {
+    for (mut aseanim, mut sprite, velocity) in dog_q.iter_mut() {
         if **velocity == Vec2::ZERO {
-            if animation.tag.as_deref() != Some("idle_front") {
-                animation.play("idle_front", AnimationRepeat::Loop);
+            if aseanim.animation.tag.as_deref() != Some("idle_front") {
+                aseanim.animation.play("idle_front", AnimationRepeat::Loop);
             }
         } else {
-            if animation.tag.as_deref() != Some("run_front") {
-                animation.play("run_front", AnimationRepeat::Loop);
+            if aseanim.animation.tag.as_deref() != Some("run_front") {
+                aseanim.animation.play("run_front", AnimationRepeat::Loop);
             }
             if velocity.x != 0.0 {
                 sprite.flip_x = velocity.x > 0.0;

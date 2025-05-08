@@ -17,9 +17,7 @@ pub struct PlayerInput {
 
 pub fn read_player_input(
     keys: Res<ButtonInput<KeyCode>>,
-    gamepads: Res<Gamepads>,
-    pad_buttons: Res<ButtonInput<GamepadButton>>,
-    axes: Res<Axis<GamepadAxis>>,
+    gamepads: Query<&Gamepad>,
     mut player_q: Query<&mut PlayerInput>,
 ) {
     if player_q.is_empty() {
@@ -30,11 +28,10 @@ pub fn read_player_input(
     let mut bark = false;
 
     // Read input from first gamepad.
+    // TODO: Somehow keep track of which gamepad the player is using if there are multiple connected.
     if let Some(gamepad) = gamepads.iter().next() {
         // Movement
-        let move_x = GamepadAxis::new(gamepad, GamepadAxisType::LeftStickX);
-        let move_y = GamepadAxis::new(gamepad, GamepadAxisType::LeftStickY);
-        if let (Some(x), Some(y)) = (axes.get(move_x), axes.get(move_y)) {
+        if let (Some(x), Some(y)) = (gamepad.get(GamepadAxis::LeftStickX), gamepad.get(GamepadAxis::LeftStickY)) {
             let tmp = Vec2::new(x, y);
             // TODO: See if we can configure the deadzone using Bevy's APIs.
             if tmp.length() > 0.1 {
@@ -43,8 +40,7 @@ pub fn read_player_input(
         }
 
         // Shoot
-        let bark_button = GamepadButton::new(gamepad, GamepadButtonType::South);
-        bark |= pad_buttons.pressed(bark_button);
+        bark |= gamepad.just_pressed(GamepadButton::South);
     }
 
     // Read input from mouse/keyboard.
