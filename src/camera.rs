@@ -24,13 +24,20 @@ fn spawn_camera(
     let window = window_q.single();
 
     // Spawn camera.
-    let mut camera = Camera2dBundle::default();
-    camera.projection.scaling_mode = ScalingMode::Fixed {
-        width: SCREEN_SIZE.x as f32,
-        height: SCREEN_SIZE.y as f32,
-    };
-    camera.camera.viewport = compute_viewport(window.physical_width(), window.physical_height());
-    commands.spawn(camera);
+    commands.spawn((
+        Camera2d,
+        Camera {
+            viewport: compute_viewport(window.physical_width(), window.physical_height()),
+            ..default()
+        },
+        OrthographicProjection {
+            scaling_mode: ScalingMode::Fixed {
+                width: SCREEN_SIZE.x as f32,
+                height: SCREEN_SIZE.y as f32,
+            },
+            ..OrthographicProjection::default_2d()
+        }
+    ));
 }
 
 fn scale_camera(

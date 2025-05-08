@@ -6,8 +6,8 @@ use serde::Deserialize;
 use crate::{
     WORLD_SIZE,
     assets::GameAssets,
-    cats::{CAT_BOUNDS, Cat, CatBundle},
-    dog::{Dog, DogBundle},
+    cats::{self, CAT_BOUNDS, Cat},
+    dog::{self, Dog},
     game::{CatBox, GameState},
 };
 
@@ -70,7 +70,7 @@ fn spawn_next_level(
     let catbox_pos = catbox_q.get_single()
         .map(|t| t.translation.truncate())
         .unwrap_or_default();
-    commands.spawn(DogBundle::new(catbox_pos, assets.wizard_dog.clone()));
+    commands.spawn(dog::dog(catbox_pos, assets.wizard_dog.clone()));
 
     // Then spawn new cats.
     let level_index = if current_level.index + 1 < levels.len() {
@@ -96,13 +96,13 @@ fn spawn_next_level(
         }
     };
     for _ in 0..level_cats.basic {
-        commands.spawn(CatBundle::basic(random_location(), assets.basic_cat.clone()));
+        commands.spawn(cats::basic_cat(random_location(), assets.basic_cat.clone()));
     }
     for _ in 0..level_cats.kitten {
-        commands.spawn(CatBundle::kitten(random_location(), assets.kitten.clone()));
+        commands.spawn(cats::kitten_cat(random_location(), assets.kitten.clone()));
     }
     for _ in 0..level_cats.chonk {
-        commands.spawn(CatBundle::chonk(random_location(), assets.fat_cat.clone()));
+        commands.spawn(cats::chonk_cat(random_location(), assets.fat_cat.clone()));
     }
 
     // Set CurrentLevel info.

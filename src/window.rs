@@ -71,7 +71,7 @@ impl Plugin for WindowPlugin {
         {
             app
                 .add_systems(Startup, window_icon::set_window_icon)
-                .add_systems(Last, save_window_state_on_exit.run_if(on_event::<AppExit>()));
+                .add_systems(Last, save_window_state_on_exit.run_if(on_event::<AppExit>));
 
             app
                 .insert_resource(LogFpsTimer::default())

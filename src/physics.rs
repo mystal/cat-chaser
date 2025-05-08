@@ -69,7 +69,7 @@ pub fn update_movement(
     mut movement_q: Query<(&Velocity, &mut Transform, Option<&MovementBounds>)>,
 ) {
     for (velocity, mut transform, bounds) in movement_q.iter_mut() {
-        transform.translation += velocity.inner.extend(0.0) * time.delta_seconds();
+        transform.translation += velocity.inner.extend(0.0) * time.delta_secs();
         // Take into account level bounds and clamp to them.
         // TODO: Move bounds clamping to a different system that uses change detection of transform.
         if let Some(bounds) = bounds {
