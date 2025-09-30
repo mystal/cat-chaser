@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
-use bevy_ui_dsl::*;
+// use bevy_ui_dsl::*;
 
 use crate::{
     SCREEN_SIZE, AppState,
     assets::GameAssets,
     cats,
-    ui::classes::*,
-    utils::Blink,
+    // ui::classes::*,
+    // utils::Blink,
 };
 
 pub struct MenusPlugin;
@@ -29,16 +29,16 @@ impl Plugin for MenusPlugin {
 pub struct MenuRoot;
 
 fn show_start(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    // mut commands: Commands,
+    // asset_server: Res<AssetServer>,
 ) {
-    rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
-        image(c_start_image, p);
+    // rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
+    //     image(c_start_image, p);
 
-        let blink = Blink::from_seconds(0.5, true);
-        // TODO: Add a drop shadow to the text.
-        texti("Press Enter to play!", c_start_text, c_font_start, blink, p);
-    });
+    //     let blink = Blink::from_seconds(0.5, true);
+    //     // TODO: Add a drop shadow to the text.
+    //     texti("Press Enter to play!", c_start_text, c_font_start, blink, p);
+    // });
 }
 
 fn handle_menu_input(
@@ -80,33 +80,30 @@ fn clear_start(
 
 fn show_credits(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    // asset_server: Res<AssetServer>,
     assets: Res<GameAssets>,
 ) {
     // Spawn background for the menu.
     commands.spawn((
         Name::new("BackgroundSprite"),
-        SpriteBundle {
-            sprite: Sprite {
-                color: Color::WHITE,
-                custom_size: Some(SCREEN_SIZE.as_vec2()),
-                ..default()
-            },
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
+        Sprite {
+            color: Color::WHITE,
+            custom_size: Some(SCREEN_SIZE.as_vec2()),
             ..default()
         },
+        Transform::from_xyz(0.0, 0.0, -1.0),
     ));
 
     // Spawn animated sprites in world.
     commands.spawn((
         Name::new("LindaSprite"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-170.0, 200.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                flip_x: true,
-                ..default()
-            },
+        Transform::from_xyz(-170.0, 200.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("jam"),
@@ -115,13 +112,13 @@ fn show_credits(
     ));
     commands.spawn((
         Name::new("MorganSprite"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-170.0, 100.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                flip_x: true,
-                ..default()
-            },
+        Transform::from_xyz(-170.0, 100.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.kitten.clone(),
             animation: Animation::default()
                 .with_tag("scarf"),
@@ -130,13 +127,13 @@ fn show_credits(
     ));
     commands.spawn((
         Name::new("JustinSprite"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-170.0, 0.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                flip_x: true,
-                ..default()
-            },
+        Transform::from_xyz(-170.0, 0.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("spin"),
@@ -145,13 +142,13 @@ fn show_credits(
     ));
     commands.spawn((
         Name::new("GabeSprite"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-170.0, -100.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                flip_x: true,
-                ..default()
-            },
+        Transform::from_xyz(-170.0, -100.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("run_back"),
@@ -160,13 +157,13 @@ fn show_credits(
     ));
     commands.spawn((
         Name::new("ThamindaSprite"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-170.0, -200.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                flip_x: true,
-                ..default()
-            },
+        Transform::from_xyz(-170.0, -200.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            flip_x: true,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.fox.clone(),
             animation: Animation::default()
                 .with_tag("fox"),
@@ -174,20 +171,20 @@ fn show_credits(
         },
     ));
 
-    let name = Name::new("UiRoot");
-    rooti(c_root, &asset_server, &mut commands, (name, MenuRoot), |p| {
-        // Spawn credits text in UI.
-        text("Linda Cai", c_credits_text_linda, c_font_credits, p);
-        text("Morgan Tenney", c_credits_text_morgan, c_font_credits, p);
-        text("Justin Hamilton", c_credits_text_justin, c_font_credits, p);
-        text("Gabriel Martinez", c_credits_text_gabe, c_font_credits, p);
-        text("Music by Thaminda Edirisooriya", c_credits_text_thaminda, c_font_credits, p);
+    // let name = Name::new("UiRoot");
+    // rooti(c_root, &asset_server, &mut commands, (name, MenuRoot), |p| {
+    //     // Spawn credits text in UI.
+    //     text("Linda Cai", c_credits_text_linda, c_font_credits, p);
+    //     text("Morgan Tenney", c_credits_text_morgan, c_font_credits, p);
+    //     text("Justin Hamilton", c_credits_text_justin, c_font_credits, p);
+    //     text("Gabriel Martinez", c_credits_text_gabe, c_font_credits, p);
+    //     text("Music by Thaminda Edirisooriya", c_credits_text_thaminda, c_font_credits, p);
 
-        let name = Name::new("ReturnText");
-        let blink = Blink::from_seconds(0.5, true);
-        // TODO: Add a drop shadow to the text.
-        texti("Press Tab to return!", c_start_text, c_font_how_to_play, (name, blink), p);
-    });
+    //     let name = Name::new("ReturnText");
+    //     let blink = Blink::from_seconds(0.5, true);
+    //     // TODO: Add a drop shadow to the text.
+    //     texti("Press Tab to return!", c_start_text, c_font_how_to_play, (name, blink), p);
+    // });
 }
 
 fn clear_credits(
@@ -205,23 +202,25 @@ fn clear_credits(
 
 fn show_how_to_play(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    // asset_server: Res<AssetServer>,
     assets: Res<GameAssets>,
 ) {
     // Ideally this would all be done in UI, but UI renders on top of the world...
     // And we don't (yet) have animated sprites in UI.
-    commands.spawn(SpriteBundle {
-        texture: assets.how_to_play.clone(),
-        transform: Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
-        ..default()
-    });
+    commands.spawn((
+        Sprite {
+            image: assets.how_to_play.clone(),
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, -1.0),
+    ));
 
     // Spawn sprites for the dog.
     commands.spawn((
         Name::new("Dog"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(270.0, 240.0, 0.0))
-                .with_scale(Vec3::new(4.0, 4.0, 1.0)),
+        Transform::from_xyz(270.0, 240.0, 0.0)
+            .with_scale(Vec3::new(4.0, 4.0, 1.0)),
+        AseSpriteAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("idle_front"),
@@ -234,13 +233,13 @@ fn show_how_to_play(
     let color = Color::srgb_from_array(cats::CAT_COLORS[0]);
     commands.spawn((
         Name::new("BasicCat"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(-30.0, -25.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                color,
-                ..default()
-            },
+        Transform::from_xyz(-30.0, -25.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            color,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -250,13 +249,13 @@ fn show_how_to_play(
     let color = Color::srgb_from_array(cats::CAT_COLORS[3]);
     commands.spawn((
         Name::new("FatCat"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(70.0, -25.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                color,
-                ..default()
-            },
+        Transform::from_xyz(70.0, -25.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            color,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.fat_cat.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -266,13 +265,13 @@ fn show_how_to_play(
     let color = Color::srgb_from_array(cats::CAT_COLORS[2]);
     commands.spawn((
         Name::new("Kitten"),
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(165.0, -25.0, 0.0))
-                .with_scale(Vec3::new(3.0, 3.0, 1.0)),
-            sprite: Sprite {
-                color,
-                ..default()
-            },
+        Transform::from_xyz(165.0, -25.0, 0.0)
+            .with_scale(Vec3::new(3.0, 3.0, 1.0)),
+        Sprite {
+            color,
+            ..default()
+        },
+        AseSpriteAnimation {
             aseprite: assets.kitten.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -280,11 +279,11 @@ fn show_how_to_play(
         },
     ));
 
-    rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
-        let blink = Blink::from_seconds(0.5, true);
-        // TODO: Add a drop shadow to the text.
-        texti("Press Enter to play!", c_start_text, c_font_how_to_play, blink, p);
-    });
+    // rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
+    //     let blink = Blink::from_seconds(0.5, true);
+    //     // TODO: Add a drop shadow to the text.
+    //     texti("Press Enter to play!", c_start_text, c_font_how_to_play, blink, p);
+    // });
 }
 
 fn clear_how_to_play(

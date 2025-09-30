@@ -1,10 +1,10 @@
 use bevy::prelude::*;
-use bevy_ui_dsl::*;
 
 use crate::{
     AppState,
+    // assets::GameAssets,
     game::{self, CatStats, GameState},
-    ui::classes::*,
+    // ui::classes::*,
 };
 
 pub struct HudPlugin;
@@ -35,23 +35,33 @@ struct VictoryText;
 
 fn setup_hud(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    // asset_server: Res<AssetServer>,
+    // assets: Res<GameAssets>,
 ) {
-    rooti(c_root, &asset_server, &mut commands, (HudRoot, Name::new("HudRoot")), |p| {
-        nodei(c_cat_tracker, Name::new("CatTracker"), p, |p| {
-            image(c_cat_face, p);
-            // TODO: Add a drop shadow to the text.
-            texti("00/00", c_tracker_text, c_font_tracker, CatTracker, p);
-        });
-        nodei(c_next_level, Name::new("NextLevel"), p, |p| {
-            // TODO: Add a drop shadow to the text.
-            texti("Cats Corralled!\nPress Enter to start the next level", c_next_level_text, c_font_next_level, NextLevelText, p);
-        });
-        nodei(c_victory, Name::new("Victory"), p, |p| {
-            // TODO: Add a drop shadow to the text.
-            texti("You are the most magical corgi in all the land!\nPress Enter to start anew!", c_next_level_text, c_font_next_level, VictoryText, p);
-        });
-    });
+    // Spawn Cat Tracker.
+    commands.spawn((
+    ));
+
+    // Spawn Next Level text.
+
+    // Spawn Victory text.
+
+    // TODO: Spawn nodes individually.
+    // rooti(c_root, &asset_server, &mut commands, (HudRoot, Name::new("HudRoot")), |p| {
+    //     nodei(c_cat_tracker, Name::new("CatTracker"), p, |p| {
+    //         image(c_cat_face, p);
+    //         // TODO: Add a drop shadow to the text.
+    //         texti("00/00", c_tracker_text, c_font_tracker, CatTracker, p);
+    //     });
+    //     nodei(c_next_level, Name::new("NextLevel"), p, |p| {
+    //         // TODO: Add a drop shadow to the text.
+    //         texti("Cats Corralled!\nPress Enter to start the next level", c_next_level_text, c_font_next_level, NextLevelText, p);
+    //     });
+    //     nodei(c_victory, Name::new("Victory"), p, |p| {
+    //         // TODO: Add a drop shadow to the text.
+    //         texti("You are the most magical corgi in all the land!\nPress Enter to start anew!", c_next_level_text, c_font_next_level, VictoryText, p);
+    //     });
+    // });
 }
 
 fn destroy_hud(
@@ -72,7 +82,7 @@ fn update_cat_tracker(
     }
 
     for mut tracker_text in tracker_q.iter_mut()  {
-        tracker_text.sections[0].value = format!("{:02}/{:02}", cat_stats.in_pen(), cat_stats.total());
+        tracker_text.0 = format!("{:02}/{:02}", cat_stats.in_pen(), cat_stats.total());
     }
 }
 

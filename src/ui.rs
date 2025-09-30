@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-mod classes;
+// mod classes;
 mod hud;
 mod menus;
 mod party;

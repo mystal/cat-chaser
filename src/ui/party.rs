@@ -38,9 +38,9 @@ fn spawn_party(
     commands.spawn((
         Name::new("PartyDog"),
         PartyDog,
-        AsepriteAnimationBundle {
-            transform: Transform::from_translation(Vec3::new(0.0, 20.0, 200.0))
-                .with_scale(Vec3::new(7.0, 7.0, 1.0)),
+        Transform::from_xyz(0.0, 20.0, 200.0)
+            .with_scale(Vec3::new(7.0, 7.0, 1.0)),
+        AseSpriteAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("run_front"),
@@ -66,15 +66,15 @@ fn spawn_party(
             PartyCat {
                 kind,
             },
-            AsepriteAnimationBundle {
-                transform: Transform::from_translation(Vec3::new(x, y, z))
-                    .with_rotation(Quat::from_rotation_z(angle.to_radians()))
-                    .with_scale(Vec3::new(1.5, 1.5, 1.0)),
-                sprite: Sprite {
-                    color: cats::random_cat_color(),
-                    flip_x: fastrand::bool(),
-                    ..default()
-                },
+            Transform::from_xyz(x, y, z)
+                .with_rotation(Quat::from_rotation_z(angle.to_radians()))
+                .with_scale(Vec3::new(1.5, 1.5, 1.0)),
+            Sprite {
+                color: cats::random_cat_color(),
+                flip_x: fastrand::bool(),
+                ..default()
+            },
+            AseSpriteAnimation {
                 aseprite,
                 animation: Animation::default()
                     .with_tag("idle"),
@@ -104,7 +104,7 @@ fn update_cats(
     time: Res<Time>,
     mut cat_q: Query<(&PartyCat, &mut Transform)>,
 ) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     for (cat, mut transform) in cat_q.iter_mut() {
         // Update rotation
         let rotation = match cat.kind {
