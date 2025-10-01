@@ -2,9 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     AppState,
-    // assets::GameAssets,
+    assets::GameAssets,
     game::{self, CatStats, GameState},
-    // ui::classes::*,
 };
 
 pub struct HudPlugin;
@@ -35,33 +34,117 @@ struct VictoryText;
 
 fn setup_hud(
     mut commands: Commands,
-    // asset_server: Res<AssetServer>,
-    // assets: Res<GameAssets>,
+    assets: Res<GameAssets>,
 ) {
-    // Spawn Cat Tracker.
+    // Set up Cat Tracker.
+    let cat_tracker = (
+        Name::new("CatTracker"),
+        Node {
+            position_type: PositionType::Absolute,
+            right: Val::Px(4.0),
+            top: Val::Px(2.0),
+            align_items: AlignItems::Center,
+            column_gap: Val::Px(4.0),
+            ..default()
+        },
+        children![
+            (
+                ImageNode {
+                    image: assets.cat_face.clone(),
+                    ..default()
+                },
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+            ),
+            (
+                CatTracker,
+                Text("00/00".into()),
+                TextColor(Color::WHITE),
+                TextFont {
+                    font: assets.font.clone(),
+                    font_size: 14.0,
+                    ..default()
+                },
+                TextShadow {
+                    offset: Vec2::splat(0.8),
+                    color: Color::BLACK,
+                },
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+            ),
+        ],
+    );
+
+    // Set up Next Level text.
+    let next_level_text = (
+        NextLevelText,
+        Name::new("NextLevel"),
+        Text("Cats Corralled!\nPress Enter to start the next level".into()),
+        TextColor(Color::WHITE),
+        TextFont {
+            font: assets.font.clone(),
+            font_size: 12.0,
+            ..default()
+        },
+        TextShadow {
+            offset: Vec2::splat(0.8),
+            color: Color::BLACK,
+        },
+        Node {
+            position_type: PositionType::Absolute,
+            right: Val::Px(6.0),
+            bottom: Val::Px(6.0),
+            ..default()
+        },
+        Visibility::Hidden,
+    );
+
+    // Set up Victory text.
+    let victory_text = (
+        Name::new("Victory"),
+        Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            bottom: Val::Px(6.0),
+            ..default()
+        },
+        children![(
+            VictoryText,
+            Text("You are the most magical corgi in all the land!\nPress Enter to start anew!".into()),
+            TextColor(Color::WHITE),
+            TextFont {
+                font: assets.font.clone(),
+                font_size: 12.0,
+                ..default()
+            },
+            TextShadow {
+                offset: Vec2::splat(0.8),
+                color: Color::BLACK,
+            },
+            Visibility::Hidden,
+        )],
+    );
+
+    // Spawn HUD root.
     commands.spawn((
+        Name::new("HudRoot"),
+        HudRoot,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        children![
+            cat_tracker,
+            next_level_text,
+            victory_text,
+        ],
     ));
-
-    // Spawn Next Level text.
-
-    // Spawn Victory text.
-
-    // TODO: Spawn nodes individually.
-    // rooti(c_root, &asset_server, &mut commands, (HudRoot, Name::new("HudRoot")), |p| {
-    //     nodei(c_cat_tracker, Name::new("CatTracker"), p, |p| {
-    //         image(c_cat_face, p);
-    //         // TODO: Add a drop shadow to the text.
-    //         texti("00/00", c_tracker_text, c_font_tracker, CatTracker, p);
-    //     });
-    //     nodei(c_next_level, Name::new("NextLevel"), p, |p| {
-    //         // TODO: Add a drop shadow to the text.
-    //         texti("Cats Corralled!\nPress Enter to start the next level", c_next_level_text, c_font_next_level, NextLevelText, p);
-    //     });
-    //     nodei(c_victory, Name::new("Victory"), p, |p| {
-    //         // TODO: Add a drop shadow to the text.
-    //         texti("You are the most magical corgi in all the land!\nPress Enter to start anew!", c_next_level_text, c_font_next_level, VictoryText, p);
-    //     });
-    // });
 }
 
 fn destroy_hud(

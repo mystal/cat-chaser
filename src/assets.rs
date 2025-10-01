@@ -31,17 +31,17 @@ impl Plugin for AssetsPlugin {
 #[derive(Resource, AssetCollection)]
 pub struct GameAssets {
     #[asset(path = "fonts/Kenney Pixel.ttf")]
-    pub _font: Handle<Font>,
+    pub font: Handle<Font>,
 
     // Menu assets.
     #[asset(path = "ui/start_menu_background.png")]
-    pub _start_menu: Handle<Image>,
+    pub start_menu: Handle<Image>,
     #[asset(path = "ui/how_to_play.png")]
     pub how_to_play: Handle<Image>,
 
     // HUD assets.
     #[asset(path = "ui/cat_face.png")]
-    pub _cat_face: Handle<Image>,
+    pub cat_face: Handle<Image>,
 
     // Game world assets.
     #[asset(path = "level/hardwood_floor.png")]

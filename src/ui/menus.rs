@@ -1,14 +1,12 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_egui::input::egui_wants_any_input;
-// use bevy_ui_dsl::*;
 
 use crate::{
     SCREEN_SIZE, AppState,
     assets::GameAssets,
     cats,
-    // ui::classes::*,
-    // utils::Blink,
+    utils::Blink,
 };
 
 pub struct MenusPlugin;
@@ -30,16 +28,45 @@ impl Plugin for MenusPlugin {
 pub struct MenuRoot;
 
 fn show_start(
-    // mut commands: Commands,
-    // asset_server: Res<AssetServer>,
+    mut commands: Commands,
+    assets: Res<GameAssets>,
 ) {
-    // rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
-    //     image(c_start_image, p);
-
-    //     let blink = Blink::from_seconds(0.5, true);
-    //     // TODO: Add a drop shadow to the text.
-    //     texti("Press Enter to play!", c_start_text, c_font_start, blink, p);
-    // });
+    let start_image = ImageNode {
+        image: assets.start_menu.clone(),
+        ..default()
+    };
+    let start_text = (
+        Blink::from_seconds(0.5, true),
+        Text("Press Enter to play!".into()),
+        TextColor(Color::WHITE),
+        TextFont {
+            font: assets.font.clone(),
+            font_size: 13.0,
+            ..default()
+        },
+        TextShadow {
+            offset: Vec2::splat(0.8),
+            color: Color::BLACK,
+        },
+        Node {
+            position_type: PositionType::Absolute,
+            right: Val::Px(4.0),
+            bottom: Val::Px(6.0),
+            ..default()
+        },
+    );
+    commands.spawn((
+        MenuRoot,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        children![
+            start_image,
+            start_text,
+        ],
+    ));
 }
 
 fn handle_menu_input(
@@ -81,7 +108,6 @@ fn clear_start(
 
 fn show_credits(
     mut commands: Commands,
-    // asset_server: Res<AssetServer>,
     assets: Res<GameAssets>,
 ) {
     // Spawn background for the menu.
@@ -172,20 +198,58 @@ fn show_credits(
         },
     ));
 
-    // let name = Name::new("UiRoot");
-    // rooti(c_root, &asset_server, &mut commands, (name, MenuRoot), |p| {
-    //     // Spawn credits text in UI.
-    //     text("Linda Cai", c_credits_text_linda, c_font_credits, p);
-    //     text("Morgan Tenney", c_credits_text_morgan, c_font_credits, p);
-    //     text("Justin Hamilton", c_credits_text_justin, c_font_credits, p);
-    //     text("Gabriel Martinez", c_credits_text_gabe, c_font_credits, p);
-    //     text("Music by Thaminda Edirisooriya", c_credits_text_thaminda, c_font_credits, p);
+    let return_text = (
+        Name::new("ReturnText"),
+        Blink::from_seconds(0.5, true),
+        Text("Press Tab to return!".into()),
+        TextColor(Color::BLACK),
+        TextFont {
+            font: assets.font.clone(),
+            font_size: 13.0,
+            ..default()
+        },
+        Node {
+            position_type: PositionType::Absolute,
+            right: Val::Px(4.0),
+            bottom: Val::Px(6.0),
+            ..default()
+        },
+    );
+    commands.spawn((
+        MenuRoot,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        children![
+            credits_name_text("Linda Cai", vec2(105.0, 34.0), assets.font.clone()),
+            credits_name_text("Morgan Tenney", vec2(105.0, 68.0), assets.font.clone()),
+            credits_name_text("Justin Hamilton", vec2(105.0, 98.0), assets.font.clone()),
+            credits_name_text("Gabriel Martinez", vec2(105.0, 132.0), assets.font.clone()),
+            credits_name_text("Music by Thaminda Edirisooriya", vec2(105.0, 163.0), assets.font.clone()),
+            return_text,
+        ],
+    ));
+}
 
-    //     let name = Name::new("ReturnText");
-    //     let blink = Blink::from_seconds(0.5, true);
-    //     // TODO: Add a drop shadow to the text.
-    //     texti("Press Tab to return!", c_start_text, c_font_how_to_play, (name, blink), p);
-    // });
+fn credits_name_text(name: &str, pos: Vec2, font: Handle<Font>) -> impl Bundle {
+    (
+        Text(name.into()),
+        TextColor(Color::BLACK),
+        TextFont {
+            font,
+            font_size: 11.0,
+            ..default()
+        },
+        Node {
+            position_type: PositionType::Absolute,
+            align_self: AlignSelf::Center,
+            left: Val::Px(pos.x),
+            top: Val::Px(pos.y),
+            ..default()
+        },
+    )
 }
 
 fn clear_credits(
@@ -281,11 +345,30 @@ fn show_how_to_play(
         },
     ));
 
-    // rooti(c_root, &asset_server, &mut commands, MenuRoot, |p| {
-    //     let blink = Blink::from_seconds(0.5, true);
-    //     // TODO: Add a drop shadow to the text.
-    //     texti("Press Enter to play!", c_start_text, c_font_how_to_play, blink, p);
-    // });
+    commands.spawn((
+        MenuRoot,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        children![(
+            Blink::from_seconds(0.5, true),
+            Text("Press Enter to play!".into()),
+            TextColor(Color::BLACK),
+            TextFont {
+                font: assets.font.clone(),
+                font_size: 13.0,
+                ..default()
+            },
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(4.0),
+                bottom: Val::Px(6.0),
+                ..default()
+            },
+        )],
+    ));
 }
 
 fn clear_how_to_play(
