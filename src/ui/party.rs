@@ -40,7 +40,7 @@ fn spawn_party(
         PartyDog,
         Transform::from_xyz(0.0, 20.0, 200.0)
             .with_scale(Vec3::new(7.0, 7.0, 1.0)),
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("run_front"),
@@ -74,7 +74,7 @@ fn spawn_party(
                 flip_x: fastrand::bool(),
                 ..default()
             },
-            AseSpriteAnimation {
+            AseAnimation {
                 aseprite,
                 animation: Animation::default()
                     .with_tag("idle"),
@@ -91,12 +91,12 @@ fn destroy_party(
 ) {
     // Despawn cats.
     for cat in cat_q.iter() {
-        commands.entity(cat).despawn_recursive();
+        commands.entity(cat).despawn();
     }
 
     // Despawn dog.
     for dog in dog_q.iter() {
-        commands.entity(dog).despawn_recursive();
+        commands.entity(dog).despawn();
     }
 }
 

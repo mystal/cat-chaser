@@ -21,7 +21,7 @@ fn spawn_camera(
     mut commands: Commands,
     window_q: Query<&Window, With<PrimaryWindow>>,
 ) {
-    let window = window_q.single();
+    let window = window_q.single().unwrap();
 
     // Spawn camera.
     commands.spawn((
@@ -30,24 +30,26 @@ fn spawn_camera(
             viewport: compute_viewport(window.physical_width(), window.physical_height()),
             ..default()
         },
-        OrthographicProjection {
+        Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::Fixed {
                 width: SCREEN_SIZE.x as f32,
                 height: SCREEN_SIZE.y as f32,
             },
             ..OrthographicProjection::default_2d()
-        }
+        }),
     ));
 }
 
 fn scale_camera(
-    mut camera_q: Query<&mut OrthographicProjection, With<Camera>>,
+    mut camera_q: Query<&mut Projection, With<Camera>>,
 ) {
     for mut projection in camera_q.iter_mut() {
-        projection.scaling_mode = ScalingMode::Fixed {
-            width: WORLD_SIZE.x as f32,
-            height: WORLD_SIZE.y as f32,
-        };
+        if let Projection::Orthographic(projection) = projection.as_mut() {
+            projection.scaling_mode = ScalingMode::Fixed {
+                width: WORLD_SIZE.x as f32,
+                height: WORLD_SIZE.y as f32,
+            };
+        }
     }
 }
 
@@ -56,10 +58,10 @@ fn handle_window_resize(
     mut camera_q: Query<&mut Camera>,
     window_q: Query<(Entity, &Window), With<PrimaryWindow>>,
 ) {
-    let Ok((window_entity, window)) = window_q.get_single() else {
+    let Ok((window_entity, window)) = window_q.single() else {
         return;
     };
-    let Ok(mut camera) = camera_q.get_single_mut() else {
+    let Ok(mut camera) = camera_q.single_mut() else {
         return;
     };
 

@@ -3,8 +3,8 @@ name = "cat-chaser"
 version = "0.2.0-rc.1"
 authors = ["Gabriel Martinez <reitaka@gmail.com>"]
 repository = "https://github.com/mystal/cat-chaser"
-edition = "2021"
-rust-version = "1.75"
+edition = "2024"
+rust-version = "1.90"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -15,20 +15,20 @@ verbose_logs = []
 
 [dependencies]
 # Load and render Aseprite animations
-bevy_aseprite_ultra = "0.4"
+bevy_aseprite_ultra = "0.6"
 # To help with loading assets.
-bevy_asset_loader = { version = "0.22", features = ["2d", "standard_dynamic_assets"] }
+bevy_asset_loader = { version = "0.23", features = ["2d", "standard_dynamic_assets"] }
 # To add support for loading RON config assets.
-bevy_common_assets = { version = "0.12", features = ["ron"]}
+bevy_common_assets = { version = "0.13", features = ["ron"]}
 # For debug UI.
-bevy_egui = { version = "0.33", default-features = false }
+bevy_egui = { version = "0.36", default-features = false, features = ["bevy_ui", "picking"]}
 # Generic debug UI to inspect entities and components.
 # TODO: Put behind a feature flag?
-bevy-inspector-egui = { version = "0.30", default-features = false, features = ["highlight_changes", "bevy_render"] }
+bevy-inspector-egui = { version = "0.33", default-features = false, features = ["highlight_changes", "bevy_render"] }
 # Audio support
-bevy_kira_audio = { version = "0.22", default-features = false, features = ["ogg", "wav"] }
+bevy_kira_audio = { version = "0.23", default-features = false, features = ["ogg", "wav"] }
 # 2D physics. Mostly used for collision detection.
-bevy_rapier2d = "0.29"
+bevy_rapier2d = "0.31"
 # For in-game UI.
 # bevy-ui-dsl = "0.9"
 
@@ -37,13 +37,17 @@ fastrand = "2"
 
 # For saving window state.
 serde = "1"
-ron = "0.10"
+ron = "0.11"
 
 # Base engine dependency.
 [dependencies.bevy]
-version = "0.15"
+version = "0.16"
 default-features = false
 features = [
+    # Base features
+    "std",
+    "async_executor",
+
     #Multi-threading
     "multi_threaded",
 
@@ -64,6 +68,9 @@ features = [
     "bevy_sprite",
     "bevy_text",
 
+    # Picking,
+    "bevy_picking",
+
     # UI
     "bevy_ui",
 
@@ -73,11 +80,11 @@ features = [
 
 # Explicitly specify bevy_window and bevy_input to add serialize feature.
 [dependencies.bevy_window]
-version = "0.15"
+version = "0.16"
 features = ["serialize"]
 
 [dependencies.bevy_input]
-version = "0.15"
+version = "0.16"
 features = ["serialize"]
 
 # Dependencies to set window icon. Versions should match bevy's.

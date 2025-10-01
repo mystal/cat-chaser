@@ -57,7 +57,7 @@ pub fn dog(pos: Vec2, aseprite: Handle<Aseprite>) -> impl Bundle {
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite,
             animation: Animation::default()
                 .with_tag("idle_front"),
@@ -88,7 +88,7 @@ fn check_dog_hit(
     cat_q: Query<&Cat, Without<Dog>>,
     rapier_ctx: ReadRapierContext,
 ) {
-    let rapier_ctx = rapier_ctx.single();
+    let rapier_ctx = rapier_ctx.single().unwrap();
 
     for (entity, mut dog, mut blink) in dog_q.iter_mut() {
         if dog.is_recovering() {
@@ -135,7 +135,7 @@ fn tick_recovery(
 }
 
 fn dog_animation(
-    mut dog_q: Query<(&mut AseSpriteAnimation, &mut Sprite, &Velocity), With<Dog>>,
+    mut dog_q: Query<(&mut AseAnimation, &mut Sprite, &Velocity), With<Dog>>,
 ) {
     // Update which animation is playing based on movement.
     for (mut aseanim, mut sprite, velocity) in dog_q.iter_mut() {
@@ -159,7 +159,7 @@ fn dog_bark(
     sfx: Res<SfxAssets>,
     dog_q: Query<&PlayerInput, With<Dog>>,
 ) {
-    let bark = dog_q.get_single()
+    let bark = dog_q.single()
         .map(|input| input.bark)
         .unwrap_or(false);
     if bark {

@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_egui::EguiContexts;
 
 pub struct InputPlugin;
 
@@ -19,6 +20,7 @@ pub fn read_player_input(
     keys: Res<ButtonInput<KeyCode>>,
     gamepads: Query<&Gamepad>,
     mut player_q: Query<&mut PlayerInput>,
+    mut egui_ctx: EguiContexts,
 ) {
     if player_q.is_empty() {
         return;
@@ -43,22 +45,27 @@ pub fn read_player_input(
         bark |= gamepad.just_pressed(GamepadButton::South);
     }
 
-    // Read input from mouse/keyboard.
-    // Movement
-    if movement == Vec2::ZERO {
-        let right = keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]);
-        let left = keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]);
-        let x = (right as i8 - left as i8) as f32;
+    // Read input from keyboard.
+    let egui_wants_input = egui_ctx.ctx_mut()
+        .map(|ctx| ctx.wants_keyboard_input())
+        .unwrap_or_default();
+    if !egui_wants_input {
+        // Movement
+        if movement == Vec2::ZERO {
+            let right = keys.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]);
+            let left = keys.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]);
+            let x = (right as i8 - left as i8) as f32;
 
-        let up = keys.any_pressed([KeyCode::KeyW, KeyCode::ArrowUp]);
-        let down = keys.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown]);
-        let y = (up as i8 - down as i8) as f32;
+            let up = keys.any_pressed([KeyCode::KeyW, KeyCode::ArrowUp]);
+            let down = keys.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown]);
+            let y = (up as i8 - down as i8) as f32;
 
-        movement = Vec2::new(x, y).normalize_or_zero();
+            movement = Vec2::new(x, y).normalize_or_zero();
+        }
+
+        // Bark
+        bark |= keys.just_pressed(KeyCode::Space);
     }
-
-    // Bark
-    bark |= keys.just_pressed(KeyCode::Space);
 
     // Store results in player input components.
     for mut input in player_q.iter_mut() {

@@ -69,7 +69,7 @@ fn destroy_hud(
     hud_q: Query<Entity, With<HudRoot>>,
 ) {
     for entity in hud_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 

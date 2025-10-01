@@ -75,7 +75,7 @@ fn main() {
         // External plugins
         .add_plugins((
             default_plugins,
-            FrameTimeDiagnosticsPlugin,
+            FrameTimeDiagnosticsPlugin::default(),
             AudioPlugin,
         ))
 

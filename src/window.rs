@@ -115,7 +115,7 @@ pub fn update_window_state(
     mut window_state: ResMut<WindowState>,
     window_q: Query<&Window, (With<PrimaryWindow>, Changed<Window>)>,
 ) {
-    if let Ok(window) = window_q.get_single() {
+    if let Ok(window) = window_q.single() {
         window_state.position = window.position;
         let scale_x = window.physical_width() / SCREEN_SIZE.x;
         let scale_y = window.physical_height() / SCREEN_SIZE.y;
@@ -133,7 +133,7 @@ fn log_fps_in_window_title(
         return;
     }
 
-    if let Ok(mut window) = window_q.get_single_mut() {
+    if let Ok(mut window) = window_q.single_mut() {
         if let (Some(fps), Some(frame_time)) = (
             diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS).and_then(|f| f.smoothed()),
             diagnostics.get(&FrameTimeDiagnosticsPlugin::FRAME_TIME).and_then(|f| f.smoothed()),

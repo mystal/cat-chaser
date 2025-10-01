@@ -181,7 +181,7 @@ fn cat(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind)
             flip_x: fastrand::bool(),
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite,
             animation: Animation::default()
                 .with_tag("idle"),
@@ -217,10 +217,10 @@ pub fn update_cats(
 ) {
     let dt = time.delta();
 
-    let (dog_recovering, dog_pos) = dog_q.get_single()
+    let (dog_recovering, dog_pos) = dog_q.single()
         .map(|(dog, trans)| (dog.is_recovering(), Some(trans.translation().truncate())))
         .unwrap_or((false, None));
-    let cat_box_data = cat_box_q.get_single().ok();
+    let cat_box_data = cat_box_q.single().ok();
     for (mut cat, mut annoyance, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
 
@@ -343,7 +343,7 @@ pub fn update_cats(
 }
 
 fn cat_animation(
-    mut cat_q: Query<(&mut AseSpriteAnimation, &mut Sprite, &Cat, &Velocity)>,
+    mut cat_q: Query<(&mut AseAnimation, &mut Sprite, &Cat, &Velocity)>,
 ) {
     use bevy::sprite::Anchor;
 

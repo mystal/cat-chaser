@@ -58,16 +58,16 @@ fn spawn_next_level(
 ) {
     // Despawn all cats.
     for entity in cats_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 
     // Despawn dog.
     for entity in dog_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 
     // Spawn a new dog.
-    let catbox_pos = catbox_q.get_single()
+    let catbox_pos = catbox_q.single()
         .map(|t| t.translation.truncate())
         .unwrap_or_default();
     commands.spawn(dog::dog(catbox_pos, assets.wizard_dog.clone()));

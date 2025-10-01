@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
+use bevy_egui::input::egui_wants_any_input;
 // use bevy_ui_dsl::*;
 
 use crate::{
@@ -21,7 +22,7 @@ impl Plugin for MenusPlugin {
             .add_systems(OnExit(AppState::Credits), clear_credits)
             .add_systems(OnEnter(AppState::HowToPlay), show_how_to_play)
             .add_systems(OnExit(AppState::HowToPlay), clear_how_to_play)
-            .add_systems(Update, handle_menu_input);
+            .add_systems(Update, handle_menu_input.run_if(not(egui_wants_any_input)));
     }
 }
 
@@ -74,7 +75,7 @@ fn clear_start(
     root_q: Query<Entity, With<MenuRoot>>,
 ) {
     for entity in root_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -103,7 +104,7 @@ fn show_credits(
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("jam"),
@@ -118,7 +119,7 @@ fn show_credits(
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.kitten.clone(),
             animation: Animation::default()
                 .with_tag("scarf"),
@@ -133,7 +134,7 @@ fn show_credits(
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("spin"),
@@ -148,7 +149,7 @@ fn show_credits(
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("run_back"),
@@ -163,7 +164,7 @@ fn show_credits(
             flip_x: true,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.fox.clone(),
             animation: Animation::default()
                 .with_tag("fox"),
@@ -193,10 +194,10 @@ fn clear_credits(
     sprite_q: Query<Entity, With<Sprite>>,
 ) {
     for entity in root_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
     for entity in sprite_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -220,7 +221,8 @@ fn show_how_to_play(
         Name::new("Dog"),
         Transform::from_xyz(270.0, 240.0, 0.0)
             .with_scale(Vec3::new(4.0, 4.0, 1.0)),
-        AseSpriteAnimation {
+        Sprite::default(),
+        AseAnimation {
             aseprite: assets.wizard_dog.clone(),
             animation: Animation::default()
                 .with_tag("idle_front"),
@@ -239,7 +241,7 @@ fn show_how_to_play(
             color,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.basic_cat.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -255,7 +257,7 @@ fn show_how_to_play(
             color,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.fat_cat.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -271,7 +273,7 @@ fn show_how_to_play(
             color,
             ..default()
         },
-        AseSpriteAnimation {
+        AseAnimation {
             aseprite: assets.kitten.clone(),
             animation: Animation::default()
                 .with_tag("idle"),
@@ -292,9 +294,9 @@ fn clear_how_to_play(
     sprite_q: Query<Entity, With<Sprite>>,
 ) {
     for entity in root_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
     for entity in sprite_q.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
