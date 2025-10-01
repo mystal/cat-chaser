@@ -3,6 +3,7 @@
 /dist
 .cargo
 .vscode
+.zed
 *.rs.bk
 *.DS_Store
 
