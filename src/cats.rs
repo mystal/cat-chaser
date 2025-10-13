@@ -4,17 +4,17 @@ use std::{
     time::Duration,
 };
 
+use avian2d::prelude::Collider;
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
-use bevy_rapier2d::prelude::Collider;
 
 use crate::{
     WORLD_SIZE, AppState,
     assets::SfxAssets,
     dog::Dog,
     game::CatBox,
-    physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
+    physics::{self, ColliderBundle, GameLayer, MovementBounds, Velocity},
 };
 
 pub const CAT_BOUNDS: f32 = 15.0;
@@ -94,6 +94,12 @@ pub enum CatState {
     Jittering { timer: Timer },
     Cannonballing { timer: Timer },
     InPen,
+}
+
+impl CatState {
+    pub fn is_cannonballing(&self) -> bool {
+        matches!(self, Self::Cannonballing { .. })
+    }
 }
 
 #[derive(Component)]
@@ -187,7 +193,7 @@ fn cat(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind)
                 .with_tag("idle"),
         },
         Velocity::default(),
-        ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::CAT, groups::DOG | groups::CATBOX),
+        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Cat, [GameLayer::Dog, GameLayer::CatBox]),
         MovementBounds {
             min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
             max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),
@@ -224,6 +230,7 @@ pub fn update_cats(
     for (mut cat, mut annoyance, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
 
+        // TODO: Switch to using events to check if a cat _entered_ the pen.
         let in_pen = cat_box_data.map(|(collider, cat_box_transform)| {
                 let box_pos = cat_box_transform.translation().truncate();
                 // TODO: Get cat_box rotation from transform.
@@ -275,6 +282,8 @@ pub fn update_cats(
                     } else {
                         Vec2::ZERO
                     };
+                    // TODO: Starting to Cannonball, check if we currently overlap the dog and
+                    // trigger hitting it.
                 }
             }
             CatState::Cannonballing { timer } => {

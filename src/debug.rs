@@ -1,7 +1,7 @@
+use avian2d::debug_render::*;
 use bevy::prelude::*;
 use bevy_egui::{egui, input::egui_wants_any_keyboard_input, EguiContextSettings, EguiContexts, EguiPrimaryContextPass};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use bevy_rapier2d::render::{DebugRenderContext, RapierDebugRenderPlugin};
 
 pub struct DebugPlugin;
 
@@ -11,8 +11,15 @@ impl Plugin for DebugPlugin {
             .add_plugins((
                 bevy_egui::EguiPlugin::default(),
                 WorldInspectorPlugin::default().run_if(show_world_inspector),
-                RapierDebugRenderPlugin::default().disabled(),
+                PhysicsDebugPlugin::default(),
             ))
+            .insert_gizmo_config(
+                PhysicsGizmos::default(),
+                GizmoConfig {
+                    enabled: false,
+                    ..default()
+                },
+            )
 
             .insert_resource(DebugState::default())
             .add_systems(EguiPrimaryContextPass,
@@ -55,10 +62,11 @@ fn show_world_inspector(
 
 fn debug_menu_bar(
     mut debug_state: ResMut<DebugState>,
-    mut debug_physics_ctx: ResMut<DebugRenderContext>,
+    mut gizmo_config_store: ResMut<GizmoConfigStore>,
     mut egui_ctx: EguiContexts,
 ) {
     let ctx = egui_ctx.ctx_mut().unwrap();
+    let (gizmo_config, _) = gizmo_config_store.config_mut::<PhysicsGizmos>();
 
     egui::TopBottomPanel::top("debug_panel")
         .show(ctx, |ui| {
@@ -68,7 +76,7 @@ fn debug_menu_bar(
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("Debug", |ui| {
                     ui.checkbox(&mut debug_state.show_world_inspector, "World Inspector");
-                    ui.checkbox(&mut debug_physics_ctx.enabled, "Debug Physics Render");
+                    ui.checkbox(&mut gizmo_config.enabled, "Debug Physics Render");
                     // ui.checkbox(&mut debug_state.place_entity_mode, "Place Entity Mode");
                 });
             });
@@ -86,10 +94,11 @@ fn toggle_debug_ui(
 
 fn toggle_physics_debug_render(
     keys: Res<ButtonInput<KeyCode>>,
-    mut debug_render_context: ResMut<DebugRenderContext>,
+    mut gizmo_config_store: ResMut<GizmoConfigStore>,
 ) {
     if keys.just_pressed(KeyCode::Digit0) {
-        debug_render_context.enabled = !debug_render_context.enabled;
+        let (gizmo_config, _) = gizmo_config_store.config_mut::<PhysicsGizmos>();
+        gizmo_config.enabled = !gizmo_config.enabled;
     }
 }
 

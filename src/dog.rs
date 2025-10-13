@@ -1,14 +1,14 @@
+use avian2d::prelude::{CollisionEventsEnabled, OnCollisionStart};
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
-use bevy_rapier2d::prelude::ReadRapierContext;
 
 use crate::{
     WORLD_SIZE, AppState,
     assets::SfxAssets,
-    cats::{Cat, CatState},
+    cats::Cat,
     input::PlayerInput,
-    physics::{self, groups, ColliderBundle, MovementBounds, Velocity},
+    physics::{self, ColliderBundle, GameLayer, MovementBounds, Velocity},
     utils::Blink,
 };
 
@@ -18,7 +18,7 @@ impl Plugin for DogPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, (
-                (tick_recovery, check_dog_hit).before(dog_movement).chain(),
+                tick_recovery.before(dog_movement).chain(),
                 dog_movement.before(physics::update_movement),
                 dog_animation.after(dog_movement),
                 dog_bark,
@@ -63,7 +63,8 @@ pub fn dog(pos: Vec2, aseprite: Handle<Aseprite>) -> impl Bundle {
                 .with_tag("idle_front"),
         },
         Velocity::default(),
-        ColliderBundle::rect(Vec2::new(30.0, 30.0), groups::DOG, groups::CAT),
+        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Dog, GameLayer::Cat),
+        CollisionEventsEnabled,
         PlayerInput::default(),
         MovementBounds {
             min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::new(0.0, 0.0),
@@ -81,43 +82,26 @@ fn dog_movement(
     }
 }
 
-fn check_dog_hit(
+pub fn dog_intersects_cat(
+    trigger: Trigger<OnCollisionStart>,
     audio: Res<Audio>,
     sounds: Res<SfxAssets>,
-    mut dog_q: Query<(Entity, &mut Dog, &mut Blink)>,
+    mut dog_q: Query<(&mut Dog, &mut Blink)>,
     cat_q: Query<&Cat, Without<Dog>>,
-    rapier_ctx: ReadRapierContext,
 ) {
-    let rapier_ctx = rapier_ctx.single().unwrap();
+    let Ok((mut dog, mut blink)) = dog_q.get_mut(trigger.target()) else {
+        return;
+    };
 
-    for (entity, mut dog, mut blink) in dog_q.iter_mut() {
-        if dog.is_recovering() {
-            continue;
-        }
+    if dog.is_recovering() {
+        return;
+    }
 
-        for (collider1, collider2, intersecting) in rapier_ctx.intersection_pairs_with(entity) {
-            if !intersecting {
-                // TODO: Is this right? Confusing API.
-                continue;
-            }
-
-            if let Ok(cat) = cat_q.get(collider1) {
-                if matches!(cat.state, CatState::Cannonballing { .. }) {
-                    dog.start_recovery();
-                    blink.enable();
-                    audio.play(sounds.dog_yip.clone());
-                    break;
-                }
-            }
-            if let Ok(cat) = cat_q.get(collider2) {
-                if matches!(cat.state, CatState::Cannonballing { .. }) {
-                    dog.start_recovery();
-                    blink.enable();
-                    audio.play(sounds.dog_yip.clone());
-                    break;
-                }
-            }
-        }
+    let other_entity = trigger.collider;
+    if let Ok(cat) = cat_q.get(other_entity) && cat.state.is_cannonballing() {
+        dog.start_recovery();
+        blink.enable();
+        audio.play(sounds.dog_yip.clone());
     }
 }
 

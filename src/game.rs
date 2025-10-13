@@ -6,7 +6,7 @@ use crate::{
     cats::{self, Cat, CatState},
     dog::DogPlugin,
     level::{CurrentLevel, Levels},
-    physics::{groups, ColliderBundle},
+    physics::{ColliderBundle, GameLayer},
 };
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
@@ -89,7 +89,7 @@ fn setup_game(
         Name::new("CatBox"),
         Sprite::from_image(assets.cat_box.clone()),
         Transform::from_xyz(0.0, 0.0, -0.5),
-        ColliderBundle::rect((60.0, 60.0).into(), groups::CATBOX, groups::CAT),
+        ColliderBundle::rect((60.0, 60.0).into(), GameLayer::CatBox, GameLayer::Cat),
     ));
 
     next_game_state.set(GameState::Playing);

@@ -70,7 +70,8 @@ fn spawn_next_level(
     let catbox_pos = catbox_q.single()
         .map(|t| t.translation.truncate())
         .unwrap_or_default();
-    commands.spawn(dog::dog(catbox_pos, assets.wizard_dog.clone()));
+    commands.spawn(dog::dog(catbox_pos, assets.wizard_dog.clone()))
+        .observe(dog::dog_intersects_cat);
 
     // Then spawn new cats.
     let level_index = if current_level.index + 1 < levels.len() {
