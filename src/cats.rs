@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use avian2d::prelude::Collider;
+use avian2d::prelude::{Collider, CollisionLayers};
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
@@ -193,7 +193,7 @@ fn cat(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind)
                 .with_tag("idle"),
         },
         Velocity::default(),
-        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Cat, [GameLayer::Dog, GameLayer::CatBox]),
+        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Cat, GameLayer::CatBox),
         MovementBounds {
             min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
             max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),
@@ -217,7 +217,7 @@ pub fn update_cats(
     time: Res<Time>,
     audio: Res<Audio>,
     sounds: Res<SfxAssets>,
-    mut cat_q: Query<(&mut Cat, &mut Annoyance, &Transform, &mut Velocity)>,
+    mut cat_q: Query<(&mut Cat, &mut Annoyance, &mut CollisionLayers, &Transform, &mut Velocity)>,
     dog_q: Query<(&Dog, &GlobalTransform), Without<Cat>>,
     cat_box_q: Query<(&Collider, &GlobalTransform), With<CatBox>>,
 ) {
@@ -227,7 +227,7 @@ pub fn update_cats(
         .map(|(dog, trans)| (dog.is_recovering(), Some(trans.translation().truncate())))
         .unwrap_or((false, None));
     let cat_box_data = cat_box_q.single().ok();
-    for (mut cat, mut annoyance, transform, mut velocity) in cat_q.iter_mut() {
+    for (mut cat, mut annoyance, mut layers, transform, mut velocity) in cat_q.iter_mut() {
         let pos = transform.translation.truncate();
 
         // TODO: Switch to using events to check if a cat _entered_ the pen.
@@ -282,8 +282,8 @@ pub fn update_cats(
                     } else {
                         Vec2::ZERO
                     };
-                    // TODO: Starting to Cannonball, check if we currently overlap the dog and
-                    // trigger hitting it.
+                    // Allow overlaps with the Dog while Cannonballing!
+                    layers.filters.add(GameLayer::Dog);
                 }
             }
             CatState::Cannonballing { timer } => {
@@ -292,6 +292,8 @@ pub fn update_cats(
                     let accel_angle = velocity.to_angle() + PI;
                     cat.state = CatState::Wander { accel_angle };
                     annoyance.reset();
+                    // Stop overlaps with the Dog now.
+                    layers.filters.remove(GameLayer::Dog);
                 }
             }
             CatState::InPen => {},
