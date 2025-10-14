@@ -1,4 +1,4 @@
-use avian2d::prelude::{CollisionEventsEnabled, OnCollisionStart};
+use avian2d::prelude::{Collider, CollisionEventsEnabled, OnCollisionStart};
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
@@ -8,7 +8,7 @@ use crate::{
     assets::SfxAssets,
     cats::Cat,
     input::PlayerInput,
-    physics::{self, ColliderBundle, GameLayer, MovementBounds, Velocity},
+    physics::{self, collider, GameLayer, MovementBounds, Velocity},
     utils::Blink,
 };
 
@@ -63,7 +63,7 @@ pub fn dog(pos: Vec2, aseprite: Handle<Aseprite>) -> impl Bundle {
                 .with_tag("idle_front"),
         },
         Velocity::default(),
-        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Dog, GameLayer::Cat),
+        collider(Collider::rectangle(30.0, 30.0), GameLayer::Dog, GameLayer::Cat),
         CollisionEventsEnabled,
         PlayerInput::default(),
         MovementBounds {

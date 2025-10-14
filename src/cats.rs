@@ -14,7 +14,7 @@ use crate::{
     assets::SfxAssets,
     dog::Dog,
     game::CatBox,
-    physics::{self, ColliderBundle, GameLayer, MovementBounds, Velocity},
+    physics::{self, collider, GameLayer, MovementBounds, Velocity},
 };
 
 pub const CAT_BOUNDS: f32 = 15.0;
@@ -193,7 +193,7 @@ fn cat(name: &'static str, pos: Vec2, aseprite: Handle<Aseprite>, kind: CatKind)
                 .with_tag("idle"),
         },
         Velocity::default(),
-        ColliderBundle::rect(Vec2::new(30.0, 30.0), GameLayer::Cat, GameLayer::CatBox),
+        collider(Collider::rectangle(30.0, 30.0), GameLayer::Cat, GameLayer::CatBox),
         MovementBounds {
             min: -(WORLD_SIZE.as_vec2() / 2.0) + Vec2::splat(CAT_BOUNDS),
             max: (WORLD_SIZE.as_vec2() / 2.0) - Vec2::splat(CAT_BOUNDS),

@@ -71,27 +71,14 @@ pub fn update_movement(
     }
 }
 
-#[derive(Bundle)]
-pub struct ColliderBundle {
+pub fn collider(
     collider: Collider,
-    layers: CollisionLayers,
-    sensor: Sensor,
-}
-
-impl ColliderBundle {
-    pub fn circle(radius: f32, memberships: impl Into<LayerMask>, filters: impl Into<LayerMask>) -> Self {
-        Self {
-            collider: Collider::circle(radius),
-            layers: CollisionLayers::new(memberships, filters),
-            sensor: Sensor,
-        }
-    }
-
-    pub fn rect(size: Vec2, memberships: impl Into<LayerMask>, filters: impl Into<LayerMask>) -> Self {
-        Self {
-            collider: Collider::rectangle(size.x, size.y),
-            layers: CollisionLayers::new(memberships, filters),
-            sensor: Sensor,
-        }
-    }
+    memberships: impl Into<LayerMask>,
+    filters: impl Into<LayerMask>,
+) -> impl Bundle {
+    (
+        collider,
+        CollisionLayers::new(memberships, filters),
+        Sensor,
+    )
 }

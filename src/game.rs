@@ -1,3 +1,4 @@
+use avian2d::prelude::Collider;
 use bevy::prelude::*;
 
 use crate::{
@@ -6,7 +7,7 @@ use crate::{
     cats::{self, Cat, CatState},
     dog::DogPlugin,
     level::{CurrentLevel, Levels},
-    physics::{ColliderBundle, GameLayer},
+    physics::{collider, GameLayer},
 };
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
@@ -89,7 +90,7 @@ fn setup_game(
         Name::new("CatBox"),
         Sprite::from_image(assets.cat_box.clone()),
         Transform::from_xyz(0.0, 0.0, -0.5),
-        ColliderBundle::rect((60.0, 60.0).into(), GameLayer::CatBox, GameLayer::Cat),
+        collider(Collider::rectangle(60.0, 60.0), GameLayer::CatBox, GameLayer::Cat),
     ));
 
     next_game_state.set(GameState::Playing);
