@@ -43,7 +43,7 @@ impl Blink {
     }
 
     pub fn is_enabled(&self) -> bool {
-        !self.timer.paused()
+        !self.timer.is_paused()
     }
 }
 

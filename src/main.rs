@@ -51,8 +51,8 @@ fn main() {
                 title: window::WINDOW_TITLE.into(),
                 position: saved_window_state.position,
                 resolution: WindowResolution::new(
-                    SCREEN_SIZE[0] as f32 * saved_window_state.scale as f32,
-                    SCREEN_SIZE[1] as f32 * saved_window_state.scale as f32,
+                    SCREEN_SIZE[0] * saved_window_state.scale as u32,
+                    SCREEN_SIZE[1] * saved_window_state.scale as u32,
                 )
                 .with_scale_factor_override(1.0),
                 resizable: true,

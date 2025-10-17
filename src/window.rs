@@ -71,7 +71,7 @@ impl Plugin for WindowPlugin {
         {
             app
                 .add_systems(Startup, window_icon::set_window_icon)
-                .add_systems(Last, save_window_state_on_exit.run_if(on_event::<AppExit>));
+                .add_systems(Last, save_window_state_on_exit.run_if(on_message::<AppExit>));
 
             app
                 .insert_resource(LogFpsTimer::default())
@@ -82,32 +82,37 @@ impl Plugin for WindowPlugin {
 
 #[cfg(not(target_arch = "wasm32"))]
 mod window_icon {
-    use bevy::prelude::*;
-    use bevy::winit::WinitWindows;
+    use bevy::ecs::system::NonSendMarker;
+    use bevy::winit::WINIT_WINDOWS;
     use winit::window::Icon;
 
     pub fn set_window_icon(
-        // Have to use `NonSend` here
-        windows: NonSend<WinitWindows>,
+        // Use NonSendMarker to run on the main thread when accessing WINIT_WINDOWS.
+        _non_send_marker: NonSendMarker,
     ) {
         // Taken from: https://bevy-cheatbook.github.io/window/icon.html
-        // Use the `image` crate to load our icon data from a png file.
-        // NOTE: This is not a very bevy-native solution, but it will do.
-        let (icon_rgba, icon_width, icon_height) = {
-            let image = image::open("assets/icon.png")
-                .expect("Failed to open icon path")
-                .into_rgba8();
-            let (width, height) = image.dimensions();
-            let rgba = image.into_raw();
-            (rgba, width, height)
-        };
-        let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height)
-            .expect("Could not create Icon from icon data");
+        // and updated for Bevy 0.17:
+        // https://bevy.org/learn/migration-guides/0-16-to-0-17/#replace-gilrs-accesskitadapters-and-winitwindows-non-send-resources
 
-        // Do it for all windows.
-        for window in windows.windows.values() {
-            window.set_window_icon(Some(icon.clone()));
-        }
+        WINIT_WINDOWS.with_borrow_mut(|winit_windows| {
+            // Use the `image` crate to load our icon data from a png file.
+            // NOTE: This is not a very bevy-native solution, but it will do.
+            let (icon_rgba, icon_width, icon_height) = {
+                let image = image::open("assets/icon.png")
+                    .expect("Failed to open icon path")
+                    .into_rgba8();
+                let (width, height) = image.dimensions();
+                let rgba = image.into_raw();
+                (rgba, width, height)
+            };
+            let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height)
+                .expect("Could not create Icon from icon data");
+
+            // Do it for all windows.
+            for window in winit_windows.windows.values() {
+                window.set_window_icon(Some(icon.clone()));
+            }
+        });
     }
 }
 

@@ -1,4 +1,4 @@
-use avian2d::prelude::{Collider, CollisionEventsEnabled, OnCollisionStart};
+use avian2d::prelude::{Collider, CollisionEventsEnabled, CollisionStart};
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
@@ -39,7 +39,7 @@ impl Dog {
     }
 
     pub fn is_recovering(&self) -> bool {
-        !self.recovery_timer.paused() && !self.recovery_timer.finished()
+        !self.recovery_timer.is_paused() && !self.recovery_timer.is_finished()
     }
 }
 
@@ -83,13 +83,13 @@ fn dog_movement(
 }
 
 pub fn dog_intersects_cat(
-    trigger: Trigger<OnCollisionStart>,
+    collision: On<CollisionStart>,
     audio: Res<Audio>,
     sounds: Res<SfxAssets>,
     mut dog_q: Query<(&mut Dog, &mut Blink)>,
     cat_q: Query<&Cat, Without<Dog>>,
 ) {
-    let Ok((mut dog, mut blink)) = dog_q.get_mut(trigger.target()) else {
+    let Ok((mut dog, mut blink)) = dog_q.get_mut(collision.collider1) else {
         return;
     };
 
@@ -97,7 +97,7 @@ pub fn dog_intersects_cat(
         return;
     }
 
-    let other_entity = trigger.collider;
+    let other_entity = collision.collider2;
     if let Ok(cat) = cat_q.get(other_entity) && cat.state.is_cannonballing() {
         dog.start_recovery();
         blink.enable();

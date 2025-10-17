@@ -6,6 +6,7 @@ use std::{
 
 use avian2d::prelude::{Collider, CollisionLayers};
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use bevy_aseprite_ultra::prelude::*;
 use bevy_kira_audio::{Audio, AudioControl};
 
@@ -271,7 +272,7 @@ pub fn update_cats(
                 }
             }
             CatState::Jittering { timer } => {
-                if timer.finished() {
+                if timer.is_finished() {
                     cat.state = CatState::Cannonballing {
                         timer: Timer::from_seconds(CANNONBALL_TIME, TimerMode::Once),
                     };
@@ -287,7 +288,7 @@ pub fn update_cats(
                 }
             }
             CatState::Cannonballing { timer } => {
-                if timer.finished() {
+                if timer.is_finished() {
                     // Start wandering facing the direction we were fleeing.
                     let accel_angle = velocity.to_angle() + PI;
                     cat.state = CatState::Wander { accel_angle };
@@ -354,12 +355,12 @@ pub fn update_cats(
 }
 
 fn cat_animation(
-    mut cat_q: Query<(&mut AseAnimation, &mut Sprite, &Cat, &Velocity)>,
+    mut cat_q: Query<(&mut AseAnimation, &mut Sprite, &mut Anchor, &Cat, &Velocity)>,
 ) {
     use bevy::sprite::Anchor;
 
     // Update which animation is playing based on state and velocity.
-    for (mut aseanim, mut sprite, cat, velocity) in cat_q.iter_mut() {
+    for (mut aseanim, mut sprite, mut anchor,  cat, velocity) in cat_q.iter_mut() {
         match &cat.state {
             CatState::Wander { .. }=> {
                 if **velocity == Vec2::ZERO {
@@ -410,11 +411,10 @@ fn cat_animation(
                     (fastrand::f32() * 2.0) - 1.0,
                     (fastrand::f32() * 2.0) - 1.0,
                 ) * JITTER_AMOUNT;
-                let anchor = offset / 32.0;
-                sprite.anchor = Anchor::Custom(anchor);
+                anchor.0 = offset / 32.0;
             }
             _ => {
-                sprite.anchor = Anchor::Center;
+                *anchor = Anchor::CENTER;
             }
         }
     }
@@ -446,7 +446,7 @@ fn cat_meows(
             continue;
         }
 
-        if cat.meow_timer.tick(dt).finished() {
+        if cat.meow_timer.tick(dt).is_finished() {
             audio.play(match cat.kind {
                 CatKind::Basic => sounds.basic_cat_meow.clone(),
                 CatKind::Kitten => sounds.kitten_meow.clone(),

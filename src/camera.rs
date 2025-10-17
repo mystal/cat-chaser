@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::render::camera::{ScalingMode, Viewport};
+use bevy::camera::{ScalingMode, Viewport};
 use bevy::window::{PrimaryWindow, WindowResized};
 
 use crate::{
@@ -54,7 +54,7 @@ fn scale_camera(
 }
 
 fn handle_window_resize(
-    mut resize_events: EventReader<WindowResized>,
+    mut resize_messages: MessageReader<WindowResized>,
     mut camera_q: Query<&mut Camera>,
     window_q: Query<(Entity, &Window), With<PrimaryWindow>>,
 ) {
@@ -65,7 +65,7 @@ fn handle_window_resize(
         return;
     };
 
-    for e in resize_events.read() {
+    for e in resize_messages.read() {
         if e.window != window_entity {
             continue;
         }
